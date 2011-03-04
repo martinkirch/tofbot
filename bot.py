@@ -65,7 +65,7 @@ class Tofbot(Bot):
         
 if __name__ == "__main__":
 	if len(sys.argv) > 2:
-		chans = map(lambda s: "#" + s, sys.argv[2:])
+		chans = [ "#" + s for s in sys.argv[2:] ]
 		b = Tofbot(sys.argv[1], 'Tofbot', chans)
 		b.run('irc.freenode.net')
 	else:
