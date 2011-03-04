@@ -9,6 +9,10 @@ Tofbot will connect to freenode.net
 """
 
 from irc import Bot
+from jokes import Jokes
+from chucknorris import ChuckNorrisFacts
+from riddles import Riddles
+from tofades import Tofades
 import sys
 
 class Riddle(object):
@@ -31,6 +35,13 @@ class Riddle(object):
 
 class Tofbot(Bot):
 
+    def __init__(self, nick, name, channels, password=None):
+        Bot.__init__(self, nick, name, channels, password)
+        self._jokes = Jokes()
+        self._chuck = ChuckNorrisFacts()
+        self._tofades = Tofades()
+        self._riddles = Riddles()
+
     def dispatch(self, origin, args):
         print ("o=%s a=%s" % (origin.sender, args))
         if (args[0] == 'End of /MOTD command.'):
@@ -44,6 +55,8 @@ class Tofbot(Bot):
             self.cmd_blague(chan)
         if (msg == '!chuck'):
             self.cmd_chuck(chan)
+        if (msg == '!tofade'):
+            self.cmd_tofade(chan)
         if (msg == '!devinette' and not self.active_riddle()):
             self.devinette = self.random_riddle(chan)
         if self.active_riddle():
@@ -54,13 +67,17 @@ class Tofbot(Bot):
         return (hasattr(self, 'devinette') and self.devinette is not None)
 
     def cmd_blague(self, chan):
-        self.msg(chan, "Ceci est une blague")
+        self.msg(chan, self._jokes.get())
 
     def cmd_chuck(self, chan):
-        self.msg(chan, "Chuck Norris can solve the halting problem. He kicks the Turing machine's ass.")
+        self.msg(chan, self._chuck.get())
+    
+    def cmd_tofade(self, chan):
+        self.msg(chan, self._tofades.get())
 
     def random_riddle(self, chan):
-        r = Riddle ("A ?", "B !", chan, lambda msg: self.msg(chan, msg))
+        text = self._riddles.get()
+        r = Riddle (text[0], text[1], chan, lambda msg: self.msg(chan, msg))
         return r
         
 if __name__ == "__main__":
