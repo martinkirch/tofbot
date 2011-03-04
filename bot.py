@@ -51,6 +51,8 @@ class Tofbot(Bot):
             return
         chan = args[2]
         msg = args[0]
+        if (msg == '!help'):
+            self.msg(chan, "Commandes : !blague !chuck !tofade !devinette !help")
         if (msg == '!blague'):
             self.cmd_blague(chan)
         if (msg == '!chuck'):
