@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 
-class Jokes(object):
+class Riddles(object):
 	"""
-	Awesome jokes
+	Awesome riddles
 	"""
 	
 	__jokes = [
-		("Voici l'histoire de Toto aux toilettes...")
+		("Tu connais l'histoire de Toto au toilettes?", "Ben moi non plus")
 	]
 	
 	def get(self):
 		return self.__class__.__jokes[0];
 
 if __name__ == "__main__":
-	joker = Jokes()
+	joker = Riddles()
 	print joker.get()

@@ -6,8 +6,8 @@ class ChuckNorrisFacts(object):
 	"""
 	
 	__sentences = [
-		"Chuck norris est trop fort",
-		"Yippee chuck"
+		("Chuck norris est tellement fort qu'il peut applaudir d'une seule main"),
+		("Il n'y a que sur Google qu'on peut taper Chuck Norris")
 	]
 	
 	def get(self):
