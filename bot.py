@@ -1,4 +1,15 @@
+#!/usr/bin/env python
+"""
+USAGE:
+
+./bot.py nickname channel [other channels...]
+
+Don't prepend a # to chan names
+Tofbot will connect to freenode.net
+"""
+
 from irc import Bot
+import sys
 
 class Riddle(object):
     def __init__(self, riddle, answer, channel, writeback):
@@ -51,3 +62,11 @@ class Tofbot(Bot):
     def random_riddle(self, chan):
         r = Riddle ("A ?", "B !", chan, lambda msg: self.msg(chan, msg))
         return r
+        
+if __name__ == "__main__":
+	if len(sys.argv) > 2:
+		chans = map(lambda s: "#" + s, sys.argv[2:])
+		b = Tofbot(sys.argv[1], 'Tofbot', chans)
+		b.run('irc.freenode.net')
+	else:
+		print __doc__
