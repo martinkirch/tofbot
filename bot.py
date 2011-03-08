@@ -13,6 +13,7 @@ from jokes import Jokes
 from chucknorris import ChuckNorrisFacts
 from riddles import Riddles
 from tofades import Tofades
+from fortunes import Fortunes
 import sys
 
 class Riddle(object):
@@ -41,18 +42,22 @@ class Tofbot(Bot):
         self._chuck = ChuckNorrisFacts()
         self._tofades = Tofades()
         self._riddles = Riddles()
+        self._fortunes = Fortunes()
 
     def dispatch(self, origin, args):
         print ("o=%s a=%s" % (origin.sender, args))
         if (args[0] == 'End of /MOTD command.'):
             for chan in self.channels:
                 self.write(('JOIN', chan))
+                self.cmd_tofade(chan)
         if origin.sender is None:
             return
         chan = args[2]
         msg = args[0]
         if (msg == '!help'):
-            self.msg(chan, "Commandes : !blague !chuck !tofade !devinette !help")
+            self.msg(chan, "Commandes : !blague !chuck !tofade !devinette !fortune !help")
+        if (msg == '!fortune'):
+            self.cmd_fortune(chan)
         if (msg == '!blague'):
             self.cmd_blague(chan)
         if (msg == '!chuck'):
@@ -70,6 +75,9 @@ class Tofbot(Bot):
 
     def cmd_blague(self, chan):
         self.msg(chan, self._jokes.get())
+
+    def cmd_fortune(self, chan):
+        self.msg(chan, self._fortunes.get())
 
     def cmd_chuck(self, chan):
         self.msg(chan, self._chuck.get())
