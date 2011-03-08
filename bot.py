@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 USAGE:
 
@@ -35,6 +36,9 @@ class Riddle(object):
             return True
         return False
 
+def in_whitelist(k):
+    return k in []
+
 class Tofbot(Bot):
 
     def __init__(self, nick, name, channels, password=None):
@@ -56,19 +60,33 @@ class Tofbot(Bot):
         if origin.sender is None:
             return
         chan = args[2]
-        msg = args[0]
-        if (msg == '!help'):
+        msg = args[0].split(" ")
+        cmd = msg[0]
+        if (cmd == '!help'):
             self.msg(chan, "Commandes : !blague !chuck !tofade !devinette !fortune !help")
-        if (msg == '!fortune'):
+        if (cmd == '!fortune'):
             self.cmd_fortune(chan)
-        if (msg == '!blague'):
+        if (cmd == '!blague'):
             self.cmd_blague(chan)
-        if (msg == '!chuck'):
+        if (cmd == '!chuck'):
             self.cmd_chuck(chan)
-        if (msg == '!tofade'):
+        if (cmd == '!tofade'):
             self.cmd_tofade(chan)
-        if (msg == '!devinette' and not self.active_riddle()):
+        if (cmd == '!devinette' and not self.active_riddle()):
             self.devinette = self.random_riddle(chan)
+        if (cmd == '!get' and len(msg) == 2):
+            key = msg[1]
+            value = self.safe_getattr(key)
+            if value is None:
+                self.msg(chan, "Ne touche pas à mes parties privées !")
+            else:
+                self.msg(chan, "%s = %s" % (key, value))
+        if (cmd == '!set' and len(msg) == 3):
+            key = msg[1]
+            value = msg[2]
+            ok = self.safe_setattr(key, value)
+            if not ok:
+                self.msg(chan, "N'écris pas sur mes parties privées !")
         if self.active_riddle():
             if (self.devinette.wait_answer(chan)):
                 self.devinette = None
@@ -76,6 +94,21 @@ class Tofbot(Bot):
             random.seed()
             if random.randint(0, 100) > 98:
                 self.cmd_tofade(chan)
+
+    def safe_getattr(self, key):
+        if not in_whitelist(key):
+            return None
+        if not hasattr(self, key):
+            return "(None)"
+        else:
+            return str(getattr(self, key))
+
+    def safe_setattr(self, key, value):
+        if not in_whitelist(key):
+            return False
+        else:
+            setattr(self, key, value)
+            return True
 
     def active_riddle(self):
         return (hasattr(self, 'devinette') and self.devinette is not None)
