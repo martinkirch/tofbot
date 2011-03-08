@@ -56,6 +56,10 @@ class Tofbot(Bot):
         if origin.sender is None:
             return
         chan = args[2]
+        
+        if chan == self.nick:
+            chan = self.channels[0]
+        
         msg = args[0]
         if (msg == '!help'):
             self.msg(chan, "Commandes : !blague !chuck !tofade !devinette !fortune !help")
