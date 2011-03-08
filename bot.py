@@ -48,38 +48,47 @@ class Tofbot(Bot):
 
     def dispatch(self, origin, args):
         print ("o=%s a=%s" % (origin.sender, args))
-        if (args[0] == 'End of /MOTD command.'):
-            for chan in self.channels:
-                self.write(('JOIN', chan))
-                self.cmd_tofade(chan)
-            self.joined = True
-        if origin.sender is None:
-            return
-        chan = args[2]
         
-        if chan == self.nick:
-            chan = self.channels[0]
+        commandType = args[1]
         
-        msg = args[0]
-        if (msg == '!help'):
-            self.msg(chan, "Commandes : !blague !chuck !tofade !devinette !fortune !help")
-        if (msg == '!fortune'):
-            self.cmd_fortune(chan)
-        if (msg == '!blague'):
-            self.cmd_blague(chan)
-        if (msg == '!chuck'):
-            self.cmd_chuck(chan)
-        if (msg == '!tofade'):
-            self.cmd_tofade(chan)
-        if (msg == '!devinette' and not self.active_riddle()):
-            self.devinette = self.random_riddle(chan)
-        if self.active_riddle():
-            if (self.devinette.wait_answer(chan)):
-                self.devinette = None
-        if self.joined:
-            random.seed()
-            if random.randint(0, 100) > 98:
+        if self.joined :
+            
+            if commandType == 'PRIVMSG':
+                msg = args[0]
+                chan = args[2]
+                
+                if chan == self.nick:
+                    chan = self.channels[0]
+                
+                if (msg == '!help'):
+                    self.msg(chan, "Commands : !blague !chuck !tofade !devinette !fortune !help")
+                    self.msg(chan, "Commands ")
+                if (msg == '!fortune'):
+                    self.cmd_fortune(chan)
+                if (msg == '!blague'):
+                    self.cmd_blague(chan)
+                if (msg == '!chuck'):
+                    self.cmd_chuck(chan)
+                if (msg == '!tofade'):
+                    self.cmd_tofade(chan)
+                if (msg == '!devinette' and not self.active_riddle()):
+                    self.devinette = self.random_riddle(chan)
+                if self.active_riddle():
+                    if (self.devinette.wait_answer(chan)):
+                        self.devinette = None
+                if self.joined:
+                    random.seed()
+                    if random.randint(0, 100) > 98:
+                        self.cmd_tofade(chan)
+            elif commandType == 'JOIN':
+                chan = args[0]
                 self.cmd_tofade(chan)
+                
+        else :
+            if (args[0] == 'End of /MOTD command.'):
+                for chan in self.channels:
+                    self.write(('JOIN', chan))
+                self.joined = True
 
     def active_riddle(self):
         return (hasattr(self, 'devinette') and self.devinette is not None)
