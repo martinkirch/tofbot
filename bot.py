@@ -22,7 +22,7 @@ class Riddle(object):
         self.answer = answer
         self.channel = channel
         self.writeback = writeback
-        self.remaining_msgs = 2
+        self.remaining_msgs = 4
         self.writeback(self.riddle)
 
     def wait_answer(self, chan):
