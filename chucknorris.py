@@ -17,7 +17,7 @@ class ChuckNorrisFacts(object):
 		("Chuck Norris ne se mouille pas, c'est l'eau qui se Chuck Norris."),
 		("Chuck Norris et Superman ont fait un bras de fer, le perdant devait mettre son slip par dessus son pantalon."),
 		("Chuck Norris peut gagner une partie de puissance 4 en trois coups."),
-		("Le dernier homme a avoir sérré la main à Chuck est Jamel Debouzze."),
+		("Le dernier homme a avoir serré la main à Chuck est Jamel Debbouze."),
 		("Jesus Christ est né en 1940 avant Chuck Norris."),
 		("Chuck Norris ne porte pas de montre. Il décide de l'heure qu'il est."),
 		("La seule chose qui arrive à la cheville de Chuck Norris... c'est sa chaussette."),

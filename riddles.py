@@ -10,7 +10,8 @@ class Riddles(object):
 	
 	__jokes = [
 		("Tu connais l'histoire de Toto au toilettes?", "Ben moi non plus"),
-		("Où est charlie?", "Sur ta mère")
+		("Où est charlie?", "Sur ta mère"),
+                ("Qu'est-ce qui est vert, qui vit sous terre, et qui mange des pierres ?", "Le mange cailloux")
 	]
 	
 	def get(self, index = None):
