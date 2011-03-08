@@ -11,7 +11,8 @@ class Tofades(object):
 	__sentences = [
 		("Ho ho ho"),
 		("Hô hô hô"),
-		("Ha ha ha")
+		("Hô ho hooo"),
+		("ho ho HO")
 	]
 	
 	def get(self, index = None):

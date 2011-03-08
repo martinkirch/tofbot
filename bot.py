@@ -14,6 +14,7 @@ from chucknorris import ChuckNorrisFacts
 from riddles import Riddles
 from tofades import Tofades
 from fortunes import Fortunes
+import random
 import sys
 
 class Riddle(object):
@@ -43,6 +44,7 @@ class Tofbot(Bot):
         self._tofades = Tofades()
         self._riddles = Riddles()
         self._fortunes = Fortunes()
+        self.joined = False
 
     def dispatch(self, origin, args):
         print ("o=%s a=%s" % (origin.sender, args))
@@ -50,6 +52,7 @@ class Tofbot(Bot):
             for chan in self.channels:
                 self.write(('JOIN', chan))
                 self.cmd_tofade(chan)
+            self.joined = True
         if origin.sender is None:
             return
         chan = args[2]
@@ -69,6 +72,10 @@ class Tofbot(Bot):
         if self.active_riddle():
             if (self.devinette.wait_answer(chan)):
                 self.devinette = None
+        if self.joined:
+            random.seed()
+            if random.randint(0, 100) > 98:
+                self.cmd_tofade(chan)
 
     def active_riddle(self):
         return (hasattr(self, 'devinette') and self.devinette is not None)
