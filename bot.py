@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 USAGE:
 
@@ -35,6 +36,9 @@ class Riddle(object):
             return True
         return False
 
+def in_whitelist(k):
+    return k in ["autoTofadeThreshold"]
+
 class Tofbot(Bot):
 
     def __init__(self, nick, name, channels, password=None):
@@ -45,6 +49,7 @@ class Tofbot(Bot):
         self._riddles = Riddles()
         self._fortunes = Fortunes()
         self.joined = False
+        self.autoTofadeThreshold = 98
 
     def dispatch(self, origin, args):
         print ("o=%s a=%s" % (origin.sender, args))
@@ -54,31 +59,47 @@ class Tofbot(Bot):
         if self.joined :
             
             if commandType == 'PRIVMSG':
-                msg = args[0]
+                msg = args[0].split(" ")
+                cmd = msg[0]
                 chan = args[2]
                 
                 if chan == self.nick:
                     chan = self.channels[0]
                 
-                if (msg == '!help'):
-                    self.msg(chan, "Commands : !blague !chuck !tofade !devinette !fortune !help")
-                    self.msg(chan, "Commands ")
-                if (msg == '!fortune'):
+                if (cmd == '!help'):
+                    self.msg(chan, "Commands should be entered in the channel or by private message")
+                    self.msg(chan, "Available commands : !blague !chuck !tofade !devinette !fortune !help")
+                    self.msg(chan, "you can also !get or !set autoTofadeThreshold")
+                elif (cmd == '!fortune'):
                     self.cmd_fortune(chan)
-                if (msg == '!blague'):
+                elif (cmd == '!blague'):
                     self.cmd_blague(chan)
-                if (msg == '!chuck'):
+                elif (cmd == '!chuck'):
                     self.cmd_chuck(chan)
-                if (msg == '!tofade'):
+                elif (cmd == '!tofade'):
                     self.cmd_tofade(chan)
-                if (msg == '!devinette' and not self.active_riddle()):
+                elif (cmd == '!devinette' and not self.active_riddle()):
                     self.devinette = self.random_riddle(chan)
+                elif (cmd == '!get' and len(msg) == 2):
+                    key = msg[1]
+                    value = self.safe_getattr(key)
+                    if value is None:
+                        self.msg(chan, "Ne touche pas à mes parties privées !")
+                    else:
+                        self.msg(chan, "%s = %s" % (key, value))
+                elif (cmd == '!set' and len(msg) == 3):
+                    key = msg[1]
+                    value = msg[2]
+                    ok = self.safe_setattr(key, value)
+                    if not ok:
+                        self.msg(chan, "N'écris pas sur mes parties privées !")
+                
                 if self.active_riddle():
                     if (self.devinette.wait_answer(chan)):
                         self.devinette = None
                 if self.joined:
                     random.seed()
-                    if random.randint(0, 100) > 98:
+                    if random.randint(0, 100) > self.autoTofadeThreshold:
                         self.cmd_tofade(chan)
             elif commandType == 'JOIN':
                 chan = args[0]
@@ -89,6 +110,21 @@ class Tofbot(Bot):
                 for chan in self.channels:
                     self.write(('JOIN', chan))
                 self.joined = True
+
+    def safe_getattr(self, key):
+        if not in_whitelist(key):
+            return None
+        if not hasattr(self, key):
+            return "(None)"
+        else:
+            return str(getattr(self, key))
+
+    def safe_setattr(self, key, value):
+        if not in_whitelist(key):
+            return False
+        else:
+            setattr(self, key, value)
+            return True
 
     def active_riddle(self):
         return (hasattr(self, 'devinette') and self.devinette is not None)
