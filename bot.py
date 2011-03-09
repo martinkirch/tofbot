@@ -49,7 +49,7 @@ class Tofbot(Bot):
         self._riddles = Riddles()
         self._fortunes = Fortunes()
         self.joined = False
-        self.autoTofadeThreshold = 98
+        self.autoTofadeThreshold = 95
 
     def dispatch(self, origin, args):
         print ("o=%s a=%s" % (origin.sender, args))
@@ -99,7 +99,7 @@ class Tofbot(Bot):
                         self.devinette = None
                 if self.joined:
                     random.seed()
-                    if random.randint(0, 100) > self.autoTofadeThreshold:
+                    if random.randint(0, 100) > int(self.autoTofadeThreshold):
                         self.cmd_tofade(chan)
             elif commandType == 'JOIN':
                 chan = args[0]
