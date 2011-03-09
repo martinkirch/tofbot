@@ -36,8 +36,21 @@ class Riddle(object):
             return True
         return False
 
+def attr_type(k):
+    types = {"autoTofadeThreshold": 'int'}
+    try:
+        return types[k]
+    except KeyError:
+        return None
+
 def in_whitelist(k):
-    return k in ["autoTofadeThreshold"]
+    ty = attr_type(k)
+    return (ty is not None)
+
+def type_conv(value, ty):
+    if ty == 'int':
+        return int(value)
+    assert False
 
 class Tofbot(Bot):
 
@@ -99,7 +112,7 @@ class Tofbot(Bot):
                         self.devinette = None
                 if self.joined:
                     random.seed()
-                    if random.randint(0, 100) > int(self.autoTofadeThreshold):
+                    if random.randint(0, 100) > self.autoTofadeThreshold:
                         self.cmd_tofade(chan)
             elif commandType == 'JOIN':
                 chan = args[0]
@@ -120,11 +133,16 @@ class Tofbot(Bot):
             return str(getattr(self, key))
 
     def safe_setattr(self, key, value):
-        if not in_whitelist(key):
-            return False
-        else:
-            setattr(self, key, value)
-            return True
+        try:
+            ty = attr_type(key)
+            if ty is None:
+                return False
+            else:
+                value = type_conv (value, ty)
+                setattr(self, key, value)
+                return True
+        except ValueError:
+            pass
 
     def active_riddle(self):
         return (hasattr(self, 'devinette') and self.devinette is not None)
