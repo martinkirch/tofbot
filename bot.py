@@ -27,9 +27,12 @@ class Riddle(object):
         self.remaining_msgs = 4
         self.writeback(self.riddle)
 
-    def wait_answer(self, chan):
+    def wait_answer(self, chan, msg):
         if chan != self.channel:
             return False
+        if msg == self.answer:
+            self.writeback("10 points pour Griffondor.")
+            return True
         self.remaining_msgs -= 1
         if (self.remaining_msgs == 0):
             self.writeback(self.answer)
@@ -72,7 +75,8 @@ class Tofbot(Bot):
         if self.joined :
             
             if commandType == 'PRIVMSG':
-                msg = args[0].split(" ")
+                msg_text = args[0]
+                msg = msg_text.split(" ")
                 cmd = msg[0]
                 chan = args[2]
                 
@@ -108,7 +112,7 @@ class Tofbot(Bot):
                         self.msg(chan, "N'écris pas sur mes parties privées !")
                 
                 if self.active_riddle():
-                    if (self.devinette.wait_answer(chan)):
+                    if (self.devinette.wait_answer(chan, msg_text)):
                         self.devinette = None
                 if self.joined:
                     random.seed()
