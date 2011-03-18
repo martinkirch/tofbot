@@ -71,61 +71,60 @@ class Tofbot(Bot):
 
         commandType = args[1]
 
-        if self.joined :
-
-            if commandType == 'PRIVMSG':
-                msg_text = args[0]
-                msg = msg_text.split(" ")
-                cmd = msg[0]
-                chan = args[2]
-
-                if chan == self.nick:
-                    chan = self.channels[0]
-
-                if (cmd == '!help'):
-                    self.msg(chan, "Commands should be entered in the channel or by private message")
-                    self.msg(chan, "Available commands : !blague !chuck !tofade !devinette !fortune !help")
-                    self.msg(chan, "you can also !get or !set autoTofadeThreshold")
-                elif (cmd == '!fortune'):
-                    self.cmd_fortune(chan)
-                elif (cmd == '!blague'):
-                    self.cmd_blague(chan)
-                elif (cmd == '!chuck'):
-                    self.cmd_chuck(chan)
-                elif (cmd == '!tofade'):
-                    self.cmd_tofade(chan)
-                elif (cmd == '!devinette' and not self.active_riddle()):
-                    self.devinette = self.random_riddle(chan)
-                elif (cmd == '!get' and len(msg) == 2):
-                    key = msg[1]
-                    value = self.safe_getattr(key)
-                    if value is None:
-                        self.msg(chan, "Ne touche pas à mes parties privées !")
-                    else:
-                        self.msg(chan, "%s = %s" % (key, value))
-                elif (cmd == '!set' and len(msg) == 3):
-                    key = msg[1]
-                    value = msg[2]
-                    ok = self.safe_setattr(key, value)
-                    if not ok:
-                        self.msg(chan, "N'écris pas sur mes parties privées !")
-
-                if self.active_riddle():
-                    if (self.devinette.wait_answer(chan, msg_text)):
-                        self.devinette = None
-                if self.joined:
-                    random.seed()
-                    if random.randint(0, 100) > self.autoTofadeThreshold:
-                        self.cmd_tofade(chan)
-            elif commandType == 'JOIN':
-                chan = args[0]
-                self.cmd_tofade(chan)
-
-        else :
+        if not self.joined:
             if (args[0] == 'End of /MOTD command.'):
                 for chan in self.channels:
                     self.write(('JOIN', chan))
                 self.joined = True
+            return
+
+        if commandType == 'PRIVMSG':
+            msg_text = args[0]
+            msg = msg_text.split(" ")
+            cmd = msg[0]
+            chan = args[2]
+
+            if chan == self.nick:
+                chan = self.channels[0]
+
+            if (cmd == '!help'):
+                self.msg(chan, "Commands should be entered in the channel or by private message")
+                self.msg(chan, "Available commands : !blague !chuck !tofade !devinette !fortune !help")
+                self.msg(chan, "you can also !get or !set autoTofadeThreshold")
+            elif (cmd == '!fortune'):
+                self.cmd_fortune(chan)
+            elif (cmd == '!blague'):
+                self.cmd_blague(chan)
+            elif (cmd == '!chuck'):
+                self.cmd_chuck(chan)
+            elif (cmd == '!tofade'):
+                self.cmd_tofade(chan)
+            elif (cmd == '!devinette' and not self.active_riddle()):
+                self.devinette = self.random_riddle(chan)
+            elif (cmd == '!get' and len(msg) == 2):
+                key = msg[1]
+                value = self.safe_getattr(key)
+                if value is None:
+                    self.msg(chan, "Ne touche pas à mes parties privées !")
+                else:
+                    self.msg(chan, "%s = %s" % (key, value))
+            elif (cmd == '!set' and len(msg) == 3):
+                key = msg[1]
+                value = msg[2]
+                ok = self.safe_setattr(key, value)
+                if not ok:
+                    self.msg(chan, "N'écris pas sur mes parties privées !")
+
+            if self.active_riddle():
+                if (self.devinette.wait_answer(chan, msg_text)):
+                    self.devinette = None
+            if self.joined:
+                random.seed()
+                if random.randint(0, 100) > self.autoTofadeThreshold:
+                    self.cmd_tofade(chan)
+        elif commandType == 'JOIN':
+            chan = args[0]
+            self.cmd_tofade(chan)
 
     def safe_getattr(self, key):
         if not in_whitelist(key):
