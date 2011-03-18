@@ -1,28 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+Awesome tofades
+"""
 
-import random
-
-class Tofades(object):
-	"""
-	Awesome tofades
-	"""
-
-	__sentences = [
-		("Ho ho ho"),
-		("Hô hô hô"),
-		("Hô ho hooo"),
-		("ho ho HO")
-	]
-
-	def get(self, index = None):
-		pool = self.__class__.__sentences
-		if index:
-			return pool[index % len(pool)];
-		else:
-			return pool[ random.randint(0, len(pool)-1) ];
+tofades = [
+    ("Ho ho ho"),
+    ("Hô hô hô"),
+    ("Hô ho hooo"),
+    ("ho ho HO"),
+]
 
 if __name__ == "__main__":
-	tof = Tofades()
-	print tof.get()
-	print tof.get(1)
+    from bot import InnocentHand
+    tof = InnocentHand(tofades)
+    print tof()
+    print tof(1)

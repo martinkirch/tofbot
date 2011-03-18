@@ -10,11 +10,11 @@ Tofbot will connect to freenode.net
 """
 
 from irc import Bot
-from jokes import Jokes
-from chucknorris import ChuckNorrisFacts
-from riddles import Riddles
-from tofades import Tofades
-from fortunes import Fortunes
+from jokes import jokes
+from chucknorris import chuckNorrisFacts
+from riddles import riddles
+from tofades import tofades
+from fortunes import fortunes
 import random
 import sys
 
@@ -40,6 +40,22 @@ class RiddleTeller(object):
             return True
         return False
 
+class InnocentHand(object):
+    """
+    A cute 6 years old girl, picking a random object
+    from a given pool of candidates
+    """
+    def __init__(self, pool):
+        """
+        pool: list of candidates
+        """
+        self.pool = pool
+
+    def __call__(self, index=None):
+        if index:
+            return self.pool[index % len(self.pool)]
+        return random.choice(self.pool)
+
 def attr_type(k):
     types = {"autoTofadeThreshold": 'int'}
     try:
@@ -60,11 +76,11 @@ class Tofbot(Bot):
 
     def __init__(self, nick, name, channels, password=None):
         Bot.__init__(self, nick, name, channels, password)
-        self._jokes = Jokes()
-        self._chuck = ChuckNorrisFacts()
-        self._tofades = Tofades()
-        self._riddles = Riddles()
-        self._fortunes = Fortunes()
+        self._jokes = InnocentHand(jokes)
+        self._chuck = InnocentHand(chuckNorrisFacts)
+        self._tofades = InnocentHand(tofades)
+        self._riddles = InnocentHand(riddles)
+        self._fortunes = InnocentHand(fortunes)
         self.joined = False
         self.autoTofadeThreshold = 95
 
@@ -148,16 +164,16 @@ class Tofbot(Bot):
         return (hasattr(self, 'devinette') and self.devinette is not None)
 
     def cmd_blague(self, chan):
-        self.msg(chan, self._jokes.get())
+        self.msg(chan, self._jokes())
 
     def cmd_fortune(self, chan):
-        self.msg(chan, self._fortunes.get())
+        self.msg(chan, self._fortunes())
 
     def cmd_chuck(self, chan):
-        self.msg(chan, self._chuck.get())
+        self.msg(chan, self._chuck())
 
     def cmd_tofade(self, chan):
-        self.msg(chan, self._tofades.get())
+        self.msg(chan, self._tofades())
 
     def cmd_help(self, chan):
         self.msg(chan, "Commands should be entered in the channel or by private message")
@@ -165,7 +181,7 @@ class Tofbot(Bot):
         self.msg(chan, "you can also !get or !set autoTofadeThreshold")
 
     def random_riddle(self, chan):
-        riddle = self._riddles.get()
+        riddle = self._riddles()
         r = RiddleTeller (riddle, chan, lambda msg: self.msg(chan, msg))
         return r
 

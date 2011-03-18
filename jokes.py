@@ -1,26 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+Awesome jokes
+"""
 
-import random
-
-class Jokes(object):
-	"""
-	Awesome jokes
-	"""
-
-	__jokes = [
-		("Voici l'histoire de Toto aux toilettes..."),
-		("Une autre histoire")
-	]
-
-	def get(self, index = None):
-		pool = self.__class__.__jokes
-		if index:
-			return pool[index % len(pool)];
-		else:
-			return pool[ random.randint(0, len(pool)-1) ];
+jokes = [
+    ("Voici l'histoire de Toto aux toilettes..."),
+    ("Une autre histoire")
+]
 
 if __name__ == "__main__":
-	joker = Jokes()
-	print joker.get()
-	print joker.get(1)
+    from bot import InnocentHand
+    joker = InnocentHand(jokes)
+    print joker()
+    print joker(1)
