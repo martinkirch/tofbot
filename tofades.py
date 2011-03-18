@@ -7,14 +7,14 @@ class Tofades(object):
 	"""
 	Awesome tofades
 	"""
-	
+
 	__sentences = [
 		("Ho ho ho"),
 		("Hô hô hô"),
 		("Hô ho hooo"),
 		("ho ho HO")
 	]
-	
+
 	def get(self, index = None):
 		pool = self.__class__.__sentences
 		if index:

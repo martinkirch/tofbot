@@ -5,11 +5,11 @@ import random
 
 class Fortunes(object):
 	"""
-	Awesome fortunes 
+	Awesome fortunes
 	based on Brian M. Clapper's collection
 	https://github.com/bmc/fortunes
 	"""
-	
+
 	__fortunes = [
 		("\"... the educated person is not the person who can answer the questions, but the person who can question the answers.\" -- Theodore Schick Jr., in The_Skeptical_Inquirer, March/April, 1997"),
 		("\"A Mormon is a man that has the bad taste and the religion to do what a good many other people are restrained from doing by conscientious scruples and the police.\" -- Mr. Dooley"),
@@ -2760,7 +2760,7 @@ class Fortunes(object):
 		("The essence of Christianity is told to us in the Garden of Eden history. The fruit that was forbidden was on the Tree of Knowledge. The subtext is, \"All the suffering you have is because you wanted to find out what was going on. You could be in the Garden of Eden if you had just kept your fucking mouth shut and hadn't asked any questions.\" -- Frank Zappa"),
 		("There is more stupidity than hydrogen in the universe, and it has a longer shelf life. -- Frank Zappa"),
 	]
-	
+
 	def get(self, index = None):
 		pool = self.__class__.__fortunes
 		if index:

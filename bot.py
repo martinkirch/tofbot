@@ -69,20 +69,20 @@ class Tofbot(Bot):
 
     def dispatch(self, origin, args):
         print ("o=%s a=%s" % (origin.sender, args))
-        
+
         commandType = args[1]
-        
+
         if self.joined :
-            
+
             if commandType == 'PRIVMSG':
                 msg_text = args[0]
                 msg = msg_text.split(" ")
                 cmd = msg[0]
                 chan = args[2]
-                
+
                 if chan == self.nick:
                     chan = self.channels[0]
-                
+
                 if (cmd == '!help'):
                     self.msg(chan, "Commands should be entered in the channel or by private message")
                     self.msg(chan, "Available commands : !blague !chuck !tofade !devinette !fortune !help")
@@ -110,7 +110,7 @@ class Tofbot(Bot):
                     ok = self.safe_setattr(key, value)
                     if not ok:
                         self.msg(chan, "N'écris pas sur mes parties privées !")
-                
+
                 if self.active_riddle():
                     if (self.devinette.wait_answer(chan, msg_text)):
                         self.devinette = None
@@ -121,7 +121,7 @@ class Tofbot(Bot):
             elif commandType == 'JOIN':
                 chan = args[0]
                 self.cmd_tofade(chan)
-                
+
         else :
             if (args[0] == 'End of /MOTD command.'):
                 for chan in self.channels:
@@ -159,7 +159,7 @@ class Tofbot(Bot):
 
     def cmd_chuck(self, chan):
         self.msg(chan, self._chuck.get())
-    
+
     def cmd_tofade(self, chan):
         self.msg(chan, self._tofades.get())
 
@@ -167,7 +167,7 @@ class Tofbot(Bot):
         text = self._riddles.get()
         r = Riddle (text[0], text[1], chan, lambda msg: self.msg(chan, msg))
         return r
-        
+
 if __name__ == "__main__":
 	if len(sys.argv) > 2:
 		chans = [ "#" + s for s in sys.argv[2:] ]

@@ -7,7 +7,7 @@ class ChuckNorrisFacts(object):
 	"""
 	Awesome chuck norris facts
 	"""
-	
+
 	__sentences = [
 		("Chuck norris est tellement fort qu'il peut applaudir d'une seule main"),
 		("Il n'y a que sur Google qu'on peut taper Chuck Norris"),
@@ -41,7 +41,7 @@ class ChuckNorrisFacts(object):
 		("Si Chuck Norris avait été pris dans le film \"300\" il l'aurait renommé en \"1\"."),
 		("Pour certains hommes le testicule gauche est plus large que le testicule droit, chez Chuck Norris, chaque testicule est plus large que l'autre."),
 	]
-	
+
 	def get(self, index = None):
 		pool = self.__class__.__sentences
 		if index:

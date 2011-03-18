@@ -7,12 +7,12 @@ class Jokes(object):
 	"""
 	Awesome jokes
 	"""
-	
+
 	__jokes = [
 		("Voici l'histoire de Toto aux toilettes..."),
 		("Une autre histoire")
 	]
-	
+
 	def get(self, index = None):
 		pool = self.__class__.__jokes
 		if index:
