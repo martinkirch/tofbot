@@ -84,7 +84,9 @@ class Tofbot(Bot):
         commandType = args[1]
 
         if not self.joined:
-            if (args[0] == 'End of /MOTD command.'):
+            if (args[0] in ['End of /MOTD command.',
+                            "This server was created ... I don't know"]
+                            ):
                 for chan in self.channels:
                     self.write(('JOIN', chan))
                 self.joined = True
