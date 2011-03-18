@@ -18,7 +18,6 @@ class Jokes(object):
 		if index:
 			return pool[index % len(pool)];
 		else:
-			random.seed()
 			return pool[ random.randint(0, len(pool)-1) ];
 
 if __name__ == "__main__":

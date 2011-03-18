@@ -18,6 +18,8 @@ from fortunes import Fortunes
 import random
 import sys
 
+random.seed()
+
 class RiddleTeller(object):
     def __init__(self, riddle, channel, writeback):
         self.riddle, self.answer = riddle
@@ -116,7 +118,6 @@ class Tofbot(Bot):
                 if (self.devinette.wait_answer(chan, msg_text)):
                     self.devinette = None
             if self.joined:
-                random.seed()
                 if random.randint(0, 100) > self.autoTofadeThreshold:
                     self.cmd_tofade(chan)
         elif commandType == 'JOIN':
