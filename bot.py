@@ -18,10 +18,9 @@ from fortunes import Fortunes
 import random
 import sys
 
-class Riddle(object):
-    def __init__(self, riddle, answer, channel, writeback):
-        self.riddle = riddle
-        self.answer = answer
+class RiddleTeller(object):
+    def __init__(self, riddle, channel, writeback):
+        self.riddle, self.answer = riddle
         self.channel = channel
         self.writeback = writeback
         self.remaining_msgs = 4
@@ -34,7 +33,7 @@ class Riddle(object):
             self.writeback("10 points pour Griffondor.")
             return True
         self.remaining_msgs -= 1
-        if (self.remaining_msgs == 0):
+        if self.remaining_msgs == 0:
             self.writeback(self.answer)
             return True
         return False
@@ -164,8 +163,8 @@ class Tofbot(Bot):
         self.msg(chan, self._tofades.get())
 
     def random_riddle(self, chan):
-        text = self._riddles.get()
-        r = Riddle (text[0], text[1], chan, lambda msg: self.msg(chan, msg))
+        riddle = self._riddles.get()
+        r = RiddleTeller (riddle, chan, lambda msg: self.msg(chan, msg))
         return r
 
 if __name__ == "__main__":
