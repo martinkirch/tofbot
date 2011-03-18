@@ -96,7 +96,9 @@ class Tofbot(Bot):
             cmd = msg[0]
             chan = args[2]
 
-            assert cmd[0] == '!'
+            if cmd[0] != '!':
+                return
+            
             cmd = cmd[1:]
 
             if chan == self.nick:
