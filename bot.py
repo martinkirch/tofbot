@@ -108,7 +108,7 @@ class Tofbot(Bot):
 
             if cmd in self._simple_dispatch:
                 action = getattr(self, "cmd_" + cmd)
-                action()
+                action(chan)
             elif (cmd == 'devinette' and not self.active_riddle()):
                 self.devinette = self.random_riddle(chan)
             elif (cmd == 'get' and len(msg) == 2):
