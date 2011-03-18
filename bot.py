@@ -76,7 +76,7 @@ class Tofbot(Bot):
         self.autoTofadeThreshold = 95
 
     # those commands directly trigger cmd_* actions
-    _simple_dispatch = set(('help', 'fortune', 'blague', 'chuck', 'tofade'))
+    _simple_dispatch = set(('help', 'fortune', 'blague', 'chuck', 'tofade', 'devinette'))
 
     def dispatch(self, origin, args):
         print ("o=%s a=%s" % (origin.sender, args))
@@ -98,6 +98,13 @@ class Tofbot(Bot):
             cmd = msg[0]
             chan = args[2]
 
+            if random.randint(0, 100) > self.autoTofadeThreshold:
+                self.cmd_tofade(chan)
+            if self.active_riddle():
+                itsOver = self.devinette.wait_answer(chan, msg_text)
+                if itsOver:
+                    self.devinette = None
+
             if cmd[0] != '!':
                 return
             
@@ -109,8 +116,6 @@ class Tofbot(Bot):
             if cmd in self._simple_dispatch:
                 action = getattr(self, "cmd_" + cmd)
                 action(chan)
-            elif (cmd == 'devinette' and not self.active_riddle()):
-                self.devinette = self.random_riddle(chan)
             elif (cmd == 'get' and len(msg) == 2):
                 key = msg[1]
                 value = self.safe_getattr(key)
@@ -124,12 +129,6 @@ class Tofbot(Bot):
                 ok = self.safe_setattr(key, value)
                 if not ok:
                     self.msg(chan, "N'écris pas sur mes parties privées !")
-
-            if self.active_riddle():
-                if (self.devinette.wait_answer(chan, msg_text)):
-                    self.devinette = None
-            if random.randint(0, 100) > self.autoTofadeThreshold:
-                self.cmd_tofade(chan)
         elif commandType == 'JOIN':
             chan = args[0]
             self.cmd_tofade(chan)
@@ -168,9 +167,14 @@ class Tofbot(Bot):
     def cmd_tofade(self, chan):
         self.msg(chan, self._tofades())
 
+    def cmd_devinette(self, chan):
+        if not self.active_riddle():
+            self.devinette = self.random_riddle(chan)
+
     def cmd_help(self, chan):
+        commands = ['!' + cmd for cmd in self._simple_dispatch]
         self.msg(chan, "Commands should be entered in the channel or by private message")
-        self.msg(chan, "Available commands : !blague !chuck !tofade !devinette !fortune !help")
+        self.msg(chan, "Available commands : " + ' '.join(commands))
         self.msg(chan, "you can also !get or !set autoTofadeThreshold")
 
     def random_riddle(self, chan):
