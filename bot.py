@@ -66,6 +66,9 @@ class Tofbot(Bot):
         self.joined = False
         self.autoTofadeThreshold = 95
 
+    # those commands directly trigger cmd_* actions
+    _simple_dispatch = set(('help', 'fortune', 'blague', 'chuck', 'tofade'))
+
     def dispatch(self, origin, args):
         print ("o=%s a=%s" % (origin.sender, args))
 
@@ -84,31 +87,25 @@ class Tofbot(Bot):
             cmd = msg[0]
             chan = args[2]
 
+            assert cmd[0] == '!'
+            cmd = cmd[1:]
+
             if chan == self.nick:
                 chan = self.channels[0]
 
-            if (cmd == '!help'):
-                self.msg(chan, "Commands should be entered in the channel or by private message")
-                self.msg(chan, "Available commands : !blague !chuck !tofade !devinette !fortune !help")
-                self.msg(chan, "you can also !get or !set autoTofadeThreshold")
-            elif (cmd == '!fortune'):
-                self.cmd_fortune(chan)
-            elif (cmd == '!blague'):
-                self.cmd_blague(chan)
-            elif (cmd == '!chuck'):
-                self.cmd_chuck(chan)
-            elif (cmd == '!tofade'):
-                self.cmd_tofade(chan)
-            elif (cmd == '!devinette' and not self.active_riddle()):
+            if cmd in self._simple_dispatch:
+                action = getattr(self, "cmd_" + cmd)
+                action()
+            elif (cmd == 'devinette' and not self.active_riddle()):
                 self.devinette = self.random_riddle(chan)
-            elif (cmd == '!get' and len(msg) == 2):
+            elif (cmd == 'get' and len(msg) == 2):
                 key = msg[1]
                 value = self.safe_getattr(key)
                 if value is None:
                     self.msg(chan, "Ne touche pas à mes parties privées !")
                 else:
                     self.msg(chan, "%s = %s" % (key, value))
-            elif (cmd == '!set' and len(msg) == 3):
+            elif (cmd == 'set' and len(msg) == 3):
                 key = msg[1]
                 value = msg[2]
                 ok = self.safe_setattr(key, value)
@@ -160,6 +157,11 @@ class Tofbot(Bot):
 
     def cmd_tofade(self, chan):
         self.msg(chan, self._tofades.get())
+
+    def cmd_help(self, chan):
+        self.msg(chan, "Commands should be entered in the channel or by private message")
+        self.msg(chan, "Available commands : !blague !chuck !tofade !devinette !fortune !help")
+        self.msg(chan, "you can also !get or !set autoTofadeThreshold")
 
     def random_riddle(self, chan):
         riddle = self._riddles.get()
