@@ -56,23 +56,14 @@ class InnocentHand(object):
             return self.pool[index % len(self.pool)]
         return random.choice(self.pool)
 
-def attr_type(k):
-    types = {"autoTofadeThreshold": 'int'}
-    try:
-        return types[k]
-    except KeyError:
-        return None
-
-def in_whitelist(k):
-    ty = attr_type(k)
-    return (ty is not None)
-
-def type_conv(value, ty):
-    if ty == 'int':
-        return int(value)
-    assert False
-
 class Tofbot(Bot):
+
+    # Those attributes are published and can be changed by irc users
+    # value is a str to object converter. It could do sanitization:
+    # if value is incorrect, raise ValueError
+    _mutable_attributes = {
+        "autoTofadeThreshold": int
+    }
 
     def __init__(self, nick, name, channels, password=None):
         Bot.__init__(self, nick, name, channels, password)
@@ -141,7 +132,7 @@ class Tofbot(Bot):
             self.cmd_tofade(chan)
 
     def safe_getattr(self, key):
-        if not in_whitelist(key):
+        if key not in self._mutable_attributes:
             return None
         if not hasattr(self, key):
             return "(None)"
@@ -150,13 +141,12 @@ class Tofbot(Bot):
 
     def safe_setattr(self, key, value):
         try:
-            ty = attr_type(key)
-            if ty is None:
+            converter = self._mutable_attributes.get(key)
+            if converter is None:
                 return False
-            else:
-                value = type_conv (value, ty)
-                setattr(self, key, value)
-                return True
+            value = converter(value)
+            setattr(self, key, value)
+            return True
         except ValueError:
             pass
 
