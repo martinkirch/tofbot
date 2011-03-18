@@ -128,9 +128,8 @@ class Tofbot(Bot):
             if self.active_riddle():
                 if (self.devinette.wait_answer(chan, msg_text)):
                     self.devinette = None
-            if self.joined:
-                if random.randint(0, 100) > self.autoTofadeThreshold:
-                    self.cmd_tofade(chan)
+            if random.randint(0, 100) > self.autoTofadeThreshold:
+                self.cmd_tofade(chan)
         elif commandType == 'JOIN':
             chan = args[0]
             self.cmd_tofade(chan)
