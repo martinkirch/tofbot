@@ -65,7 +65,7 @@ class Tofbot(Bot):
         "autoTofadeThreshold": int
     }
 
-    def __init__(self, nick, name, channels, password=None):
+    def __init__(self, nick, name, channels, password=None, debug=True):
         Bot.__init__(self, nick, name, channels, password)
         self._jokes = InnocentHand(jokes)
         self._chuck = InnocentHand(chuckNorrisFacts)
@@ -74,12 +74,17 @@ class Tofbot(Bot):
         self._fortunes = InnocentHand(fortunes)
         self.joined = False
         self.autoTofadeThreshold = 95
+        self.debug = debug
 
     # those commands directly trigger cmd_* actions
     _simple_dispatch = set(('help', 'fortune', 'blague', 'chuck', 'tofade', 'devinette'))
 
+    def log(self, msg):
+        if self.debug:
+            print(msg)
+
     def dispatch(self, origin, args):
-        print ("o=%s a=%s" % (origin.sender, args))
+        self.log("o=%s a=%s" % (origin.sender, args))
 
         commandType = args[1]
 
