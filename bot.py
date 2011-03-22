@@ -65,7 +65,7 @@ class Tofbot(Bot):
         "autoTofadeThreshold": int
     }
 
-    def __init__(self, nick, name, channels, password=None):
+    def __init__(self, nick, name, channels, password=None, debug=True):
         Bot.__init__(self, nick, name, channels, password)
         self._jokes = InnocentHand(jokes)
         self._chuck = InnocentHand(chuckNorrisFacts)
@@ -74,17 +74,24 @@ class Tofbot(Bot):
         self._fortunes = InnocentHand(fortunes)
         self.joined = False
         self.autoTofadeThreshold = 95
+        self.debug = debug
 
     # those commands directly trigger cmd_* actions
-    _simple_dispatch = set(('help', 'fortune', 'blague', 'chuck', 'tofade'))
+    _simple_dispatch = set(('help', 'fortune', 'blague', 'chuck', 'tofade', 'devinette'))
+
+    def log(self, msg):
+        if self.debug:
+            print(msg)
 
     def dispatch(self, origin, args):
-        print ("o=%s a=%s" % (origin.sender, args))
+        self.log("o=%s a=%s" % (origin.sender, args))
 
         commandType = args[1]
 
         if not self.joined:
-            if (args[0] == 'End of /MOTD command.'):
+            if (args[0] in ['End of /MOTD command.',
+                            "This server was created ... I don't know"]
+                            ):
                 for chan in self.channels:
                     self.write(('JOIN', chan))
                 self.joined = True
@@ -96,7 +103,14 @@ class Tofbot(Bot):
             cmd = msg[0]
             chan = args[2]
 
-            if len(cmd[0]) <= 1 or cmd[0] != '!':
+            if random.randint(0, 100) > self.autoTofadeThreshold:
+                self.cmd_tofade(chan)
+            if self.active_riddle():
+                itsOver = self.devinette.wait_answer(chan, msg_text)
+                if itsOver:
+                    self.devinette = None
+
+            if len(cmd) <= 1 or cmd[0] != '!':
                 return
             
             cmd = cmd[1:]
@@ -106,9 +120,7 @@ class Tofbot(Bot):
 
             if cmd in self._simple_dispatch:
                 action = getattr(self, "cmd_" + cmd)
-                action()
-            elif (cmd == 'devinette' and not self.active_riddle()):
-                self.devinette = self.random_riddle(chan)
+                action(chan)
             elif (cmd == 'get' and len(msg) == 2):
                 key = msg[1]
                 value = self.safe_getattr(key)
@@ -122,13 +134,6 @@ class Tofbot(Bot):
                 ok = self.safe_setattr(key, value)
                 if not ok:
                     self.msg(chan, "N'écris pas sur mes parties privées !")
-
-            if self.active_riddle():
-                if (self.devinette.wait_answer(chan, msg_text)):
-                    self.devinette = None
-            if self.joined:
-                if random.randint(0, 100) > self.autoTofadeThreshold:
-                    self.cmd_tofade(chan)
         elif commandType == 'JOIN':
             chan = args[0]
             self.cmd_tofade(chan)
@@ -167,9 +172,14 @@ class Tofbot(Bot):
     def cmd_tofade(self, chan):
         self.msg(chan, self._tofades())
 
+    def cmd_devinette(self, chan):
+        if not self.active_riddle():
+            self.devinette = self.random_riddle(chan)
+
     def cmd_help(self, chan):
+        commands = ['!' + cmd for cmd in self._simple_dispatch]
         self.msg(chan, "Commands should be entered in the channel or by private message")
-        self.msg(chan, "Available commands : !blague !chuck !tofade !devinette !fortune !help")
+        self.msg(chan, "Available commands : " + ' '.join(commands))
         self.msg(chan, "you can also !get or !set autoTofadeThreshold")
 
     def random_riddle(self, chan):
@@ -178,9 +188,9 @@ class Tofbot(Bot):
         return r
 
 if __name__ == "__main__":
-	if len(sys.argv) > 2:
-		chans = [ "#" + s for s in sys.argv[2:] ]
-		b = Tofbot(sys.argv[1], 'Tofbot', chans)
-		b.run('irc.freenode.net')
-	else:
-		print __doc__
+        if len(sys.argv) > 2:
+                chans = [ "#" + s for s in sys.argv[2:] ]
+                b = Tofbot(sys.argv[1], 'Tofbot', chans)
+                b.run('irc.freenode.net')
+        else:
+                print __doc__
