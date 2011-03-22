@@ -37,6 +37,9 @@ chuckNorrisFacts = [
     ("Chuck Norris connait la dernière décimale de Pi."),
     ("Si Chuck Norris avait été pris dans le film \"300\" il l'aurait renommé en \"1\"."),
     ("Pour certains hommes le testicule gauche est plus large que le testicule droit, chez Chuck Norris, chaque testicule est plus large que l'autre."),
+    ("Quand Chuck Norris fume un pétard, c'est le pétard qui est défoncé !"),
+    ("Chuck Norris n'a jamais vu Nicolas Sarkozy.Il n'a jamais baissé les yeux."),
+    ("Chuck Norris n'a jamais le mal de mer, c'est la mer qui a le mal de Chuck Norris."),
 ]
 
 # tester
