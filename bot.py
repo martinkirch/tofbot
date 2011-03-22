@@ -96,7 +96,7 @@ class Tofbot(Bot):
             cmd = msg[0]
             chan = args[2]
 
-            if cmd[0] != '!':
+            if len(cmd[0]) <= 1 or cmd[0] != '!':
                 return
             
             cmd = cmd[1:]
