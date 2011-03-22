@@ -78,7 +78,12 @@ class Tofbot(Bot):
 
     # those commands directly trigger cmd_* actions
     _simple_dispatch = set(('help', 'fortune', 'blague', 'chuck', 'tofade', 'devinette'))
-
+    
+    # line-feed-safe
+    def msg(self, chan, msg):
+        for m in msg.split("\n"):
+             Bot.msg(self, chan, m)
+        
     def log(self, msg):
         if self.debug:
             print(msg)
