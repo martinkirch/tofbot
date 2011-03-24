@@ -117,12 +117,14 @@ class Tofbot(Bot):
         self.lastTGtofbot = 0
 
     # those commands directly trigger cmd_* actions
-    _simple_dispatch = set(('help',
-                            'fortune',
-                            'blague',
-                            'chuck',
-                            'tofade',
-                            'devinette'
+    _simple_dispatch = set(('help'
+                          , 'fortune'
+                          , 'blague'
+                          , 'chuck'
+                          , 'tofade'
+                          , 'devinette'
+                          , 'get'
+                          , 'set'
                           ))
     
     # line-feed-safe
@@ -134,18 +136,22 @@ class Tofbot(Bot):
         if self.debug:
             print(msg)
 
+    def try_join(self, args):
+        if (args[0] in ['End of /MOTD command.',
+                        "This server was created ... I don't know"]
+                        ):
+            for chan in self.channels:
+                self.write(('JOIN', chan))
+            self.joined = True
+
+
     def dispatch(self, origin, args):
         self.log("o=%s a=%s" % (origin.sender, args))
 
         commandType = args[1]
 
         if not self.joined:
-            if (args[0] in ['End of /MOTD command.',
-                            "This server was created ... I don't know"]
-                            ):
-                for chan in self.channels:
-                    self.write(('JOIN', chan))
-                self.joined = True
+            self.try_join(args)
             return
 
         if commandType == 'PRIVMSG':
@@ -158,7 +164,7 @@ class Tofbot(Bot):
                 self.lastTGtofbot = time.time()
 
             if random.randint(0, 100) > self.autoTofadeThreshold and (time.time() - self.lastTGtofbot) <= (self.TGtime * 60):
-                self.cmd_tofade(chan)
+                self.cmd_tofade(chan, [])
                 
             if self.active_riddle():
                 itsOver = self.devinette.wait_answer(chan, msg_text)
@@ -175,23 +181,10 @@ class Tofbot(Bot):
 
             if cmd in self._simple_dispatch:
                 action = getattr(self, "cmd_" + cmd)
-                action(chan)
-            elif (cmd == 'get' and len(msg) == 2):
-                key = msg[1]
-                value = self.safe_getattr(key)
-                if value is None:
-                    self.msg(chan, "Ne touche pas à mes parties privées !")
-                else:
-                    self.msg(chan, "%s = %s" % (key, value))
-            elif (cmd == 'set' and len(msg) == 3):
-                key = msg[1]
-                value = msg[2]
-                ok = self.safe_setattr(key, value)
-                if not ok:
-                    self.msg(chan, "N'écris pas sur mes parties privées !")
+                action(chan, msg)
         elif commandType == 'JOIN':
             chan = args[0]
-            self.cmd_tofade(chan)
+            self.cmd_tofade(chan, [])
 
     def safe_getattr(self, key):
         if key not in self._mutable_attributes:
@@ -215,27 +208,44 @@ class Tofbot(Bot):
     def active_riddle(self):
         return (hasattr(self, 'devinette') and self.devinette is not None)
 
-    def cmd_blague(self, chan):
+    def cmd_blague(self, chan, args):
         self.msg(chan, self._jokes())
 
-    def cmd_fortune(self, chan):
+    def cmd_fortune(self, chan, args):
         self.msg(chan, self._fortunes())
 
-    def cmd_chuck(self, chan):
+    def cmd_chuck(self, chan, args):
         self.msg(chan, self._chuck())
 
-    def cmd_tofade(self, chan):
+    def cmd_tofade(self, chan, args):
         self.msg(chan, self._tofades())
 
-    def cmd_devinette(self, chan):
+    def cmd_devinette(self, chan, args):
         if not self.active_riddle():
             self.devinette = self.random_riddle(chan)
 
-    def cmd_help(self, chan):
+    def cmd_help(self, chan, args):
         commands = ['!' + cmd for cmd in self._simple_dispatch]
-        self.msg(chan, "Commands should be entered in the channel or by private message")
-        self.msg(chan, "Available commands : " + ' '.join(commands))
-        self.msg(chan, "you can also !get or !set " + ", ".join(self._mutable_attributes.keys()))
+        help_message = "\n".join(["Commands should be entered in the channel or by private message\n"
+                                 ,"Available commands : %s"
+                                 ,"you can also !get or !set %s"
+                                 ])
+        self.msg(chan, help_message % (' '.join(commands), ", ".join(self._mutable_attributes.keys())))
+
+    def cmd_get(self, chan, args):
+        key = args[1]
+        value = self.safe_getattr(key)
+        if value is None:
+            self.msg(chan, "Ne touche pas à mes parties privées !")
+        else:
+            self.msg(chan, "%s = %s" % (key, value))
+
+    def cmd_set(self, chan, args):
+        key = args[1]
+        value = args[2]
+        ok = self.safe_setattr(key, value)
+        if not ok:
+            self.msg(chan, "N'écris pas sur mes parties privées !")
 
     def random_riddle(self, chan):
         riddle = self._riddles()
