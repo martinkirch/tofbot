@@ -12,7 +12,7 @@ jokes = [
 - Vous avez des bananes ?
 - Non on n'en n'a pas.
 - Vous avez des bananes ?
-- Non, t'es sourd ou quoi !! Si tu me demandes encore si j'ai des bananes je te clous le langues au contoir !!!!
+- Non, t'es sourd ou quoi !! Si tu me demandes encore si j'ai des bananes je te cloue la langue au comptoir !!!!
 - Vous avez des clous ?
 - Non.
 - Vous avez des bananes ?"""),
