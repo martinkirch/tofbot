@@ -20,18 +20,41 @@ import sys
 
 random.seed()
 
+def distance(s,t):
+    """
+    Levenshtein distance
+    http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance#Python
+    """
+    s = ' ' + s
+    t = ' ' + t
+    d = {}
+    S = len(s)
+    T = len(t)
+    for i in range(S):
+        d[i, 0] = i
+    for j in range (T):
+        d[0, j] = j
+    for j in range(1,T):
+        for i in range(1,S):
+            if s[i] == t[j]:
+                d[i, j] = d[i-1, j-1]
+            else:
+                d[i, j] = min(d[i-1, j] + 1, d[i, j-1] + 1, d[i-1, j-1] + 1)
+    return d[S-1, T-1]
+
 class RiddleTeller(object):
-    def __init__(self, riddle, channel, writeback):
+    def __init__(self, riddle, channel, writeback, maxDist):
         self.riddle, self.answer = riddle
         self.channel = channel
         self.writeback = writeback
         self.remaining_msgs = 4
         self.writeback(self.riddle)
+        self.maxDist = maxDist
 
     def wait_answer(self, chan, msg):
         if chan != self.channel:
             return False
-        if msg == self.answer:
+        if distance(msg.lower(), self.answer.lower()) < self.maxDist:
             self.writeback("10 points pour Griffondor.")
             return True
         self.remaining_msgs -= 1
@@ -62,7 +85,8 @@ class Tofbot(Bot):
     # value is a str to object converter. It could do sanitization:
     # if value is incorrect, raise ValueError
     _mutable_attributes = {
-        "autoTofadeThreshold": int
+        "autoTofadeThreshold": int ,
+        "riddleMaxDist": int
     }
 
     def __init__(self, nick, name, channels, password=None, debug=True):
@@ -74,6 +98,7 @@ class Tofbot(Bot):
         self._fortunes = InnocentHand(fortunes)
         self.joined = False
         self.autoTofadeThreshold = 95
+        self.riddleMaxDist = 2
         self.debug = debug
 
     # those commands directly trigger cmd_* actions
@@ -189,7 +214,10 @@ class Tofbot(Bot):
 
     def random_riddle(self, chan):
         riddle = self._riddles()
-        r = RiddleTeller (riddle, chan, lambda msg: self.msg(chan, msg))
+        r = RiddleTeller (riddle,
+                          chan,
+                          lambda msg: self.msg(chan, msg),
+                          self.riddleMaxDist)
         return r
 
 if __name__ == "__main__":
