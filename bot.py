@@ -154,7 +154,10 @@ class Tofbot(Bot):
             self.try_join(args)
             return
 
-        if commandType == 'PRIVMSG':
+        if commandType == 'JOIN':
+            chan = args[0]
+            self.cmd_tofade(chan, [])
+        elif commandType == 'PRIVMSG':
             msg_text = args[0]
             msg = msg_text.split(" ")
             cmd = msg[0]
@@ -182,9 +185,6 @@ class Tofbot(Bot):
             if cmd in self._simple_dispatch:
                 action = getattr(self, "cmd_" + cmd)
                 action(chan, msg)
-        elif commandType == 'JOIN':
-            chan = args[0]
-            self.cmd_tofade(chan, [])
 
     def safe_getattr(self, key):
         if key not in self._mutable_attributes:
