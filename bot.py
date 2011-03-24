@@ -15,6 +15,7 @@ from chucknorris import chuckNorrisFacts
 from riddles import riddles
 from tofades import tofades
 from fortunes import fortunes
+import time
 import random
 import sys
 
@@ -54,7 +55,7 @@ class RiddleTeller(object):
         self.riddle, self.answer = riddle
         self.channel = channel
         self.writeback = writeback
-        self.remaining_msgs = 4
+        self.remaining_msgs = 3
         self.writeback(self.riddle)
         self.max_dist = max_dist
 
@@ -97,7 +98,8 @@ class Tofbot(Bot):
     # if value is incorrect, raise ValueError
     _mutable_attributes = {
         "autoTofadeThreshold": int ,
-        "riddleMaxDist": int
+        "riddleMaxDist": int,
+        "TGtime":int
     }
 
     def __init__(self, nick, name, channels, password=None, debug=True):
@@ -111,6 +113,8 @@ class Tofbot(Bot):
         self.autoTofadeThreshold = 95
         self.riddleMaxDist = 2
         self.debug = debug
+        self.TGtime = 5
+        self.lastTGtofbot = 0
 
     # those commands directly trigger cmd_* actions
     _simple_dispatch = set(('help',
@@ -150,13 +154,17 @@ class Tofbot(Bot):
             cmd = msg[0]
             chan = args[2]
 
-            if random.randint(0, 100) > self.autoTofadeThreshold:
+            if cmd == "TG " + self.nick:
+                self.lastTGtofbot = time.time()
+
+            if random.randint(0, 100) > self.autoTofadeThreshold and (time.time() - self.lastTGtofbot) <= (self.TGtime * 60):
                 self.cmd_tofade(chan)
+                
             if self.active_riddle():
                 itsOver = self.devinette.wait_answer(chan, msg_text)
                 if itsOver:
                     self.devinette = None
-
+            
             if len(cmd) <= 1 or cmd[0] != '!':
                 return
             
@@ -227,7 +235,7 @@ class Tofbot(Bot):
         commands = ['!' + cmd for cmd in self._simple_dispatch]
         self.msg(chan, "Commands should be entered in the channel or by private message")
         self.msg(chan, "Available commands : " + ' '.join(commands))
-        self.msg(chan, "you can also !get or !set autoTofadeThreshold")
+        self.msg(chan, "you can also !get or !set " + ", ".join(self._mutable_attributes.keys()))
 
     def random_riddle(self, chan):
         riddle = self._riddles()
