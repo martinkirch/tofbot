@@ -165,11 +165,12 @@ class Tofbot(Bot):
             msg = msg_text.split(" ")
             cmd = msg[0]
             chan = args[2]
-
-            if cmd == "TG " + self.nick:
+            
+            if msg_text.strip() == "TG " + self.nick:
                 self.lastTGtofbot = time.time()
 
-            if random.randint(0, 100) > self.autoTofadeThreshold and (time.time() - self.lastTGtofbot) <= (self.TGtime * 60):
+            if (random.randint(0, 100) > self.autoTofadeThreshold and 
+                (time.time() - self.lastTGtofbot) >= (self.TGtime * 60)):
                 self.cmd_tofade(chan, [])
                 
             if self.active_riddle():
@@ -231,15 +232,6 @@ class Tofbot(Bot):
         if i_have(0, args) and not self.active_riddle():
             self.devinette = self.random_riddle(chan)
 
-    def cmd_help(self, chan, args):
-        if i_have(0, args):
-            commands = ['!' + cmd for cmd in self._simple_dispatch]
-            help_message = "\n".join(["Commands should be entered in the channel or by private message\n"
-                                     ,"Available commands : %s"
-                                     ,"you can also !get or !set %s"
-                                     ])
-            self.msg(chan, help_message % (' '.join(commands), ", ".join(self._mutable_attributes.keys())))
-
     def cmd_get(self, chan, args):
         if i_have(1, args):
             key = args[0]
@@ -256,6 +248,14 @@ class Tofbot(Bot):
             ok = self.safe_setattr(key, value)
             if not ok:
                 self.msg(chan, "N'écris pas sur mes parties privées !")
+
+    def cmd_help(self, chan, args):
+        if i_have(0, args):
+            commands = ['!' + cmd for cmd in self._simple_dispatch]
+            self.msg(chan, "Commands should be entered in the channel or by private message")
+            self.msg(chan, "Available commands : " + ' '.join(commands))
+            self.msg(chan, "you can also !get or !set " + ", ".join(self._mutable_attributes.keys()))
+            self.msg(chan, "If random-tofades are boring you, enter 'TG " + self.nick + "'")
 
     def random_riddle(self, chan):
         riddle = self._riddles()
