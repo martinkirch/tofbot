@@ -210,7 +210,7 @@ class Tofbot(Bot):
         commands = ['!' + cmd for cmd in self._simple_dispatch]
         self.msg(chan, "Commands should be entered in the channel or by private message")
         self.msg(chan, "Available commands : " + ' '.join(commands))
-        self.msg(chan, "you can also !get or !set autoTofadeThreshold")
+        self.msg(chan, "you can also !get or !set " + ", ".join(self._mutable_attributes.keys()))
 
     def random_riddle(self, chan):
         riddle = self._riddles()
