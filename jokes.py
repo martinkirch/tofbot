@@ -30,6 +30,8 @@ L'enfant retourne dans sa chambre. Le lendemain il entend le même bruit et là 
     ("""Deux ivrognes sont pris dans une avalanche. Un St-Bernard vient vers eux pour les sauver.
 L'un des deux ivrognes dit : "Le meilleur ami de l'homme vient à notre secours!"
 L'autre répond : " Oui et il vient avec un chien." """),
+	("bash.rc, c'est le bash.org de la république du Congo?") #en fait elle est de hellcook celle-là
+
 ]
 
 if __name__ == "__main__":
