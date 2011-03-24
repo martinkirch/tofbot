@@ -20,41 +20,52 @@ import sys
 
 random.seed()
 
-def distance(s,t):
+def distance(string1, string2):
     """
     Levenshtein distance
     http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance#Python
     """
-    s = ' ' + s
-    t = ' ' + t
-    d = {}
-    S = len(s)
-    T = len(t)
-    for i in range(S):
-        d[i, 0] = i
-    for j in range (T):
-        d[0, j] = j
-    for j in range(1,T):
-        for i in range(1,S):
-            if s[i] == t[j]:
-                d[i, j] = d[i-1, j-1]
+    string1 = ' ' + string1
+    string2 = ' ' + string2
+    dists = {}
+    len1 = len(string1)
+    len2 = len(string2)
+    for i in range(len1):
+        dists[i, 0] = i
+    for j in range (len2):
+        dists[0, j] = j
+    for j in range(1, len2):
+        for i in range(1, len1):
+            if string1[i] == string2[j]:
+                dists[i, j] = dists[i-1, j-1]
             else:
-                d[i, j] = min(d[i-1, j] + 1, d[i, j-1] + 1, d[i-1, j-1] + 1)
-    return d[S-1, T-1]
+                dists[i, j] = min(dists[i-1, j] + 1,
+                                  dists[i, j-1] + 1,
+                                  dists[i-1, j-1] + 1
+                                 )
+    return dists[len1-1, len2-1]
 
 class RiddleTeller(object):
-    def __init__(self, riddle, channel, writeback, maxDist):
+    """
+    A gentleman (and a scholar) who likes to entertain its audience.
+    """
+
+    def __init__(self, riddle, channel, writeback, max_dist):
         self.riddle, self.answer = riddle
         self.channel = channel
         self.writeback = writeback
         self.remaining_msgs = 4
         self.writeback(self.riddle)
-        self.maxDist = maxDist
+        self.max_dist = max_dist
 
     def wait_answer(self, chan, msg):
+        """
+        Called at each try.
+        Returns True iff the riddle is over.
+        """
         if chan != self.channel:
             return False
-        if distance(msg.lower(), self.answer.lower()) < self.maxDist:
+        if distance(msg.lower(), self.answer.lower()) < self.max_dist:
             self.writeback("10 points pour Griffondor.")
             return True
         self.remaining_msgs -= 1
@@ -102,12 +113,18 @@ class Tofbot(Bot):
         self.debug = debug
 
     # those commands directly trigger cmd_* actions
-    _simple_dispatch = set(('help', 'fortune', 'blague', 'chuck', 'tofade', 'devinette'))
+    _simple_dispatch = set(('help',
+                            'fortune',
+                            'blague',
+                            'chuck',
+                            'tofade',
+                            'devinette'
+                          ))
     
     # line-feed-safe
     def msg(self, chan, msg):
         for m in msg.split("\n"):
-             Bot.msg(self, chan, m)
+            Bot.msg(self, chan, m)
         
     def log(self, msg):
         if self.debug:
@@ -221,9 +238,9 @@ class Tofbot(Bot):
         return r
 
 if __name__ == "__main__":
-        if len(sys.argv) > 2:
-                chans = [ "#" + s for s in sys.argv[2:] ]
-                b = Tofbot(sys.argv[1], 'Tofbot', chans)
-                b.run('irc.freenode.net')
-        else:
-                print __doc__
+    if len(sys.argv) > 2:
+        chans = [ "#" + s for s in sys.argv[2:] ]
+        b = Tofbot(sys.argv[1], 'Tofbot', chans)
+        b.run('irc.freenode.net')
+    else:
+        print __doc__
