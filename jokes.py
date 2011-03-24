@@ -21,7 +21,7 @@ jokes = [
 - et pourqoi ça toto ?
 - ben mon papa il a dit a maman "quand le petit part je te boufe la chatte" """),
     ("""Un enfant de huit ans entend des bruits venant de la chambre de sa maman... Celui-ci s'approche pour voir et voit sa mère se touchant en s'écriant "je veux un homme ,je veux un homme!".
-L'enfant retourne dans sa chambre. Le lendemain il entend le même bruit et là il s'aperçoit qu il y a un homme sur sa mère! Il court vite dans sa chambre, baisse son pantalon, se touche le kiki en s'écriant "je veux un vélo bleu, je veux un vélo bleu. """),
+L'enfant retourne dans sa chambre. Le lendemain il entend le même bruit et là il s'aperçoit qu il y a un homme sur sa mère! Il court vite dans sa chambre, baisse son pantalon, se touche le kiki en s'écriant "je veux un vélo bleu, je veux un vélo bleu." """),
     ("""C'est 2 amis qui parlent ensemble :
 - dis donc Roger ta femme ne porte pas de culotte !
 - Mais Marcel comment le sais tu?
