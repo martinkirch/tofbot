@@ -184,7 +184,7 @@ class Tofbot(Bot):
 
             if cmd in self._simple_dispatch:
                 action = getattr(self, "cmd_" + cmd)
-                action(chan, msg)
+                action(chan, msg[1:])
 
     def safe_getattr(self, key):
         if key not in self._mutable_attributes:
@@ -233,7 +233,7 @@ class Tofbot(Bot):
         self.msg(chan, help_message % (' '.join(commands), ", ".join(self._mutable_attributes.keys())))
 
     def cmd_get(self, chan, args):
-        key = args[1]
+        key = args[0]
         value = self.safe_getattr(key)
         if value is None:
             self.msg(chan, "Ne touche pas à mes parties privées !")
@@ -241,8 +241,8 @@ class Tofbot(Bot):
             self.msg(chan, "%s = %s" % (key, value))
 
     def cmd_set(self, chan, args):
-        key = args[1]
-        value = args[2]
+        key = args[0]
+        value = args[1]
         ok = self.safe_setattr(key, value)
         if not ok:
             self.msg(chan, "N'écris pas sur mes parties privées !")
