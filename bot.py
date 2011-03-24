@@ -46,6 +46,9 @@ def distance(string1, string2):
                                  )
     return dists[len1-1, len2-1]
 
+def i_have(n, args):
+    return n == len(args)
+
 class RiddleTeller(object):
     """
     A gentleman (and a scholar) who likes to entertain its audience.
@@ -209,43 +212,50 @@ class Tofbot(Bot):
         return (hasattr(self, 'devinette') and self.devinette is not None)
 
     def cmd_blague(self, chan, args):
-        self.msg(chan, self._jokes())
+        if i_have(0, args):
+            self.msg(chan, self._jokes())
 
     def cmd_fortune(self, chan, args):
-        self.msg(chan, self._fortunes())
+        if i_have(0, args):
+            self.msg(chan, self._fortunes())
 
     def cmd_chuck(self, chan, args):
-        self.msg(chan, self._chuck())
+        if i_have(0, args):
+            self.msg(chan, self._chuck())
 
     def cmd_tofade(self, chan, args):
-        self.msg(chan, self._tofades())
+        if i_have(0, args):
+            self.msg(chan, self._tofades())
 
     def cmd_devinette(self, chan, args):
-        if not self.active_riddle():
+        if i_have(0, args) and not self.active_riddle():
             self.devinette = self.random_riddle(chan)
 
     def cmd_help(self, chan, args):
-        commands = ['!' + cmd for cmd in self._simple_dispatch]
-        help_message = "\n".join(["Commands should be entered in the channel or by private message\n"
-                                 ,"Available commands : %s"
-                                 ,"you can also !get or !set %s"
-                                 ])
-        self.msg(chan, help_message % (' '.join(commands), ", ".join(self._mutable_attributes.keys())))
+        if i_have(0, args):
+            commands = ['!' + cmd for cmd in self._simple_dispatch]
+            help_message = "\n".join(["Commands should be entered in the channel or by private message\n"
+                                     ,"Available commands : %s"
+                                     ,"you can also !get or !set %s"
+                                     ])
+            self.msg(chan, help_message % (' '.join(commands), ", ".join(self._mutable_attributes.keys())))
 
     def cmd_get(self, chan, args):
-        key = args[0]
-        value = self.safe_getattr(key)
-        if value is None:
-            self.msg(chan, "Ne touche pas à mes parties privées !")
-        else:
-            self.msg(chan, "%s = %s" % (key, value))
+        if i_have(1, args):
+            key = args[0]
+            value = self.safe_getattr(key)
+            if value is None:
+                self.msg(chan, "Ne touche pas à mes parties privées !")
+            else:
+                self.msg(chan, "%s = %s" % (key, value))
 
     def cmd_set(self, chan, args):
-        key = args[0]
-        value = args[1]
-        ok = self.safe_setattr(key, value)
-        if not ok:
-            self.msg(chan, "N'écris pas sur mes parties privées !")
+        if i_have(2, args):
+            key = args[0]
+            value = args[1]
+            ok = self.safe_setattr(key, value)
+            if not ok:
+                self.msg(chan, "N'écris pas sur mes parties privées !")
 
     def random_riddle(self, chan):
         riddle = self._riddles()
