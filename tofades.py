@@ -10,7 +10,7 @@ tofades = [
     ("Hô ho hooo"),
     ("ho ho HO"),
     ("Et toi, tu suces ?"),
-    ("Appelles-moi papa !")
+    ("Appelle-moi papa !")
 ]
 
 if __name__ == "__main__":
