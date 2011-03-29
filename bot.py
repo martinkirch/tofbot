@@ -125,6 +125,7 @@ class Tofbot(Bot):
                           , 'blague'
                           , 'chuck'
                           , 'tofade'
+                          , 'tofme'
                           , 'devinette'
                           , 'get'
                           , 'set'
@@ -227,6 +228,11 @@ class Tofbot(Bot):
     def cmd_tofade(self, chan, args):
         if i_have(0, args):
             self.msg(chan, self._tofades())
+
+    def cmd_tofme(self, chan, args):
+        if i_have(1, args):
+            who = args[0]
+            self.msg(chan, "%s : %s" % (who, self._tofades()))
 
     def cmd_devinette(self, chan, args):
         if i_have(0, args) and not self.active_riddle():
