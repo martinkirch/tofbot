@@ -150,8 +150,9 @@ class Tofbot(Bot):
 
 
     def dispatch(self, origin, args):
-        self.log("o=%s a=%s" % (origin.sender, args))
-
+        self.log("o=%s n=%s a=%s" % (origin.sender, origin.nick, args))
+        
+        senderNick = origin.nick
         commandType = args[1]
 
         if not self.joined:
@@ -172,7 +173,7 @@ class Tofbot(Bot):
 
             if (random.randint(0, 100) > self.autoTofadeThreshold and 
                 (time.time() - self.lastTGtofbot) >= (self.TGtime * 60)):
-                self.cmd_tofade(chan, [])
+                self.cmd_tofme(chan, [senderNick])
                 
             if self.active_riddle():
                 itsOver = self.devinette.wait_answer(chan, msg_text)
