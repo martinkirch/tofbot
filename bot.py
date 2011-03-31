@@ -161,7 +161,7 @@ class Tofbot(Bot):
 
         if commandType == 'JOIN':
             chan = args[0]
-            self.cmd_tofade(chan, [])
+            self.cmd_tofme(chan, [senderNick])
         elif commandType == 'PRIVMSG':
             msg_text = args[0]
             msg = msg_text.split(" ")
