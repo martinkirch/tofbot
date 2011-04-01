@@ -107,7 +107,9 @@ class Tofbot(Bot):
     }
 
     def __init__(self, nick, name, channels, password=None, debug=True):
+        assert(len(channels) == 1)
         Bot.__init__(self, nick, name, channels, password)
+        self.chan = channels[0]
         self._jokes = InnocentHand(jokes)
         self._chuck = InnocentHand(chuckNorrisFacts)
         self._tofades = InnocentHand(tofades)
@@ -138,6 +140,9 @@ class Tofbot(Bot):
     def msg(self, chan, msg):
         for m in msg.split("\n"):
             Bot.msg(self, chan, m)
+
+    def say(self, msg):
+        self.msg(self.chan, msg)
         
     def log(self, msg):
         if self.debug:
@@ -147,12 +152,19 @@ class Tofbot(Bot):
         if (args[0] in ['End of /MOTD command.',
                         "This server was created ... I don't know"]
                         ):
-            for chan in self.channels:
-                self.write(('JOIN', chan))
+            self.write(('JOIN', self.chan))
             self.joined = True
 
-
     def dispatch(self, origin, args):
+        try:
+            self._dispatch(origin, args)
+        except:
+            if self.debug:
+                e = sys.exc_info()
+                self.say("%s: %s" % (e.__class__.__name__,str(e)))
+            raise
+
+    def _dispatch(self, origin, args):
         self.log("o=%s n=%s a=%s" % (origin.sender, origin.nick, args))
         
         senderNick = origin.nick
@@ -165,9 +177,9 @@ class Tofbot(Bot):
         if commandType == 'JOIN':
             chan = args[0]
             if senderNick == self.nick:
-                self.cmd_tofade(chan, [])
+                self.cmd_tofade([])
             else:
-                self.cmd_tofme(chan, [senderNick])
+                self.cmd_tofme([senderNick])
         
         elif commandType == 'PRIVMSG':
             msg_text = args[0]
@@ -182,7 +194,7 @@ class Tofbot(Bot):
 
             if (random.randint(0, 100) > self.autoTofadeThreshold and 
                 (time.time() - self.lastTGtofbot) >= (self.TGtime * 60)):
-                self.cmd_tofme(chan, [senderNick])
+                self.cmd_tofme([senderNick])
                 
             if self.active_riddle():
                 itsOver = self.devinette.wait_answer(chan, msg_text)
@@ -194,12 +206,9 @@ class Tofbot(Bot):
             
             cmd = cmd[1:]
 
-            if chan == self.nick:
-                chan = self.channels[0]
-
             if cmd in self._simple_dispatch:
                 action = getattr(self, "cmd_" + cmd)
-                action(chan, msg[1:])
+                action(msg[1:])
 
     def safe_getattr(self, key):
         if key not in self._mutable_attributes:
@@ -223,67 +232,67 @@ class Tofbot(Bot):
     def active_riddle(self):
         return (hasattr(self, 'devinette') and self.devinette is not None)
 
-    def cmd_blague(self, chan, args):
+    def cmd_blague(self, args):
         if i_have(0, args):
-            self.msg(chan, self._jokes())
+            self.say(self._jokes())
 
-    def cmd_fortune(self, chan, args):
+    def cmd_fortune(self, args):
         if i_have(0, args):
-            self.msg(chan, self._fortunes())
+            self.say(self._fortunes())
 
-    def cmd_chuck(self, chan, args):
+    def cmd_chuck(self, args):
         if i_have(0, args):
-            self.msg(chan, self._chuck())
+            self.say(self._chuck())
 
-    def cmd_tofade(self, chan, args):
+    def cmd_tofade(self, args):
         if i_have(0, args):
-            self.msg(chan, self._tofades())
+            self.say(self._tofades())
 
-    def cmd_tofme(self, chan, args):
+    def cmd_tofme(self, args):
         if i_have(1, args):
             who = args[0]
-            self.msg(chan, "%s : %s" % (who, self._tofades()))
+            self.say("%s : %s" % (who, self._tofades()))
 
-    def cmd_devinette(self, chan, args):
+    def cmd_devinette(self, args):
         if i_have(0, args) and not self.active_riddle():
-            self.devinette = self.random_riddle(chan)
+            self.devinette = self.random_riddle()
 
-    def cmd_get(self, chan, args):
+    def cmd_get(self, args):
         if i_have(1, args):
             key = args[0]
             value = self.safe_getattr(key)
             if value is None:
-                self.msg(chan, "Ne touche pas à mes parties privées !")
+                self.say("Ne touche pas à mes parties privées !")
             else:
-                self.msg(chan, "%s = %s" % (key, value))
+                self.say("%s = %s" % (key, value))
 
-    def cmd_set(self, chan, args):
+    def cmd_set(self, args):
         if i_have(2, args):
             key = args[0]
             value = args[1]
             ok = self.safe_setattr(key, value)
             if not ok:
-                self.msg(chan, "N'écris pas sur mes parties privées !")
+                self.say("N'écris pas sur mes parties privées !")
 
-    def cmd_context(self, chan, args):
+    def cmd_context(self, args):
         if i_have(0, args):
-            self.msg(chan, "Context :")
+            self.say("Context :")
             for m in self.last_messages:
-                self.msg(chan, m)
+                self.say(m)
 
-    def cmd_help(self, chan, args):
+    def cmd_help(self, args):
         if i_have(0, args):
             commands = ['!' + cmd for cmd in self._simple_dispatch]
-            self.msg(chan, "Commands should be entered in the channel or by private message")
-            self.msg(chan, "Available commands : " + ' '.join(commands))
-            self.msg(chan, "you can also !get or !set " + ", ".join(self._mutable_attributes.keys()))
-            self.msg(chan, "If random-tofades are boring you, enter 'TG " + self.nick + "'")
+            self.say("Commands should be entered in the channel or by private message")
+            self.say("Available commands : " + ' '.join(commands))
+            self.say("you can also !get or !set " + ", ".join(self._mutable_attributes.keys()))
+            self.say("If random-tofades are boring you, enter 'TG " + self.nick + "'")
 
-    def random_riddle(self, chan):
+    def random_riddle(self):
         riddle = self._riddles()
         r = RiddleTeller (riddle,
-                          chan,
-                          lambda msg: self.msg(chan, msg),
+                          self.chan,
+                          lambda msg: self.say(msg),
                           self.riddleMaxDist)
         return r
 

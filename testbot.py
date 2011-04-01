@@ -8,11 +8,10 @@ class TestTofbot(Tofbot):
     def __init__(self, nick, name, chan, origin):
         chans = [chan]
         Tofbot.__init__(self, nick, name, chans, debug=False)
-        self.chan = chan
         self.origin = origin
         self.cb = print_resp
 
-    def msg(self, chan, msg):
+    def say(self, msg):
         if self.cb:
             self.cb(msg)
         else:
