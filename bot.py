@@ -18,6 +18,7 @@ from fortunes import fortunes
 import time
 import random
 import sys
+from collections import deque
 
 random.seed()
 
@@ -118,6 +119,7 @@ class Tofbot(Bot):
         self.debug = debug
         self.TGtime = 5
         self.lastTGtofbot = 0
+        self.last_messages = deque([], 10)
 
     # those commands directly trigger cmd_* actions
     _simple_dispatch = set(('help'
@@ -129,6 +131,7 @@ class Tofbot(Bot):
                           , 'devinette'
                           , 'get'
                           , 'set'
+                          , 'context'
                           ))
     
     # line-feed-safe
@@ -171,6 +174,8 @@ class Tofbot(Bot):
             msg = msg_text.split(" ")
             cmd = msg[0]
             chan = args[2]
+
+            self.last_messages.append(msg_text)
             
             if msg_text.strip() == "TG " + self.nick:
                 self.lastTGtofbot = time.time()
@@ -259,6 +264,12 @@ class Tofbot(Bot):
             ok = self.safe_setattr(key, value)
             if not ok:
                 self.msg(chan, "N'écris pas sur mes parties privées !")
+
+    def cmd_context(self, chan, args):
+        if i_have(0, args):
+            self.msg(chan, "Context :")
+            for m in self.last_messages:
+                self.msg(chan, m)
 
     def cmd_help(self, chan, args):
         if i_have(0, args):
