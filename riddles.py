@@ -11,7 +11,7 @@ riddles = [
     ("Pourquoi les Américains ne voient-ils pas le bout du tunnel ?", "Parce que George Bush."),
     ("La petite fille tombe de la balançoire. Pourquoi ?", "Parce qu'elle n'a pas de bras."),
     ("Pourquoi les Spices Girls mouillent ?" , "Parce que les boys band!"),
-    
+    ("Pourquoi les blondes n'aiment pas les vibromasseurs ?", "Parceque ça fait mal aux dents")
 ]
 
 if __name__ == "__main__":
