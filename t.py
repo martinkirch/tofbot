@@ -1,4 +1,5 @@
 from testbot import TestTofbot, print_resp
+import random
 
 class Origin:
     pass
@@ -7,6 +8,7 @@ chan = '#test'
 
 origin = Origin()
 origin.sender = 'TestTofbot'
+origin.nick = 'TestTofbot_nick'
 
 class Counter:
     
@@ -26,6 +28,7 @@ def cb_error(msg):
     return cb_lines(0)
 
 b = TestTofbot('ohohOHoh_bot', 'Le tof', chan, origin)
+random.seed(0) # be deterministic
 
 b.send("End of /MOTD command.", cb=cb_error)
 b.send("test", cb=cb_error)
@@ -33,3 +36,10 @@ b.send("!help", cb=cb_lines(4))
 b.send("!set autoTofadeThreshold 100", cb=cb_error)
 b.send("!get autoTofadeThreshold", cb=cb_lines(1))
 b.send("!get autoTofadeThreshold 2", cb=cb_error)
+b.send("!devinette")
+b.send("idk", cb=cb_error)
+b.send("idk", cb=cb_error)
+b.send("idk", cb=cb_lines(1))
+b.send("!devinette", cb=cb_error)
+b.send("parce que george bushe", cb=cb_lines(1))
+b.send("!set lol 2", cb=cb_lines(1))
