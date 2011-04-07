@@ -113,7 +113,7 @@ class Tofbot(Bot):
         self._riddles = InnocentHand(riddles)
         self._fortunes = InnocentHand(fortunes)
         self.joined = False
-        self.autoTofadeThreshold = 95
+        self.autoTofadeThreshold = 98
         self.riddleMaxDist = 2
         self.debug = debug
         self.TGtime = 5
