@@ -103,7 +103,8 @@ class Tofbot(Bot):
     _mutable_attributes = {
         "autoTofadeThreshold": int ,
         "riddleMaxDist": int,
-        "TGtime":int
+        "TGtime":int,
+        "memoryDepth":int
     }
 
     def __init__(self, nick, name, channels, password=None, debug=True):
@@ -119,6 +120,9 @@ class Tofbot(Bot):
         self.debug = debug
         self.TGtime = 5
         self.lastTGtofbot = 0
+        
+        self.memoryDepth = 10
+        self.msgMemory = []
 
     # those commands directly trigger cmd_* actions
     _simple_dispatch = set(('help'
@@ -184,6 +188,11 @@ class Tofbot(Bot):
                 itsOver = self.devinette.wait_answer(chan, msg_text)
                 if itsOver:
                     self.devinette = None
+
+            if chan == self.channels[0] and cmd[0] != '!':
+                self.msgMemory.append("<" + senderNick + "> " + msg_text)
+                if len(self.msgMemory) > self.memoryDepth:
+                    del self.msgMemory[0]
             
             if len(cmd) <= 1 or cmd[0] != '!':
                 return
@@ -192,10 +201,12 @@ class Tofbot(Bot):
 
             if chan == self.nick:
                 chan = self.channels[0]
-
+            
             if cmd in self._simple_dispatch:
                 action = getattr(self, "cmd_" + cmd)
                 action(chan, msg[1:])
+            elif cmd == 'context':
+                self.send_context(senderNick)
 
     def safe_getattr(self, key):
         if key not in self._mutable_attributes:
@@ -261,9 +272,17 @@ class Tofbot(Bot):
             if not ok:
                 self.msg(chan, "N'écris pas sur mes parties privées !")
 
+    def send_context(self, to):
+        intro = "Last " + str(len(self.msgMemory)) + " messages sent on " + self.channels[0] + " :"
+        self.msg(to, intro)
+        
+        for msg in self.msgMemory:
+            self.msg(to, msg)
+
     def cmd_help(self, chan, args):
         if i_have(0, args):
             commands = ['!' + cmd for cmd in self._simple_dispatch]
+            commands.append("!context")
             self.msg(chan, "Commands should be entered in the channel or by private message")
             self.msg(chan, "Available commands : " + ' '.join(commands))
             self.msg(chan, "you can also !get or !set " + ", ".join(self._mutable_attributes.keys()))
