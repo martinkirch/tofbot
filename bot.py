@@ -189,22 +189,22 @@ class Tofbot(Bot):
                 if itsOver:
                     self.devinette = None
 
+            if len(cmd) == 0:
+                return
+
             if chan == self.channels[0] and cmd[0] != '!':
                 self.msgMemory.append("<" + senderNick + "> " + msg_text)
                 if len(self.msgMemory) > self.memoryDepth:
                     del self.msgMemory[0]
             
-            if len(cmd) <= 1 or cmd[0] != '!':
+            if cmd[0] != '!':
                 return
             
             cmd = cmd[1:]
 
-            if chan == self.nick:
-                chan = self.channels[0]
-            
             if cmd in self._simple_dispatch:
                 action = getattr(self, "cmd_" + cmd)
-                action(chan, msg[1:])
+                action(self.channels[0], msg[1:])
             elif cmd == 'context':
                 self.send_context(senderNick)
 
