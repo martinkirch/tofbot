@@ -9,6 +9,7 @@ Don't prepend a # to chan names
 Tofbot will connect to freenode.net
 """
 
+from datetime import datetime
 from irc import Bot
 from jokes import jokes
 from chucknorris import chuckNorrisFacts
@@ -120,6 +121,7 @@ class Tofbot(Bot):
         self.debug = debug
         self.TGtime = 5
         self.lastTGtofbot = 0
+        self.pings = {}
         
         self.memoryDepth = 10
         self.msgMemory = []
@@ -134,6 +136,7 @@ class Tofbot(Bot):
                           , 'devinette'
                           , 'get'
                           , 'set'
+                          , 'ping'
                           ))
     
     # line-feed-safe
@@ -176,6 +179,8 @@ class Tofbot(Bot):
             msg = msg_text.split(" ")
             cmd = msg[0]
             chan = args[2]
+            
+            self.pings[senderNick] = datetime.now()
             
             if msg_text.strip() == "TG " + self.nick:
                 self.lastTGtofbot = time.time()
@@ -229,6 +234,16 @@ class Tofbot(Bot):
 
     def active_riddle(self):
         return (hasattr(self, 'devinette') and self.devinette is not None)
+    
+    def cmd_ping(self, chan, args):
+        if i_have(1, args):
+            who = args[0]
+            if who in self.pings:
+                self.msg(chan, 
+                    "Last message from %s was on %s (btw my local time is %s)" % 
+                    (who, self.pings[who].__str__(), datetime.now().__str__() ))
+            else:
+                self.msg(chan, "I havn't seen any message from " + who)
 
     def cmd_blague(self, chan, args):
         if i_have(0, args):
