@@ -40,6 +40,8 @@ chuckNorrisFacts = [
     ("Quand Chuck Norris fume un pétard, c'est le pétard qui est défoncé !"),
     ("Chuck Norris n'a jamais vu Nicolas Sarkozy.Il n'a jamais baissé les yeux."),
     ("Chuck Norris n'a jamais le mal de mer, c'est la mer qui a le mal de Chuck Norris."),
+    ("Si Chuck Norris joue au Risk sans armée, ce n'est pas parce que c'est trop facile, c'est parce que personne n'ose l'attaquer."),
+    ("Chuck Norris n'a pas de numéro de Sécurité Sociale : les chiffres n'existaient pas encore...."),
 ]
 
 # tester
