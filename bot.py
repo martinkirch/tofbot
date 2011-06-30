@@ -116,7 +116,7 @@ class Tofbot(Bot):
         self._riddles = InnocentHand(riddles)
         self._fortunes = InnocentHand(fortunes)
         self.joined = False
-        self.autoTofadeThreshold = 98
+        self.autoTofadeThreshold = 95
         self.riddleMaxDist = 2
         self.debug = debug
         self.TGtime = 5
@@ -314,7 +314,7 @@ class Tofbot(Bot):
 if __name__ == "__main__":
     if len(sys.argv) > 2:
         chans = [ "#" + s for s in sys.argv[2:] ]
-        b = Tofbot(sys.argv[1], 'Tofbot', chans)
+        b = Tofbot(sys.argv[1], 'Vikbot', chans)
         b.run('irc.freenode.net')
     else:
         print __doc__

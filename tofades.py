@@ -5,12 +5,12 @@ Awesome tofades
 """
 
 tofades = [
-    ("Ho ho ho"),
-    ("Hô hô hô"),
-    ("Hô ho hooo"),
-    ("ho ho HO"),
-    ("Et toi, tu suces ?"),
-    ("Appelle-moi papa !")
+    ("alcoolique !"),
+    ("soulak !"),
+    ("bois un canon !"),
+    ("tu viens boire un canon ?"),
+    (";)"),
+    ("t'es saoul ;)'")
 ]
 
 if __name__ == "__main__":
