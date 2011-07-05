@@ -16,6 +16,7 @@ from chucknorris import chuckNorrisFacts
 from riddles import riddles
 from tofades import tofades
 from fortunes import fortunes
+from contrepetries import contrepetries
 import time
 import random
 import sys
@@ -115,6 +116,7 @@ class Tofbot(Bot):
         self._tofades = InnocentHand(tofades)
         self._riddles = InnocentHand(riddles)
         self._fortunes = InnocentHand(fortunes)
+        self._contrepetries = InnocentHand(contrepetries)
         self.joined = False
         self.autoTofadeThreshold = 98
         self.riddleMaxDist = 2
@@ -137,6 +139,7 @@ class Tofbot(Bot):
                           , 'get'
                           , 'set'
                           , 'ping'
+                          , 'contrepetrie'
                           ))
     
     # line-feed-safe
@@ -260,6 +263,10 @@ class Tofbot(Bot):
     def cmd_tofade(self, chan, args):
         if i_have(0, args):
             self.msg(chan, self._tofades())
+            
+    def cmd_contrepetrie(self, chan, args):
+        if i_have(0, args):
+            self.msg(chan, self._contrepetries())
 
     def cmd_tofme(self, chan, args):
         if i_have(1, args):
