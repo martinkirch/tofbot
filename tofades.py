@@ -10,7 +10,7 @@ tofades = [
     ("bois un canon !"),
     ("tu viens boire un canon ?"),
     (";)"),
-    ("t'es saoul ;)'")
+    ("t'es saoul ;)")
 ]
 
 if __name__ == "__main__":
