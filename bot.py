@@ -125,7 +125,7 @@ class Tofbot(Bot):
         self.lastTGtofbot = 0
         self.pings = {}
         
-        self.memoryDepth = 10
+        self.memoryDepth = 20
         self.msgMemory = []
 
     # those commands directly trigger cmd_* actions
