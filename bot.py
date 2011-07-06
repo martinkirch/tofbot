@@ -145,7 +145,7 @@ class Tofbot(Bot):
     # line-feed-safe
     def msg(self, chan, msg):
         for m in msg.split("\n"):
-            Bot.msg(self, chan, m)
+            self.write(('PRIVMSG', chan), msg)
         
     def log(self, msg):
         if self.debug:
