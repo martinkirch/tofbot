@@ -51,6 +51,27 @@ def distance(string1, string2):
 def i_have(n, args):
     return n == len(args)
 
+class TimeSlice():
+
+    def __init__(self):
+        t = datetime.now()
+        self.date = t.date()
+        self.hour = t.hour
+
+    def __str__(self):
+        return "%s %02dh-%02dh" % ( self.date.strftime("%d %b")
+                                  , self.hour
+                                  , self.hour+1 % 24
+                                  )
+
+    def __cmp__(self, other):
+        return cmp ( (self.date, self.hour)
+                   , (other.date, other.hour)
+                   )
+
+    def __hash__(self):
+        return hash(self.date) + hash(self.hour)
+
 class RiddleTeller(object):
     """
     A gentleman (and a scholar) who likes to entertain its audience.
@@ -124,6 +145,9 @@ class Tofbot(Bot):
         self.TGtime = 5
         self.lastTGtofbot = 0
         self.pings = {}
+
+        # TODO Ideally, this should be serialized
+        self.lolRate = {}
         
         self.memoryDepth = 20
         self.msgMemory = []
@@ -140,6 +164,7 @@ class Tofbot(Bot):
                           , 'set'
                           , 'ping'
                           , 'contrepetrie'
+                          , 'lulz'
                           ))
     
     # line-feed-safe
@@ -199,6 +224,12 @@ class Tofbot(Bot):
 
             if len(cmd) == 0:
                 return
+
+            if "lol" in cmd:
+                ts = TimeSlice()
+                if not ts in self.lolRate:
+                    self.lolRate[ts] = 0
+                self.lolRate[ts] += 1
 
             if chan == self.channels[0] and cmd[0] != '!':
                 self.msgMemory.append("<" + senderNick + "> " + msg_text)
@@ -276,6 +307,11 @@ class Tofbot(Bot):
     def cmd_devinette(self, chan, args):
         if i_have(0, args) and not self.active_riddle():
             self.devinette = self.random_riddle(chan)
+
+    def cmd_lulz(self, chan, args):
+        if i_have(0, args):
+            for k, v in self.lolRate.items():
+                self.msg(chan, "%s => %d" % (k, v))
 
     def cmd_get(self, chan, args):
         if i_have(1, args):
