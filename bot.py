@@ -20,6 +20,7 @@ from contrepetries import contrepetries
 import time
 import random
 import sys
+import re
 
 random.seed()
 
@@ -218,6 +219,9 @@ class Tofbot(Bot):
             if msg_text.strip() == "TG " + self.nick:
                 self.lastTGtofbot = time.time()
 
+            if msg_text.strip() == "GG " + self.nick:
+                self.lastTGtofbot = 0
+
             if (random.randint(0, 100) > self.autoTofadeThreshold and 
                 (time.time() - self.lastTGtofbot) >= (self.TGtime * 60)):
                 self.cmd_tofme(chan, [senderNick])
@@ -353,7 +357,7 @@ class Tofbot(Bot):
             self.msg(chan, "Commands should be entered in the channel or by private message")
             self.msg(chan, "Available commands : " + ' '.join(commands))
             self.msg(chan, "you can also !get or !set " + ", ".join(self._mutable_attributes.keys()))
-            self.msg(chan, "If random-tofades are boring you, enter 'TG " + self.nick + "'")
+            self.msg(chan, "If random-tofades are boring you, enter 'TG " + self.nick + "' (but can be cancelled by GG " + self.nick + ")")
 
     def random_riddle(self, chan):
         riddle = self._riddles()
