@@ -325,7 +325,7 @@ class Tofbot(Bot):
     def cmd_lulz(self, chan, args):
         if i_have(0, args):
             for lolade in self.lolRate:
-                self.msg(chan, "%s" % (lolade))
+                self.msg(chan, str(lolade))
 
     def cmd_get(self, chan, args):
         if i_have(1, args):
