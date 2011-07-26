@@ -233,8 +233,9 @@ class Tofbot(Bot):
 
             if len(cmd) == 0:
                 return
-
-            if "lol" in cmd:
+            
+            lulz = len(re.findall("[Ll]+[oO]+[Ll]+", msg_text))
+            if lulz > 0:
                 ts = TimeSlice()
                 if ts != self.lolRate[0]:
                     self.lolRate.insert(0,ts)
@@ -242,7 +243,7 @@ class Tofbot(Bot):
                 if len(self.lolRate) > self.lolRateDepth:
                     self.lolRate.pop()
                     
-                self.lolRate[0] += 1
+                self.lolRate[0] += lulz
 
             if chan == self.channels[0] and cmd[0] != '!':
                 self.msgMemory.append("<" + senderNick + "> " + msg_text)
