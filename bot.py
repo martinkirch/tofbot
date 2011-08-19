@@ -231,11 +231,17 @@ class Tofbot(Bot):
                     self.lolRate[ts] = 0
                 self.lolRate[ts] += 1
 
+            if msg[0:2] == ['donnez', 'moi'] and msg[2] in ('un', 'une'):
+                what = msg[3]
+                for m in what:
+                    self.msg(chan, m.upper())
+                    time.sleep(0.5)
+            
             if chan == self.channels[0] and cmd[0] != '!':
                 self.msgMemory.append("<" + senderNick + "> " + msg_text)
                 if len(self.msgMemory) > self.memoryDepth:
                     del self.msgMemory[0]
-            
+
             if cmd[0] != '!':
                 return
             
