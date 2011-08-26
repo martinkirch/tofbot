@@ -48,8 +48,13 @@ def distance(string1, string2):
                                  )
     return dists[len1-1, len2-1]
 
+# those commands directly trigger cmd_* actions
+_simple_dispatch = set()
+
 def cmd(expected_args):
     def deco(func):
+        name = func.__name__[4:]
+        _simple_dispatch.add(name)
         def f(bot, chan, args):
             if(len(args) == expected_args):
                 return func(bot, chan, args)
@@ -157,21 +162,6 @@ class Tofbot(Bot):
         self.memoryDepth = 20
         self.msgMemory = []
 
-    # those commands directly trigger cmd_* actions
-    _simple_dispatch = set(('help'
-                          , 'fortune'
-                          , 'blague'
-                          , 'chuck'
-                          , 'tofade'
-                          , 'tofme'
-                          , 'devinette'
-                          , 'get'
-                          , 'set'
-                          , 'ping'
-                          , 'contrepetrie'
-                          , 'lulz'
-                          ))
-    
     # line-feed-safe
     def msg(self, chan, msg):
         for m in msg.split("\n"):
@@ -246,7 +236,7 @@ class Tofbot(Bot):
             
             cmd = cmd[1:]
 
-            if cmd in self._simple_dispatch:
+            if cmd in _simple_dispatch:
                 action = getattr(self, "cmd_" + cmd)
                 action(self.channels[0], msg[1:])
             elif cmd == 'context':
@@ -345,7 +335,7 @@ class Tofbot(Bot):
 
     @cmd(0)
     def cmd_help(self, chan, args):
-        commands = ['!' + cmd for cmd in self._simple_dispatch]
+        commands = ['!' + cmd for cmd in _simple_dispatch]
         commands.append("!context")
         self.msg(chan, "Commands should be entered in the channel or by private message")
         self.msg(chan, "Available commands : " + ' '.join(commands))
