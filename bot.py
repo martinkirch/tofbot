@@ -49,8 +49,18 @@ def distance(string1, string2):
                                  )
     return dists[len1-1, len2-1]
 
-def i_have(n, args):
-    return n == len(args)
+# those commands directly trigger cmd_* actions
+_simple_dispatch = set()
+
+def cmd(expected_args):
+    def deco(func):
+        name = func.__name__[4:]
+        _simple_dispatch.add(name)
+        def f(bot, chan, args):
+            if(len(args) == expected_args):
+                return func(bot, chan, args)
+        return f
+    return deco
 
 class TimeSlice():
 
@@ -158,21 +168,6 @@ class Tofbot(Bot):
         self.msgMemory = []
         self.lolRate = [TimeSlice()]
 
-    # those commands directly trigger cmd_* actions
-    _simple_dispatch = set(('help'
-                          , 'fortune'
-                          , 'blague'
-                          , 'chuck'
-                          , 'tofade'
-                          , 'tofme'
-                          , 'devinette'
-                          , 'get'
-                          , 'set'
-                          , 'ping'
-                          , 'contrepetrie'
-                          , 'lulz'
-                          ))
-    
     # line-feed-safe
     def msg(self, chan, msg):
         for m in msg.split("\n"):
@@ -266,7 +261,7 @@ class Tofbot(Bot):
             
             cmd = cmd[1:]
 
-            if cmd in self._simple_dispatch:
+            if cmd in _simple_dispatch:
                 action = getattr(self, "cmd_" + cmd)
                 action(self.channels[0], msg[1:])
             elif cmd == 'context':
@@ -294,66 +289,67 @@ class Tofbot(Bot):
     def active_riddle(self):
         return (hasattr(self, 'devinette') and self.devinette is not None)
     
+    @cmd(1)
     def cmd_ping(self, chan, args):
-        if i_have(1, args):
-            who = args[0]
-            if who in self.pings:
-                self.msg(chan, 
-                    "Last message from %s was on %s (btw my local time is %s)" % 
-                    (who, self.pings[who].__str__(), datetime.now().__str__() ))
-            else:
-                self.msg(chan, "I havn't seen any message from " + who)
+        who = args[0]
+        if who in self.pings:
+            self.msg(chan, 
+                "Last message from %s was on %s (btw my local time is %s)" % 
+                (who, self.pings[who].__str__(), datetime.now().__str__() ))
+        else:
+            self.msg(chan, "I havn't seen any message from " + who)
 
+    @cmd(0)
     def cmd_blague(self, chan, args):
-        if i_have(0, args):
-            self.msg(chan, self._jokes())
+        self.msg(chan, self._jokes())
 
+    @cmd(0)
     def cmd_fortune(self, chan, args):
-        if i_have(0, args):
-            self.msg(chan, self._fortunes())
+        self.msg(chan, self._fortunes())
 
+    @cmd(0)
     def cmd_chuck(self, chan, args):
-        if i_have(0, args):
-            self.msg(chan, self._chuck())
+        self.msg(chan, self._chuck())
 
+    @cmd(0)
     def cmd_tofade(self, chan, args):
-        if i_have(0, args):
-            self.msg(chan, self._tofades())
+        self.msg(chan, self._tofades())
             
+    @cmd(0)
     def cmd_contrepetrie(self, chan, args):
-        if i_have(0, args):
-            self.msg(chan, self._contrepetries())
+        self.msg(chan, self._contrepetries())
 
+    @cmd(1)
     def cmd_tofme(self, chan, args):
-        if i_have(1, args):
-            who = args[0]
-            self.msg(chan, "%s : %s" % (who, self._tofades()))
+        who = args[0]
+        self.msg(chan, "%s : %s" % (who, self._tofades()))
 
+    @cmd(0)
     def cmd_devinette(self, chan, args):
-        if i_have(0, args) and not self.active_riddle():
+        if not self.active_riddle():
             self.devinette = self.random_riddle(chan)
 
+    @cmd(0)
     def cmd_lulz(self, chan, args):
-        if i_have(0, args):
-            for lolade in self.lolRate:
-                self.msg(chan, str(lolade))
+        for lolade in self.lolRate:
+            self.msg(chan, str(lolade))
 
+    @cmd(1)
     def cmd_get(self, chan, args):
-        if i_have(1, args):
-            key = args[0]
-            value = self.safe_getattr(key)
-            if value is None:
-                self.msg(chan, "Ne touche pas à mes parties privées !")
-            else:
-                self.msg(chan, "%s = %s" % (key, value))
+        key = args[0]
+        value = self.safe_getattr(key)
+        if value is None:
+            self.msg(chan, "Ne touche pas à mes parties privées !")
+        else:
+            self.msg(chan, "%s = %s" % (key, value))
 
+    @cmd(2)
     def cmd_set(self, chan, args):
-        if i_have(2, args):
-            key = args[0]
-            value = args[1]
-            ok = self.safe_setattr(key, value)
-            if not ok:
-                self.msg(chan, "N'écris pas sur mes parties privées !")
+        key = args[0]
+        value = args[1]
+        ok = self.safe_setattr(key, value)
+        if not ok:
+            self.msg(chan, "N'écris pas sur mes parties privées !")
 
     def send_context(self, to):
         intro = "Last " + str(len(self.msgMemory)) + " messages sent on " + self.channels[0] + " :"
@@ -362,14 +358,15 @@ class Tofbot(Bot):
         for msg in self.msgMemory:
             self.msg(to, msg)
 
+    @cmd(0)
     def cmd_help(self, chan, args):
-        if i_have(0, args):
-            commands = ['!' + cmd for cmd in self._simple_dispatch]
-            commands.append("!context")
-            self.msg(chan, "Commands should be entered in the channel or by private message")
-            self.msg(chan, "Available commands : " + ' '.join(commands))
-            self.msg(chan, "you can also !get or !set " + ", ".join(self._mutable_attributes.keys()))
-            self.msg(chan, "If random-tofades are boring you, enter 'TG " + self.nick + "' (but can be cancelled by GG " + self.nick + ")")
+        commands = ['!' + cmd for cmd in _simple_dispatch]
+        commands.append("!context")
+        self.msg(chan, "Commands should be entered in the channel or by private message")
+        self.msg(chan, "Available commands : " + ' '.join(commands))
+        self.msg(chan, "you can also !get or !set " + ", ".join(self._mutable_attributes.keys()))
+        self.msg(chan, "If random-tofades are boring you, enter 'TG " + self.nick + "'")
+        self.msg(chan, "If random-tofades are boring you, enter 'TG " + self.nick + "' (but can be cancelled by GG " + self.nick + ")")
 
     def random_riddle(self, chan):
         riddle = self._riddles()
