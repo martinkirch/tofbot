@@ -20,6 +20,7 @@ from contrepetries import contrepetries
 import time
 import random
 import sys
+import re
 
 random.seed()
 
@@ -67,12 +68,14 @@ class TimeSlice():
         t = datetime.now()
         self.date = t.date()
         self.hour = t.hour
+        self.count = 0
 
     def __str__(self):
-        return "%s %02dh-%02dh" % ( self.date.strftime("%d %b")
-                                  , self.hour
-                                  , self.hour+1 % 24
-                                  )
+        return "%s %02dh-%02dh : %d lolz" % ( self.date.strftime("%d %b")
+                                            , self.hour
+                                            , self.hour+1 % 24
+                                            , self.count
+                                            )
 
     def __cmp__(self, other):
         return cmp ( (self.date, self.hour)
@@ -81,6 +84,11 @@ class TimeSlice():
 
     def __hash__(self):
         return hash(self.date) + hash(self.hour)
+        
+    def __iadd__(self, other):
+        self.count += other
+        return self
+    
 
 class RiddleTeller(object):
     """
@@ -155,12 +163,10 @@ class Tofbot(Bot):
         self.TGtime = 5
         self.lastTGtofbot = 0
         self.pings = {}
-
-        # TODO Ideally, this should be serialized
-        self.lolRate = {}
-        
         self.memoryDepth = 20
+        self.lolRateDepth = 8
         self.msgMemory = []
+        self.lolRate = [TimeSlice()]
 
     # line-feed-safe
     def msg(self, chan, msg):
@@ -208,6 +214,9 @@ class Tofbot(Bot):
             if msg_text.strip() == "TG " + self.nick:
                 self.lastTGtofbot = time.time()
 
+            if msg_text.strip() == "GG " + self.nick:
+                self.lastTGtofbot = 0
+
             if (random.randint(0, 100) > self.autoTofadeThreshold and 
                 (time.time() - self.lastTGtofbot) >= (self.TGtime * 60)):
                 self.cmd_tofme(chan, [senderNick])
@@ -219,18 +228,29 @@ class Tofbot(Bot):
 
             if len(cmd) == 0:
                 return
-
-            if "lol" in cmd:
+            
+            lulz = len(re.findall("[Ll]+[oO]+[Ll]+", msg_text))
+            if lulz > 0:
                 ts = TimeSlice()
-                if not ts in self.lolRate:
-                    self.lolRate[ts] = 0
-                self.lolRate[ts] += 1
+                if ts != self.lolRate[0]:
+                    self.lolRate.insert(0,ts)
+                    
+                if len(self.lolRate) > self.lolRateDepth:
+                    self.lolRate.pop()
+                    
+                self.lolRate[0] += lulz
 
+            if msg[0:2] == ['donnez', 'moi'] and msg[2] in ('un', 'une'):
+                what = msg[3]
+                for m in what:
+                    self.msg(chan, m.upper())
+                    time.sleep(0.5)
+            
             if chan == self.channels[0] and cmd[0] != '!':
                 self.msgMemory.append("<" + senderNick + "> " + msg_text)
                 if len(self.msgMemory) > self.memoryDepth:
                     del self.msgMemory[0]
-            
+
             if cmd[0] != '!':
                 return
             
@@ -306,8 +326,8 @@ class Tofbot(Bot):
 
     @cmd(0)
     def cmd_lulz(self, chan, args):
-        for k, v in self.lolRate.items():
-            self.msg(chan, "%s => %d" % (k, v))
+        for lolade in self.lolRate:
+            self.msg(chan, str(lolade))
 
     @cmd(1)
     def cmd_get(self, chan, args):
@@ -341,6 +361,7 @@ class Tofbot(Bot):
         self.msg(chan, "Available commands : " + ' '.join(commands))
         self.msg(chan, "you can also !get or !set " + ", ".join(self._mutable_attributes.keys()))
         self.msg(chan, "If random-tofades are boring you, enter 'TG " + self.nick + "'")
+        self.msg(chan, "If random-tofades are boring you, enter 'TG " + self.nick + "' (but can be cancelled by GG " + self.nick + ")")
 
     def random_riddle(self, chan):
         riddle = self._riddles()
