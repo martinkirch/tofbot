@@ -202,6 +202,11 @@ class Tofbot(Bot):
             else:
                 self.cmd_tofme(chan, [senderNick])
         
+        elif commandType == 'KICK':
+            chan = args[2]
+            self.write(('JOIN', chan))
+            self.msg(chan, 'respawn, LOL')
+
         elif commandType == 'PRIVMSG':
             msg_text = args[0]
             msg = msg_text.split(" ")
