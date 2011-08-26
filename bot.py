@@ -208,7 +208,7 @@ class Tofbot(Bot):
             else:
                 self.cmd_tofme(chan, [senderNick])
         
-        elif commandType == 'KICK':
+        elif commandType == 'KICK' and args[0] == self.nick:
             chan = args[2]
             self.write(('JOIN', chan))
             self.msg(chan, 'respawn, LOL')
