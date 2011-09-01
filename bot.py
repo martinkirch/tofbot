@@ -246,7 +246,7 @@ class Tofbot(Bot):
                 self.lolRate[0] += lulz
 
             if msg[0:2] == ['donnez', 'moi'] and msg[2] in ('un', 'une'):
-                what = msg[3]
+                what = ' '.join(msg[3:])
                 for m in what:
                     self.msg(chan, m.upper())
                     time.sleep(0.5)
