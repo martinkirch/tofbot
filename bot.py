@@ -365,7 +365,6 @@ class Tofbot(Bot):
         self.msg(chan, "Commands should be entered in the channel or by private message")
         self.msg(chan, "Available commands : " + ' '.join(commands))
         self.msg(chan, "you can also !get or !set " + ", ".join(self._mutable_attributes.keys()))
-        self.msg(chan, "If random-tofades are boring you, enter 'TG " + self.nick + "'")
         self.msg(chan, "If random-tofades are boring you, enter 'TG " + self.nick + "' (but can be cancelled by GG " + self.nick + ")")
 
     def random_riddle(self, chan):
