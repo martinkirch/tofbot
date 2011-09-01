@@ -248,7 +248,7 @@ class Tofbot(Bot):
             if msg[0:2] == ['donnez', 'moi'] and msg[2] in ('un', 'une'):
                 what = ' '.join(msg[3:])
                 for m in what:
-                    self.msg(chan, m.upper())
+                    self.msg(self.channels[0], m.upper())
                     time.sleep(0.5)
             
             if chan == self.channels[0] and cmd[0] != '!':
