@@ -171,7 +171,7 @@ class Tofbot(Bot):
     # line-feed-safe
     def msg(self, chan, msg):
         for m in msg.split("\n"):
-            self.write(('PRIVMSG', chan), msg)
+            Bot.msg(self, chan, m)
         
     def log(self, msg):
         if self.debug:
@@ -246,9 +246,9 @@ class Tofbot(Bot):
                 self.lolRate[0] += lulz
 
             if msg[0:2] == ['donnez', 'moi'] and msg[2] in ('un', 'une'):
-                what = msg[3]
+                what = ' '.join(msg[3:])
                 for m in what:
-                    self.msg(chan, m.upper())
+                    self.msg(self.channels[0], m.upper())
                     time.sleep(0.5)
             
             if chan == self.channels[0] and cmd[0] != '!':
@@ -365,7 +365,6 @@ class Tofbot(Bot):
         self.msg(chan, "Commands should be entered in the channel or by private message")
         self.msg(chan, "Available commands : " + ' '.join(commands))
         self.msg(chan, "you can also !get or !set " + ", ".join(self._mutable_attributes.keys()))
-        self.msg(chan, "If random-tofades are boring you, enter 'TG " + self.nick + "'")
         self.msg(chan, "If random-tofades are boring you, enter 'TG " + self.nick + "' (but can be cancelled by GG " + self.nick + ")")
 
     def random_riddle(self, chan):
