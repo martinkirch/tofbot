@@ -21,6 +21,7 @@ import time
 import random
 import sys
 import re
+import urllib2
 
 random.seed()
 
@@ -167,6 +168,8 @@ class Tofbot(Bot):
         self.lolRateDepth = 8
         self.msgMemory = []
         self.lolRate = [TimeSlice()]
+        self._eulerScores = {}
+        self._eulerNicks = set()
 
     # line-feed-safe
     def msg(self, chan, msg):
@@ -350,6 +353,23 @@ class Tofbot(Bot):
         ok = self.safe_setattr(key, value)
         if not ok:
             self.msg(chan, "N'écris pas sur mes parties privées !")
+
+    def euler_update_data(self):
+        for nick in self._eulerNicks:
+            url = "http://projecteuler.net/profile/%s.txt" % nick
+            s = urllib2.urlopen(url).read().split(',')
+            self._eulerScores[nick] = s[3]
+
+    @cmd(0)
+    def cmd_euler(self, chan, args):
+        self.euler_update_data()
+        for nick, score in self._eulerScores.items():
+            self.msg(chan, "%s : %s" %(nick, score))
+
+    @cmd(1)
+    def cmd_euler_add(self, chan, args):
+        who = args[0]
+        self._eulerNicks.add(who)
 
     def send_context(self, to):
         intro = "Last " + str(len(self.msgMemory)) + " messages sent on " + self.channels[0] + " :"
