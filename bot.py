@@ -24,36 +24,11 @@ import re
 import os
 import plugins
 import types
-from toflib import cmd, _simple_dispatch
+from toflib import cmd, _simple_dispatch, distance
 
 import plugins.euler
 
 random.seed()
-
-def distance(string1, string2):
-    """
-    Levenshtein distance
-    http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance#Python
-    """
-    string1 = ' ' + string1
-    string2 = ' ' + string2
-    dists = {}
-    len1 = len(string1)
-    len2 = len(string2)
-    for i in range(len1):
-        dists[i, 0] = i
-    for j in range (len2):
-        dists[0, j] = j
-    for j in range(1, len2):
-        for i in range(1, len1):
-            if string1[i] == string2[j]:
-                dists[i, j] = dists[i-1, j-1]
-            else:
-                dists[i, j] = min(dists[i-1, j] + 1,
-                                  dists[i, j-1] + 1,
-                                  dists[i-1, j-1] + 1
-                                 )
-    return dists[len1-1, len2-1]
 
 class TimeSlice():
 
