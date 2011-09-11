@@ -27,6 +27,7 @@ from toflib import cmd, _simple_dispatch, distance
 
 import plugins.euler
 import plugins.lolrate
+import plugins.donnezmoi
 
 random.seed()
 
@@ -195,12 +196,6 @@ class Tofbot(Bot):
                 if hasattr(p, 'handle_msg'):
                     p.handle_msg(msg_text)
 
-            if msg[0:2] == ['donnez', 'moi'] and msg[2] in ('un', 'une'):
-                what = ' '.join(msg[3:])
-                for m in what:
-                    self.msg(self.channels[0], m.upper())
-                    time.sleep(0.5)
-            
             if chan == self.channels[0] and cmd[0] != '!':
                 self.msgMemory.append("<" + senderNick + "> " + msg_text)
                 if len(self.msgMemory) > self.memoryDepth:
