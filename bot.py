@@ -20,43 +20,15 @@ from contrepetries import contrepetries
 import time
 import random
 import sys
-import re
 import os
 import plugins
 import types
 from toflib import cmd, _simple_dispatch, distance
 
 import plugins.euler
+import plugins.lolrate
 
 random.seed()
-
-class TimeSlice():
-
-    def __init__(self):
-        t = datetime.now()
-        self.date = t.date()
-        self.hour = t.hour
-        self.count = 0
-
-    def __str__(self):
-        return "%s %02dh-%02dh : %d lolz" % ( self.date.strftime("%d %b")
-                                            , self.hour
-                                            , self.hour+1 % 24
-                                            , self.count
-                                            )
-
-    def __cmp__(self, other):
-        return cmp ( (self.date, self.hour)
-                   , (other.date, other.hour)
-                   )
-
-    def __hash__(self):
-        return hash(self.date) + hash(self.hour)
-        
-    def __iadd__(self, other):
-        self.count += other
-        return self
-    
 
 class RiddleTeller(object):
     """
@@ -134,7 +106,6 @@ class Tofbot(Bot):
         self.memoryDepth = 20
         self.lolRateDepth = 8
         self.msgMemory = []
-        self.lolRate = [TimeSlice()]
         self.plugins = self.load_plugins()
 
     def load_plugins(self):
@@ -149,8 +120,9 @@ class Tofbot(Bot):
                 c = getattr(plugin, n)
                 if type(c) != types.ClassType:
                     continue
-                instance = c(self)
-                plugin_instances.append(instance)
+                if c.__name__.startswith('Plugin'):
+                    instance = c(self)
+                    plugin_instances.append(instance)
         return plugin_instances
 
     # line-feed-safe
@@ -218,17 +190,10 @@ class Tofbot(Bot):
 
             if len(cmd) == 0:
                 return
-            
-            lulz = len(re.findall("[Ll]+[oO]+[Ll]+", msg_text))
-            if lulz > 0:
-                ts = TimeSlice()
-                if ts != self.lolRate[0]:
-                    self.lolRate.insert(0,ts)
-                    
-                if len(self.lolRate) > self.lolRateDepth:
-                    self.lolRate.pop()
-                    
-                self.lolRate[0] += lulz
+
+            for p in self.plugins:
+                if hasattr(p, 'handle_msg'):
+                    p.handle_msg(msg_text)
 
             if msg[0:2] == ['donnez', 'moi'] and msg[2] in ('un', 'une'):
                 what = ' '.join(msg[3:])
@@ -323,11 +288,6 @@ class Tofbot(Bot):
     def cmd_devinette(self, chan, args):
         if not self.active_riddle():
             self.devinette = self.random_riddle(chan)
-
-    @cmd(0)
-    def cmd_lulz(self, chan, args):
-        for lolade in self.lolRate:
-            self.msg(chan, str(lolade))
 
     @cmd(1)
     def cmd_get(self, chan, args):
