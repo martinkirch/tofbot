@@ -22,6 +22,9 @@ import random
 import sys
 import re
 import urllib2
+import os
+import plugins
+import types
 
 random.seed()
 
@@ -137,6 +140,22 @@ class InnocentHand(object):
         random.seed()
         return random.choice(self.pool)
 
+def load_plugins():
+    d = os.path.dirname(__file__)
+    plugindir = os.path.join(d, 'plugins')
+    plugin_instances = []
+    for m in dir(plugins):
+        if type(getattr(plugins,m)) != types.ModuleType:
+            continue
+        plugin = getattr(plugins, m)
+        for n in dir(plugin):
+            c = getattr(plugin, n)
+            if type(c) != types.ClassType:
+                continue
+            instance = c()
+            plugin_instances.append(instance)
+    return plugin_instances
+
 class Tofbot(Bot):
 
     # Those attributes are published and can be changed by irc users
@@ -170,6 +189,7 @@ class Tofbot(Bot):
         self.lolRate = [TimeSlice()]
         self._eulerScores = {}
         self._eulerNicks = set()
+        self.plugins = load_plugins()
 
     # line-feed-safe
     def msg(self, chan, msg):
