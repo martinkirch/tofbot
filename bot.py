@@ -21,10 +21,12 @@ import time
 import random
 import sys
 import re
-import urllib2
 import os
 import plugins
 import types
+from toflib import cmd, _simple_dispatch
+
+import plugins.euler
 
 random.seed()
 
@@ -52,19 +54,6 @@ def distance(string1, string2):
                                   dists[i-1, j-1] + 1
                                  )
     return dists[len1-1, len2-1]
-
-# those commands directly trigger cmd_* actions
-_simple_dispatch = set()
-
-def cmd(expected_args):
-    def deco(func):
-        name = func.__name__[4:]
-        _simple_dispatch.add(name)
-        def f(bot, chan, args):
-            if(len(args) == expected_args):
-                return func(bot, chan, args)
-        return f
-    return deco
 
 class TimeSlice():
 
@@ -140,22 +129,6 @@ class InnocentHand(object):
         random.seed()
         return random.choice(self.pool)
 
-def load_plugins():
-    d = os.path.dirname(__file__)
-    plugindir = os.path.join(d, 'plugins')
-    plugin_instances = []
-    for m in dir(plugins):
-        if type(getattr(plugins,m)) != types.ModuleType:
-            continue
-        plugin = getattr(plugins, m)
-        for n in dir(plugin):
-            c = getattr(plugin, n)
-            if type(c) != types.ClassType:
-                continue
-            instance = c()
-            plugin_instances.append(instance)
-    return plugin_instances
-
 class Tofbot(Bot):
 
     # Those attributes are published and can be changed by irc users
@@ -187,9 +160,23 @@ class Tofbot(Bot):
         self.lolRateDepth = 8
         self.msgMemory = []
         self.lolRate = [TimeSlice()]
-        self._eulerScores = {}
-        self._eulerNicks = set()
-        self.plugins = load_plugins()
+        self.plugins = self.load_plugins()
+
+    def load_plugins(self):
+        d = os.path.dirname(__file__)
+        plugindir = os.path.join(d, 'plugins')
+        plugin_instances = []
+        for m in dir(plugins):
+            if type(getattr(plugins,m)) != types.ModuleType:
+                continue
+            plugin = getattr(plugins, m)
+            for n in dir(plugin):
+                c = getattr(plugin, n)
+                if type(c) != types.ClassType:
+                    continue
+                instance = c(self)
+                plugin_instances.append(instance)
+        return plugin_instances
 
     # line-feed-safe
     def msg(self, chan, msg):
@@ -285,10 +272,20 @@ class Tofbot(Bot):
             cmd = cmd[1:]
 
             if cmd in _simple_dispatch:
-                action = getattr(self, "cmd_" + cmd)
-                action(self.channels[0], msg[1:])
+                self.call_cmd_action("cmd_" + cmd, msg[1:])
             elif cmd == 'context':
                 self.send_context(senderNick)
+
+    def call_cmd_action(self, cmd_name, args):
+        targets = self.plugins
+        targets.insert(0, self)
+        found = False
+
+        for t in targets:
+            if (hasattr(t, cmd_name)):
+                action = getattr(t, cmd_name)
+                action(self.channels[0], args)
+                break
 
     def safe_getattr(self, key):
         if key not in self._mutable_attributes:
@@ -373,24 +370,6 @@ class Tofbot(Bot):
         ok = self.safe_setattr(key, value)
         if not ok:
             self.msg(chan, "N'écris pas sur mes parties privées !")
-
-    def euler_update_data(self):
-        for nick in self._eulerNicks:
-            url = "http://projecteuler.net/profile/%s.txt" % nick
-            s = urllib2.urlopen(url).read().split(',')
-            if(len(s) >= 4):
-                self._eulerScores[nick] = s[3]
-
-    @cmd(0)
-    def cmd_euler(self, chan, args):
-        self.euler_update_data()
-        for nick, score in self._eulerScores.items():
-            self.msg(chan, "%s : %s" %(nick, score))
-
-    @cmd(1)
-    def cmd_euler_add(self, chan, args):
-        who = args[0]
-        self._eulerNicks.add(who)
 
     def send_context(self, to):
         intro = "Last " + str(len(self.msgMemory)) + " messages sent on " + self.channels[0] + " :"
