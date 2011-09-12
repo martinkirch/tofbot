@@ -11,12 +11,6 @@ Tofbot will connect to freenode.net
 
 from datetime import datetime
 from irc import Bot
-from jokes import jokes
-from chucknorris import chuckNorrisFacts
-from riddles import riddles
-from tofades import tofades
-from fortunes import fortunes
-from contrepetries import contrepetries
 import time
 import random
 import sys
@@ -28,6 +22,7 @@ from toflib import cmd, _simple_dispatch, distance, InnocentHand, RiddleTeller
 import plugins.euler
 import plugins.lolrate
 import plugins.donnezmoi
+import plugins.jokes
 
 random.seed()
 
@@ -37,20 +32,12 @@ class Tofbot(Bot):
     # value is a str to object converter. It could do sanitization:
     # if value is incorrect, raise ValueError
     _mutable_attributes = {
-        "autoTofadeThreshold": int ,
-        "riddleMaxDist": int,
         "TGtime":int,
         "memoryDepth":int
     }
 
     def __init__(self, nick, name, channels, password=None, debug=True):
         Bot.__init__(self, nick, name, channels, password)
-        self._jokes = InnocentHand(jokes)
-        self._chuck = InnocentHand(chuckNorrisFacts)
-        self._tofades = InnocentHand(tofades)
-        self._riddles = InnocentHand(riddles)
-        self._fortunes = InnocentHand(fortunes)
-        self._contrepetries = InnocentHand(contrepetries)
         self.joined = False
         self.autoTofadeThreshold = 98
         self.riddleMaxDist = 2
@@ -109,12 +96,10 @@ class Tofbot(Bot):
             return
 
         if commandType == 'JOIN':
-            chan = args[0]
-            if senderNick == self.nick:
-                self.cmd_tofade(chan, [])
-            else:
-                self.cmd_tofme(chan, [senderNick])
-        
+            for p in self.plugins:
+                if hasattr(p, 'handle_join'):
+                    p.handle_join(args[0], senderNick)
+
         elif commandType == 'KICK' and args[0] == self.nick:
             chan = args[2]
             self.write(('JOIN', chan))
@@ -134,21 +119,12 @@ class Tofbot(Bot):
             if msg_text.strip() == "GG " + self.nick:
                 self.lastTGtofbot = 0
 
-            if (random.randint(0, 100) > self.autoTofadeThreshold and 
-                (time.time() - self.lastTGtofbot) >= (self.TGtime * 60)):
-                self.cmd_tofme(chan, [senderNick])
-                
-            if self.active_riddle():
-                itsOver = self.devinette.wait_answer(chan, msg_text)
-                if itsOver:
-                    self.devinette = None
-
             if len(cmd) == 0:
                 return
 
             for p in self.plugins:
                 if hasattr(p, 'handle_msg'):
-                    p.handle_msg(msg_text)
+                    p.handle_msg(msg_text, chan)
 
             if chan == self.channels[0] and cmd[0] != '!':
                 self.msgMemory.append("<" + senderNick + "> " + msg_text)
@@ -195,9 +171,6 @@ class Tofbot(Bot):
         except ValueError:
             pass
 
-    def active_riddle(self):
-        return (hasattr(self, 'devinette') and self.devinette is not None)
-    
     @cmd(1)
     def cmd_ping(self, chan, args):
         who = args[0]
@@ -207,36 +180,6 @@ class Tofbot(Bot):
                 (who, self.pings[who].__str__(), datetime.now().__str__() ))
         else:
             self.msg(chan, "I havn't seen any message from " + who)
-
-    @cmd(0)
-    def cmd_blague(self, chan, args):
-        self.msg(chan, self._jokes())
-
-    @cmd(0)
-    def cmd_fortune(self, chan, args):
-        self.msg(chan, self._fortunes())
-
-    @cmd(0)
-    def cmd_chuck(self, chan, args):
-        self.msg(chan, self._chuck())
-
-    @cmd(0)
-    def cmd_tofade(self, chan, args):
-        self.msg(chan, self._tofades())
-            
-    @cmd(0)
-    def cmd_contrepetrie(self, chan, args):
-        self.msg(chan, self._contrepetries())
-
-    @cmd(1)
-    def cmd_tofme(self, chan, args):
-        who = args[0]
-        self.msg(chan, "%s : %s" % (who, self._tofades()))
-
-    @cmd(0)
-    def cmd_devinette(self, chan, args):
-        if not self.active_riddle():
-            self.devinette = self.random_riddle(chan)
 
     @cmd(1)
     def cmd_get(self, chan, args):
@@ -270,14 +213,6 @@ class Tofbot(Bot):
         self.msg(chan, "Available commands : " + ' '.join(commands))
         self.msg(chan, "you can also !get or !set " + ", ".join(self._mutable_attributes.keys()))
         self.msg(chan, "If random-tofades are boring you, enter 'TG " + self.nick + "' (but can be cancelled by GG " + self.nick + ")")
-
-    def random_riddle(self, chan):
-        riddle = self._riddles()
-        r = RiddleTeller (riddle,
-                          chan,
-                          lambda msg: self.msg(chan, msg),
-                          self.riddleMaxDist)
-        return r
 
 if __name__ == "__main__":
     if len(sys.argv) > 2:
