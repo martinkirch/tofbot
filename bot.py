@@ -23,59 +23,13 @@ import sys
 import os
 import plugins
 import types
-from toflib import cmd, _simple_dispatch, distance
+from toflib import cmd, _simple_dispatch, distance, InnocentHand, RiddleTeller
 
 import plugins.euler
 import plugins.lolrate
 import plugins.donnezmoi
 
 random.seed()
-
-class RiddleTeller(object):
-    """
-    A gentleman (and a scholar) who likes to entertain its audience.
-    """
-
-    def __init__(self, riddle, channel, writeback, max_dist):
-        self.riddle, self.answer = riddle
-        self.channel = channel
-        self.writeback = writeback
-        self.remaining_msgs = 3
-        self.writeback(self.riddle)
-        self.max_dist = max_dist
-
-    def wait_answer(self, chan, msg):
-        """
-        Called at each try.
-        Returns True iff the riddle is over.
-        """
-        if chan != self.channel:
-            return False
-        if distance(msg.lower(), self.answer.lower()) < self.max_dist:
-            self.writeback("10 points pour Griffondor.")
-            return True
-        self.remaining_msgs -= 1
-        if self.remaining_msgs == 0:
-            self.writeback(self.answer)
-            return True
-        return False
-
-class InnocentHand(object):
-    """
-    A cute 6 years old girl, picking a random object
-    from a given pool of candidates
-    """
-    def __init__(self, pool):
-        """
-        pool: list of candidates
-        """
-        self.pool = pool
-
-    def __call__(self, index=None):
-        if index:
-            return self.pool[index % len(self.pool)]
-        random.seed()
-        return random.choice(self.pool)
 
 class Tofbot(Bot):
 
