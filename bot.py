@@ -9,7 +9,7 @@ Don't prepend a # to chan names
 Tofbot will connect to freenode.net
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from irc import Bot
 import time
 import random
@@ -19,27 +19,14 @@ import plugins
 import types
 from toflib import cmd, _simple_dispatch, distance, InnocentHand, RiddleTeller
 import re
-import urllib2
-import json
 
 import plugins.euler
 import plugins.lolrate
 import plugins.donnezmoi
 import plugins.jokes
+import plugins.twitter
 
 random.seed()
-
-def lastTweet(user):
-    """
-    Returns the last tweet of the given user (None if problem)
-    """
-    request = "http://api.twitter.com/1/users/show.json?screen_name=" + user
-    try:
-        answer = urllib2.urlopen(request)
-        answer_data = json.load(answer)
-        return answer_data["status"]["text"]
-    except: # too many things can go wrong to catch explicitly
-        return None
 
 class Tofbot(Bot):
 
@@ -63,11 +50,6 @@ class Tofbot(Bot):
         self.memoryDepth = 20
         self.lolRateDepth = 8
         self.msgMemory = []
-        self._twitter = {
-                "tweet": "",
-                "time": datetime.min,
-                "frequency": timedelta(minutes=10)
-                }
         self.plugins = self.load_plugins()
 
     def load_plugins(self):
@@ -145,14 +127,6 @@ class Tofbot(Bot):
             for p in self.plugins:
                 if hasattr(p, 'handle_msg'):
                     p.handle_msg(msg_text, chan)
-
-            if datetime.now() - self._twitter["time"] > self._twitter["frequency"]:
-                tweet = lastTweet("mickaelistria")
-                if tweet != self._twitter["tweet"]:
-                    self._twitter["tweet"] = tweet
-                    print "tweet = %s" % tweet
-                    self.msg(self.channels[0], "A new tweet from @mickaelistria!")
-                    self.msg(self.channels[0], tweet)
 
             if chan == self.channels[0] and cmd[0] != '!':
                 self.msgMemory.append("<" + senderNick + "> " + msg_text)
