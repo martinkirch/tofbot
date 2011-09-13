@@ -22,8 +22,21 @@ import random
 import sys
 import re
 import urllib2
+import json
 
 random.seed()
+
+def lastTweet(user):
+    """
+    Returns the last tweet of the given user (None if problem)
+    """
+    request = "http://api.twitter.com/1/users/show.json?screen_name=" + user
+    try:
+        answer = urllib2.urlopen(request)
+        answer_data = json.load(answer)
+        return answer_data["status"]["text"]
+    except: # too many things can go wrong to catch explicitly
+        return None
 
 def distance(string1, string2):
     """
@@ -170,6 +183,11 @@ class Tofbot(Bot):
         self.lolRate = [TimeSlice()]
         self._eulerScores = {}
         self._eulerNicks = set()
+        self._twitter = {
+                "tweet": ""
+                "time": datetime.min
+                "frequency": datetime.timedelta(minutes=10)
+                }
 
     # line-feed-safe
     def msg(self, chan, msg):
@@ -269,6 +287,13 @@ class Tofbot(Bot):
                 action(self.channels[0], msg[1:])
             elif cmd == 'context':
                 self.send_context(senderNick)
+
+        if datetime.now() - self._twitter["time"] > self._twitter["frequency"]:
+            tweet = lastTweet("mickaelistria")
+            if tweet != self._twitter["tweet"]:
+                self._twitter["tweet"] = tweet
+                self.msg(self.channels[0], "A new tweet from @mickaelistria!")
+                self.msg(self.channels[0], tweet)
 
     def safe_getattr(self, key):
         if key not in self._mutable_attributes:
