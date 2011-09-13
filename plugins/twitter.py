@@ -24,7 +24,7 @@ class PluginTwitter:
         self.time = datetime.min
         self.frequency = timedelta(minutes=10)
 
-    def handle_msg(self, msg_text, chan):
+    def handle_msg(self, msg_text, chan, nick):
         if self.user is not None and datetime.now() - self.time > self.frequency:
             tweet = lastTweet(self.user)
             if tweet is not None and tweet != self.tweet:

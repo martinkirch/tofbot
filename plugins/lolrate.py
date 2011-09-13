@@ -36,7 +36,7 @@ class PluginLolrate:
         self.lolRate = [TimeSlice()]
         self.bot._mutable_attributes['lolRateDepth'] = int
 
-    def handle_msg(self, msg_text, chan):
+    def handle_msg(self, msg_text, chan, nick):
         lulz = len(re.findall("[Ll]+[oO]+[Ll]+", msg_text))
         if lulz > 0:
             ts = TimeSlice()

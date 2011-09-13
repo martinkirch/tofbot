@@ -55,9 +55,9 @@ class PluginJokes:
         if nick == self.bot.nick:
             self.cmd_tofade(chan, [])
         else:
-            self.cmd_tofme(chan, [senderNick])
+            self.cmd_tofme(chan, [nick])
         
-    def handle_msg(self, msg_text, chan):
+    def handle_msg(self, msg_text, chan, nick):
         if self.active_riddle():
             itsOver = self.devinette.wait_answer(chan, msg_text)
             if itsOver:
@@ -65,7 +65,7 @@ class PluginJokes:
 
         if (random.randint(0, 100) > self.bot.autoTofadeThreshold and 
             (time.time() - self.lastTGtofbot) >= (self.TGtime * 60)):
-            self.cmd_tofme(chan, [senderNick])
+            self.cmd_tofme(chan, [nick])
 
 
     def active_riddle(self):

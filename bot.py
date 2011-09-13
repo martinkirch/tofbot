@@ -126,7 +126,7 @@ class Tofbot(Bot):
 
             for p in self.plugins:
                 if hasattr(p, 'handle_msg'):
-                    p.handle_msg(msg_text, chan)
+                    p.handle_msg(msg_text, chan, senderNick)
 
             if chan == self.channels[0] and cmd[0] != '!':
                 self.msgMemory.append("<" + senderNick + "> " + msg_text)
