@@ -64,7 +64,7 @@ class PluginJokes:
                 self.devinette = None
 
         if (random.randint(0, 100) > self.bot.autoTofadeThreshold and 
-            (time.time() - self.lastTGtofbot) >= (self.TGtime * 60)):
+            (time.time() - self.bot.lastTGtofbot) >= (self.bot.TGtime * 60)):
             self.cmd_tofme(chan, [nick])
 
 
