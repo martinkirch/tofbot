@@ -25,6 +25,7 @@ import plugins.lolrate
 import plugins.donnezmoi
 import plugins.jokes
 import plugins.twitter
+import plugins.dassin
 
 random.seed()
 
