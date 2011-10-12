@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from toflib import cmd
+from toflib import cmd, Plugin
 import json
 import urllib2
 
@@ -15,10 +15,10 @@ def lastTweet(user):
     except: # too many things can go wrong to catch explicitly
         return None
 
-class PluginTwitter:
+class PluginTwitter(Plugin):
 
     def __init__(self, bot):
-        self.bot = bot
+        Plugin.__init__(self, bot)
         self.user = None
         self.tweet = None
         self.time = datetime.min
@@ -29,7 +29,7 @@ class PluginTwitter:
             tweet = lastTweet(self.user)
             if tweet is not None and tweet != self.tweet:
                 self.tweet = tweet
-                self.bot.msg(chan, "@%s: %s" % (self.user, tweet))
+                self.say("@%s: %s" % (self.user, tweet))
 
     @cmd(1)
     def cmd_twitter_track(self, chan, args):

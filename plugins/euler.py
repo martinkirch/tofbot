@@ -1,10 +1,10 @@
-from toflib import cmd
+from toflib import cmd, Plugin
 import urllib2
 
-class PluginEuler:
+class PluginEuler(Plugin):
 
     def __init__(self, bot):
-        self.bot = bot
+        Plugin.__init__(self, bot)
         self._eulerScores = {}
         self._eulerNicks = set()
 
@@ -19,7 +19,7 @@ class PluginEuler:
     def cmd_euler(self, chan, args):
         self.euler_update_data()
         for nick, score in self._eulerScores.items():
-            self.bot.msg(chan, "%s : %s" %(nick, score))
+            self.say("%s : %s" %(nick, score))
 
     @cmd(1)
     def cmd_euler_add(self, chan, args):

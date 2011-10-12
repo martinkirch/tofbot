@@ -62,7 +62,7 @@ class Tofbot(Bot):
             plugin = getattr(plugins, m)
             for n in dir(plugin):
                 c = getattr(plugin, n)
-                if type(c) != types.ClassType:
+                if type(c) not in [types.ClassType, types.TypeType]:
                     continue
                 if c.__name__.startswith('Plugin'):
                     instance = c(self)

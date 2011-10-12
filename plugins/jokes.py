@@ -4,14 +4,14 @@ from tofdata.riddles import riddles
 from tofdata.tofades import tofades
 from tofdata.fortunes import fortunes
 from tofdata.contrepetries import contrepetries
-from toflib import cmd, InnocentHand, RiddleTeller
+from toflib import cmd, InnocentHand, RiddleTeller, Plugin
 import random
 import time
 
-class PluginJokes:
+class PluginJokes(Plugin):
 
     def __init__ (self, bot):
-        self.bot = bot
+        Plugin.__init__(self, bot)
         self._jokes = InnocentHand(jokes)
         self._chuck = InnocentHand(chuckNorrisFacts)
         self._tofades = InnocentHand(tofades)
@@ -23,28 +23,28 @@ class PluginJokes:
 
     @cmd(0)
     def cmd_blague(self, chan, args):
-        self.bot.msg(chan, self._jokes())
+        self.say(self._jokes())
 
     @cmd(0)
     def cmd_fortune(self, chan, args):
-        self.bot.msg(chan, self._fortunes())
+        self.say(self._fortunes())
 
     @cmd(0)
     def cmd_chuck(self, chan, args):
-        self.bot.msg(chan, self._chuck())
+        self.say(self._chuck())
 
     @cmd(0)
     def cmd_tofade(self, chan, args):
-        self.bot.msg(chan, self._tofades())
+        self.say(self._tofades())
             
     @cmd(0)
     def cmd_contrepetrie(self, chan, args):
-        self.bot.msg(chan, self._contrepetries())
+        self.say(self._contrepetries())
 
     @cmd(1)
     def cmd_tofme(self, chan, args):
         who = args[0]
-        self.bot.msg(chan, "%s : %s" % (who, self._tofades()))
+        self.say("%s : %s" % (who, self._tofades()))
 
     @cmd(0)
     def cmd_devinette(self, chan, args):
@@ -75,7 +75,7 @@ class PluginJokes:
         riddle = self._riddles()
         r = RiddleTeller (riddle,
                           chan,
-                          lambda msg: self.bot.msg(chan, msg),
+                          self.say,
                           self.bot.riddleMaxDist)
         return r
 

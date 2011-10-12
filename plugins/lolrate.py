@@ -1,5 +1,5 @@
 from datetime import datetime
-from toflib import cmd
+from toflib import cmd, Plugin
 import re
 
 class TimeSlice():
@@ -29,12 +29,12 @@ class TimeSlice():
         self.count += other
         return self
 
-class PluginLolrate:
+class PluginLolrate(Plugin):
 
     def __init__(self, bot):
-        self.bot = bot
+        Plugin.__init__(self, bot)
         self.lolRate = [TimeSlice()]
-        self.bot._mutable_attributes['lolRateDepth'] = int
+        bot._mutable_attributes['lolRateDepth'] = int
 
     def handle_msg(self, msg_text, chan, nick):
         lulz = len(re.findall("[Ll]+[oO]+[Ll]+", msg_text))
@@ -51,4 +51,4 @@ class PluginLolrate:
     @cmd(0)
     def cmd_lulz(self, chan, args):
         for lolade in self.lolRate:
-            self.bot.msg(chan, str(lolade))
+            self.say(str(lolade))

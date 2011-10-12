@@ -83,3 +83,11 @@ class InnocentHand(object):
             return self.pool[index % len(self.pool)]
         random.seed()
         return random.choice(self.pool)
+
+class Plugin(object):
+
+    def __init__(self, bot):
+        self.bot = bot
+
+    def say(self, msg):
+        self.bot.msg(self.bot.channels[0], msg)
