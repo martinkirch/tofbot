@@ -4,7 +4,7 @@ from toflib import Plugin
 class PluginDassin(Plugin):
 
     def handle_msg(self, msg_text, chan, nick):
-        song = [ "tu sais"
+        ete =  [ "tu sais"
                , "je n'ai jamais été aussi heureux que ce matin-là"
                , "nous marchions sur une plage"
                , "un peu comme celle-ci"
@@ -28,9 +28,28 @@ class PluginDassin(Plugin):
                , "sera pareille à ce matin"
                , "aux couleurs de l'été indien"
                ]
+        colline = [ "je l'ai vue près d'un laurier"
+                  , "elle gardait ses blanches brebis"
+                  , "quand j'ai demandé d'où venait sa peau fraîche elle m'a dit"
+                  , "c'est de rouler dans la rosée qui rend les bergères jolies"
+                  , "mais quand j'ai dit qu'avec elle"
+                  , "je voudrais y rouler aussi"
+                  , "elle m'a dit"
+                  , "elle m'a dit d'aller siffler là-haut sur la colline"
+                  , "de l'attendre avec un petit bouquet d'églantines"
+                  , "j'ai cueilli des fleurs"
+                  , "et j'ai sifflé tant que j'ai pu"
+                  , "j'ai attendu, attendu"
+                  , "elle n'est jamais venue"
+                  , "zay zay zay zay"
+                  ]
 
-        try:
-            i = song.index(msg_text)
-            self.say(song[i+1])
-        except:
-            pass
+        songs = [ete, colline]
+
+        for song in songs:
+            try:
+                i = song.index(msg_text)
+                self.say(song[i+1])
+                break
+            except:
+                pass
