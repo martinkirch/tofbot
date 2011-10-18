@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-USAGE:
+./bot.py [options] [legacy-arguments]
 
-./bot.py nickname channel [other channels...]
+Legacy-arguments: 
+  NICK CHANNEL [CHANNEL...]
 
-Don't prepend a # to chan names
-Tofbot will connect to freenode.net
+  Don't prepend a # to chan names
+  Tofbot will connect to freenode.net
 """
 
 from datetime import datetime
@@ -17,8 +18,9 @@ import sys
 import os
 import plugins
 import types
-from toflib import cmd, _simple_dispatch, distance, InnocentHand, RiddleTeller
+from toflib import cmd, confcmd, _simple_dispatch, _simple_conf_dispatch, distance, InnocentHand, RiddleTeller
 import re
+from optparse import OptionParser
 
 import plugins.euler
 import plugins.lolrate
@@ -39,7 +41,7 @@ class Tofbot(Bot):
         "memoryDepth":int
     }
 
-    def __init__(self, nick, name, channels, password=None, debug=True):
+    def __init__(self, nick=None, name=None, channels=None, password=None, debug=True):
         Bot.__init__(self, nick, name, channels, password)
         self.joined = False
         self.autoTofadeThreshold = 98
@@ -52,6 +54,16 @@ class Tofbot(Bot):
         self.lolRateDepth = 8
         self.msgMemory = []
         self.plugins = self.load_plugins()
+
+    def run(self, host=None):
+      if host == None and not hasattr(self,'host'):
+        raise Exception("run: no host set or given")
+      if self.nick == None:
+        raise Exception("run: no nick set")
+      if self.name == None:
+        raise Exception("run: no name set")
+      self.host = host or self.host
+      Bot.run(self, self.host)
 
     def load_plugins(self):
         d = os.path.dirname(__file__)
@@ -91,12 +103,21 @@ class Tofbot(Bot):
     def dispatch(self, origin, args):
         self.log("o=%s n=%s a=%s" % (origin.sender, origin.nick, args))
         
+        is_config = False
         senderNick = origin.nick
         commandType = args[1]
 
-        if not self.joined:
-            self.try_join(args)
-            return
+        # if command type is 'BOTCONFIG', bypass the try_join
+        # because we are configuring the bot before any
+        # connection.
+        if commandType != 'BOTCONFIG':
+          if not self.joined:
+              self.try_join(args)
+              return
+        else:
+          is_config = 1
+          args.remove('BOTCONFIG')
+          commandType = args[1]
 
         if commandType == 'JOIN':
             for p in self.plugins:
@@ -121,35 +142,44 @@ class Tofbot(Bot):
             
             self.pings[senderNick] = datetime.now()
             
-            if msg_text.strip() == "TG " + self.nick:
-                self.lastTGtofbot = time.time()
+            if is_config == False:
+              if msg_text.strip() == "TG " + self.nick:
+                  self.lastTGtofbot = time.time()
 
-            if msg_text.strip() == "GG " + self.nick:
-                self.lastTGtofbot = 0
+              if msg_text.strip() == "GG " + self.nick:
+                  self.lastTGtofbot = 0
 
-            if len(cmd) == 0:
-                return
+              if len(cmd) == 0:
+                  return
 
-            for p in self.plugins:
-                if hasattr(p, 'handle_msg'):
-                    p.handle_msg(msg_text, chan, senderNick)
+              for p in self.plugins:
+                  if hasattr(p, 'handle_msg'):
+                      p.handle_msg(msg_text, chan, senderNick)
 
-            if chan == self.channels[0] and cmd[0] != '!':
-                self.msgMemory.append("<" + senderNick + "> " + msg_text)
-                if len(self.msgMemory) > self.memoryDepth:
-                    del self.msgMemory[0]
+              if chan == self.channels[0] and cmd[0] != '!':
+                  self.msgMemory.append("<" + senderNick + "> " + msg_text)
+                  if len(self.msgMemory) > self.memoryDepth:
+                      del self.msgMemory[0]
 
-            if cmd[0] != '!':
+            if len(cmd) == 0 or cmd[0] != '!':
                 return
             
             cmd = cmd[1:]
 
+            chan = None
+            if len(self.channels) == 0:
+              chan = 'config'
+            else:
+              chan = self.channels[0]
+
             if cmd in _simple_dispatch:
-                self.call_cmd_action("cmd_" + cmd, msg[1:])
+                self.call_cmd_action(chan,"cmd_" + cmd, msg[1:])
+            elif is_config and (cmd in _simple_conf_dispatch):
+              self.call_cmd_action(chan,"confcmd_" + cmd, msg[1:])
             elif cmd == 'context':
                 self.send_context(senderNick)
 
-    def call_cmd_action(self, cmd_name, args):
+    def call_cmd_action(self, chan, cmd_name, args):
         targets = self.plugins
         targets.insert(0, self)
         found = False
@@ -157,7 +187,7 @@ class Tofbot(Bot):
         for t in targets:
             if (hasattr(t, cmd_name)):
                 action = getattr(t, cmd_name)
-                action(self.channels[0], args)
+                action(chan, args)
                 break
 
     def safe_getattr(self, key):
@@ -178,6 +208,33 @@ class Tofbot(Bot):
             return True
         except ValueError:
             pass
+
+    @confcmd(1)
+    def confcmd_chan(self, chan, args):
+      new_chan = args[0]
+      if self.channels.count(new_chan) == 0:
+        self.channels.append(new_chan)
+      
+    @confcmd(1)
+    def confcmd_server(self, chan, args):
+      host = args[0].strip()
+      self.host = host
+    
+    @confcmd(1)
+    def confcmd_port(self, chan, args):
+      port = int(args[0].strip())
+      self.port = port
+
+    @confcmd(1)
+    def confcmd_nick(self, chan, args):
+      nick = args[0].strip()
+      self.nick = nick
+      self.user = nick
+
+    @confcmd(1)
+    def confcmd_name(self, chan, args):
+      name = args[0].strip()
+      self.name = name
 
     @cmd(1)
     def cmd_ping(self, chan, args):
@@ -223,9 +280,52 @@ class Tofbot(Bot):
         self.msg(chan, "If random-tofades are boring you, enter 'TG " + self.nick + "' (but can be cancelled by GG " + self.nick + ")")
 
 if __name__ == "__main__":
-    if len(sys.argv) > 2:
-        chans = [ "#" + s for s in sys.argv[2:] ]
-        b = Tofbot(sys.argv[1], 'Tofbot', chans)
-        b.run('irc.freenode.net')
-    else:
-        print __doc__
+    class FakeOrigin:
+      pass
+
+    def bot_config(b, cmd):
+      o = FakeOrigin
+      o.sender = 'bot_config'
+      o.nick = 'bot_config'
+      b.dispatch(o, [cmd.strip(), 'BOTCONFIG','PRIVMSG','#bot_config'])
+
+    # option parser
+    parser = OptionParser(__doc__)
+    parser.add_option("-x","--execute", dest="cmds",action="append",help="File to execute prior connection. Can be used several times.")
+    parser.add_option("-s","--host", dest="host",help="IRC server hostname")
+    parser.add_option("-p","--port", dest="port",help="IRC server port")
+    parser.add_option("-k","--nick", dest="nick",help="Bot nickname",default='Tofbot')
+    parser.add_option("-n","--name", dest="name",help="Bot name",default='Tofbot')
+    parser.add_option("-c","--channel",dest="channel",action="append",help="Channel to join (without # prefix). Can be used several times.")
+    parser.add_option("--password", dest="password")
+    parser.add_option("-d","--debug", action="store_true", dest="debug", default=False)
+
+    (options,args) = parser.parse_args();
+
+    # legacy arguments handled first
+    # (new-style arguments prevail)
+    if len(args) > 0:
+      options.nick = options.nick or args[0]
+      options.channel = options.channel or []
+      for chan in args[1:]:
+        if options.channel.count(chan) == 0:
+          options.channel.append(chan)
+
+    # initialize Tofbot
+    # using command-line arguments
+    b = Tofbot(options.nick, options.name, options.channel, options.password, options.debug)
+
+    # execute command files
+    # these commands may override command-line arguments
+    options.cmds = options.cmds or []
+    for filename in options.cmds:
+      cmdsfile = open(filename,'r')
+      for line in cmdsfile:
+        bot_config(b, line)
+
+    # default host when legacy-mode
+    if options.host == None and len(options.cmds) == 0 and len(args) > 0:
+      options.host = 'irc.freenode.net'
+
+    b.run(options.host)
+

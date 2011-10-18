@@ -3,6 +3,9 @@ import random
 # those commands directly trigger cmd_* actions
 _simple_dispatch = set()
 
+# those commands directly trigger confcmd_* actions
+_simple_conf_dispatch = set()
+
 def cmd(expected_args):
     def deco(func):
         name = func.__name__[4:]
@@ -12,6 +15,16 @@ def cmd(expected_args):
                 return func(bot, chan, args)
         return f
     return deco
+
+def confcmd(expected_args):
+  def deco(func):
+    name = func.__name__[8:]
+    _simple_conf_dispatch.add(name)
+    def f(bot, chan, args):
+      if(len(args) == expected_args):
+        return func(bot, chan, args)
+    return f
+  return deco
 
 def distance(string1, string2):
     """
