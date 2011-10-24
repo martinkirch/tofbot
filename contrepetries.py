@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Awesome contrepetries
+voir aussi http://contrepeteries.free.fr/docs/txt_reduit.php
 """
 
 contrepetries = [
