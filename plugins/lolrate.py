@@ -8,6 +8,7 @@ class TimeSlice():
         t = datetime.now()
         self.date = t.date()
         self.hour = t.hour
+        self.kevins = dict()
         self.count = 0
 
     def __str__(self):
@@ -16,6 +17,7 @@ class TimeSlice():
                                             , self.hour+1 % 24
                                             , self.count
                                             )
+      
 
     def __cmp__(self, other):
         return cmp ( (self.date, self.hour)
@@ -25,9 +27,10 @@ class TimeSlice():
     def __hash__(self):
         return hash(self.date) + hash(self.hour)
 
-    def __iadd__(self, other):
-        self.count += other
-        return self
+    def lol(self, nick, count):
+      self.kevins.setdefault(nick,0)
+      self.kevins[nick] += count
+      self.count += count
 
 class PluginLolrate(Plugin):
 
@@ -46,9 +49,25 @@ class PluginLolrate(Plugin):
             if len(self.lolRate) > self.bot.lolRateDepth:
                 self.lolRate.pop()
 
-            self.lolRate[0] += lulz
+            self.lolRate[0].lol(nick,lulz)
 
     @cmd(0)
     def cmd_lulz(self, chan, args):
         for lolade in self.lolRate:
             self.say(str(lolade))
+
+    @cmd(0)
+    def cmd_kevin(self, chan, args):
+      kevins = dict()
+      for lolade in self.lolRate:
+        for kevin in lolade.kevins.iteritems():
+          kevins.setdefault(kevin[0],0)
+          kevins[kevin[0]] += kevin[1]
+
+      if len(kevins) > 0:
+        kevin = max(kevins,key=lambda a: kevins.get(a))
+        lolades = kevins[kevin]
+        self.say(str(kevin) + " est le Kevin du moment avec " + str(lolades) + " lolade" + ("s" if lolades > 1 else ""))
+      else:
+        self.say("pas de Kevin")
+
