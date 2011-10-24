@@ -1,1 +1,9 @@
 This is tofbot
+
+configuration files in tofconfigs/
+
+launch for a given configuration like this:
+  python bot.py -x tofconfigs/localhost.conf
+
+more help about command line arguments:
+  python bot.py -h
