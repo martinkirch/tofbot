@@ -13,6 +13,7 @@ def cmd(expected_args):
         def f(bot, chan, args):
             if(len(args) == expected_args):
                 return func(bot, chan, args)
+        f.__doc__ = func.__doc__
         return f
     return deco
 
@@ -23,6 +24,7 @@ def confcmd(expected_args):
     def f(bot, chan, args):
       if(len(args) == expected_args):
         return func(bot, chan, args)
+    f.__doc__ = func.__doc__
     return f
   return deco
 
