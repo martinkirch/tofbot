@@ -18,7 +18,8 @@ import sys
 import os
 import plugins
 import types
-from toflib import cmd, confcmd, _simple_dispatch, _simple_conf_dispatch, distance, InnocentHand, RiddleTeller
+from toflib import *
+from toflib import _simple_dispatch, _simple_conf_dispatch
 import re
 from optparse import OptionParser
 
@@ -52,6 +53,7 @@ class Tofbot(Bot):
         self.memoryDepth = 20
         self.lolRateDepth = 8
         self.msgMemory = []
+        self.cron = Cron()
         self.plugins = self.load_plugins()
 
     def run(self, host=None):
@@ -142,6 +144,8 @@ class Tofbot(Bot):
             self.pings[senderNick] = datetime.now()
             
             if is_config == False:
+              self.cron.tick()
+
               if len(cmd) == 0:
                   return
 

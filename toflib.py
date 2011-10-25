@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 
 # those commands directly trigger cmd_* actions
 _simple_dispatch = set()
@@ -106,3 +107,19 @@ class Plugin(object):
 
     def say(self, msg):
         self.bot.msg(self.bot.channels[0], msg)
+
+
+
+class Cron:
+
+    def __init__(self):
+        self.events = ()
+        self.lastTick = datetime.min
+
+    def tick(self):
+        now = datetime.now ()
+        for ev in self.events:
+            if now > ev.lastTick + ev.period:
+                done = ev.fire()
+                if done:
+                    ev.lastTick = now
