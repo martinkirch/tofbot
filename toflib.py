@@ -18,15 +18,15 @@ def cmd(expected_args):
     return deco
 
 def confcmd(expected_args):
-  def deco(func):
-    name = func.__name__[8:]
-    _simple_conf_dispatch.add(name)
-    def f(bot, chan, args):
-      if(len(args) == expected_args):
-        return func(bot, chan, args)
-    f.__doc__ = func.__doc__
-    return f
-  return deco
+    def deco(func):
+        name = func.__name__[8:]
+        _simple_conf_dispatch.add(name)
+        def f(bot, chan, args):
+            if(len(args) == expected_args):
+                return func(bot, chan, args)
+        f.__doc__ = func.__doc__
+        return f
+    return deco
 
 def distance(string1, string2):
     """
