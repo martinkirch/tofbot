@@ -18,6 +18,7 @@ class PluginJokes(Plugin):
         self._riddles = InnocentHand(riddles)
         self._fortunes = InnocentHand(fortunes)
         self._contrepetries = InnocentHand(contrepetries)
+        self.lastTGtofbot = 0
         bot._mutable_attributes["autoTofadeThreshold"] = int
         bot._mutable_attributes["riddleMaxDist"] = int
 
@@ -58,13 +59,19 @@ class PluginJokes(Plugin):
             self.cmd_tofme(chan, [nick])
         
     def handle_msg(self, msg_text, chan, nick):
+        if msg_text.strip() == "TG " + self.bot.nick:
+            self.lastTGtofbot = time.time()
+
+        if msg_text.strip() == "GG " + self.bot.nick:
+            self.lastTGtofbot = 0
+
         if self.active_riddle():
             itsOver = self.devinette.wait_answer(chan, msg_text)
             if itsOver:
                 self.devinette = None
 
         if (random.randint(0, 100) > self.bot.autoTofadeThreshold and 
-            (time.time() - self.bot.lastTGtofbot) >= (self.bot.TGtime * 60)):
+            (time.time() - self.lastTGtofbot) >= (self.bot.TGtime * 60)):
             self.cmd_tofme(chan, [nick])
 
 

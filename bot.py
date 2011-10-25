@@ -48,7 +48,6 @@ class Tofbot(Bot):
         self.riddleMaxDist = 2
         self.debug = debug
         self.TGtime = 5
-        self.lastTGtofbot = 0
         self.pings = {}
         self.memoryDepth = 20
         self.lolRateDepth = 8
@@ -143,12 +142,6 @@ class Tofbot(Bot):
             self.pings[senderNick] = datetime.now()
             
             if is_config == False:
-              if msg_text.strip() == "TG " + self.nick:
-                  self.lastTGtofbot = time.time()
-
-              if msg_text.strip() == "GG " + self.nick:
-                  self.lastTGtofbot = 0
-
               if len(cmd) == 0:
                   return
 
