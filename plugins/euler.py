@@ -1,5 +1,19 @@
-from toflib import cmd, Plugin
+from toflib import cmd, Plugin, CronEvent
 import urllib2
+
+class EulerEvent(CronEvent):
+
+    def __init__(self, bot, plugin):
+        CronEvent.__init__(self, bot)
+        self.plugin = plugin
+
+    def fire(self):
+        newScores = self.plugin.euler_update_data()
+        for nick, oldScore in self.plugin._eulerScores:
+            newScore = newScores[nick]
+            if newScore != oldScore:
+                self.bot.say("%s : %s -> %s" % (nick, oldScore, newScore))
+        self.plugin._eulerScores = newScores
 
 class PluginEuler(Plugin):
 
@@ -27,4 +41,6 @@ class PluginEuler(Plugin):
     def cmd_euler_add(self, chan, args):
         who = args[0]
         self._eulerNicks.add(who)
+        ev = EulerEvent(self.bot, self)
+        self.bot.cron.schedule(ev)
 
