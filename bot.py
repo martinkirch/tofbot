@@ -135,6 +135,9 @@ class Tofbot(Bot):
             self.write(('JOIN', chan))
             self.msg(chan, respawn_msg)
 
+        elif commandType == 'PING':
+            self.cron.tick()
+
         elif commandType == 'PRIVMSG':
             msg_text = args[0]
             msg = msg_text.split(" ")
