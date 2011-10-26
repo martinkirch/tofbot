@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from toflib import Plugin
+from toflib import distance
 
 class PluginDassin(Plugin):
 
@@ -43,13 +44,78 @@ class PluginDassin(Plugin):
                   , "elle n'est jamais venue"
                   , "zay zay zay zay"
                   ]
+        
+        # Rone - Bora (vocal edit, un texte d'Alain Damasio), texte redécoupé pour que ça toffe
+        bora = [ "il n'y pas de secret",
+                 "pas de secrets",
+                 "il y a une vérité",
+                 "simple, sobre, crue, quoi",
+                 "la horde du contrevent",
+                 "tu la réussiras uniquement si tu t'isoles",
+                 "si tu t'isoles quoi",
+                 "tu comprends ce que ça veut dire isole ?",
+                 "isola",
+                 "l'ile quoi",
+                 "tu crées ton ile et tu l'effaces au maximum",
+                 "il faut que les gens soient extrêmement loin de toi",
+                 "mais loin parce que ton univers sera vaste",
+                 "sera immense",
+                 "sera énorme",
+                 "énorme univers",
+                 "énorme puissance d'univers",
+                 "caracole il existe en toi complètement",
+                 "comme strochnis",
+                 "qu'il soit toi",
+                 "que pietro della rocca tu le deviennes",
+                 "et la croute aussi",
+                 "et tous l'univers"
+                 "et tout le vent",
+                 "tu vis complètement la dedans",
+                 "c'est ca qu'il faut",
+                 "y a que ca qu'il faut",
+                 "tu restes collé au vent",
+                 "collé au vent",
+                 "collé au vent, toi",
+                 "et que tu te battes",
+                 "que tu ne fasses aucune concessison sur le reste",
+                 "tu oublies tout",
+                 "t'es pas consultant, t'es rien",
+                 "le consulting c'est d'la merde",
+                 "la seule chose qui a d'la valeur",
+                 "c'est quand t'es capable de faire un chapitre comme celui-là",
+                 "ça, ça restera, ça mérite que tu vives",
+                 "tu peux vivre pour écrire ça",
+                 "ça mérite que tu vives",
+                 "là t'es pas né pour rien",
+                 "t'es nécessaire",
+                 "t'es pas surnuméraire",
+                 "t'es pas superflu",
+                 "là t'as une nécessité quand t'écris ça",
+                 "la nécessité d'être",
+                 "et c'est ça qui faut tenir mec",
+                 "c'est ça qui faut putain de tenir",
+                 "lâches pas le morceau",
+                 "t'fais pas enculer",
+                 "t'fais pas disperser",
+                 "t'fais pas fragmenter",
+                 "fais pas de concession",
+                 "y'a pas de concession avec la vie",
+                 "y'a pas de concession",
+                 "tu vis et faut vivre à fond"
+                 ]
 
-        songs = [ete, colline]
-
+        songs = [ete, colline, bora]
+        
+        searched = msg_text.lower()
+        threshold = len(searched)/5
+        
         for song in songs:
             try:
-                i = song.index(msg_text)
-                self.say(song[i+1])
-                break
+                i = 0
+                for line in song:
+                    if (distance(line, searched) <= threshold):
+                        self.say(song[i+1])
+                        return
+                    i += 1
             except:
                 pass

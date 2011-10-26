@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 import random
+import re
 from datetime import datetime, timedelta
 
 # those commands directly trigger cmd_* actions
@@ -29,13 +31,37 @@ def confcmd(expected_args):
         return f
     return deco
 
+def sansAccents(string):
+    """
+    Remplace les accents courants en français par le caractère sans. Ne reconnait que les minuscules !
+    """
+    result = string.decode("utf-8")
+    
+    a = re.compile(u"[àâä]")
+    result = a.sub("a", result)
+    
+    e = re.compile(u"é|è|ë|ê")
+    result = e.sub("e", result)
+    
+    u = re.compile(u"[üûù]")
+    result = u.sub("u", result)
+    
+    i = re.compile(u"[ïî]")
+    result = i.sub("i", result)
+    
+    o = re.compile(u"[öô]")
+    result = o.sub("o", result)
+    
+    return result.replace(u"ç", "c")
+
+
 def distance(string1, string2):
     """
     Levenshtein distance
     http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance#Python
     """
-    string1 = ' ' + string1
-    string2 = ' ' + string2
+    string1 = ' ' + sansAccents(string1)
+    string2 = ' ' + sansAccents(string2)
     dists = {}
     len1 = len(string1)
     len2 = len(string2)
