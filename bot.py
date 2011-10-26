@@ -112,13 +112,13 @@ class Tofbot(Bot):
         # because we are configuring the bot before any
         # connection.
         if commandType != 'BOTCONFIG':
-          if not self.joined:
-              self.try_join(args)
-              return
+            if not self.joined:
+                self.try_join(args)
+                return
         else:
-          is_config = 1
-          args.remove('BOTCONFIG')
-          commandType = args[1]
+            is_config = 1
+            args.remove('BOTCONFIG')
+            commandType = args[1]
 
         if commandType == 'JOIN':
             for p in self.plugins:
@@ -144,19 +144,19 @@ class Tofbot(Bot):
             self.pings[senderNick] = datetime.now()
             
             if is_config == False:
-              self.cron.tick()
-
-              if len(cmd) == 0:
-                  return
-
-              for p in self.plugins:
-                  if hasattr(p, 'handle_msg'):
-                      p.handle_msg(msg_text, chan, senderNick)
-
-              if chan == self.channels[0] and cmd[0] != '!':
-                  self.msgMemory.append("<" + senderNick + "> " + msg_text)
-                  if len(self.msgMemory) > self.memoryDepth:
-                      del self.msgMemory[0]
+                self.cron.tick()
+               
+                if len(cmd) == 0:
+                    return
+               
+                for p in self.plugins:
+                    if hasattr(p, 'handle_msg'):
+                        p.handle_msg(msg_text, chan, senderNick)
+               
+                if chan == self.channels[0] and cmd[0] != '!':
+                    self.msgMemory.append("<" + senderNick + "> " + msg_text)
+                    if len(self.msgMemory) > self.memoryDepth:
+                        del self.msgMemory[0]
 
             if len(cmd) == 0 or cmd[0] != '!':
                 return
