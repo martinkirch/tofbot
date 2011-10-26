@@ -38,6 +38,7 @@ class PluginJokes(Plugin):
 
     @cmd(0)
     def cmd_blague(self, chan, args):
+        "Tell a joke"
         self.say(self._jokes())
 
     @cmd(0)

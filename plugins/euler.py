@@ -32,12 +32,14 @@ class PluginEuler(Plugin):
 
     @cmd(0)
     def cmd_euler(self, chan, args):
+        "Display PE scores"
         self._eulerScores = self.euler_update_data()
         for nick, score in self._eulerScores.items():
             self.say("%s : %s" %(nick, score))
 
     @cmd(1)
     def cmd_euler_add(self, chan, args):
+        "Add a PE account"
         who = args[0]
         self._eulerNicks.add(who)
         ev = EulerEvent(self)
