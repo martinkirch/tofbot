@@ -9,10 +9,10 @@ class EulerEvent(CronEvent):
 
     def fire(self):
         newScores = self.plugin.euler_update_data()
-        for nick, oldScore in self.plugin._eulerScores:
+        for nick, oldScore in self.plugin._eulerScores.items():
             newScore = newScores[nick]
             if newScore != oldScore:
-                self.bot.say("%s : %s -> %s" % (nick, oldScore, newScore))
+                self.plugin.say("%s : %s -> %s" % (nick, oldScore, newScore))
         self.plugin._eulerScores = newScores
 
 class PluginEuler(Plugin):

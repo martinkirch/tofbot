@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from toflib import cmd, Plugin, CronEvent
 import json
 import urllib2
@@ -28,7 +28,7 @@ class TweetEvent(CronEvent):
         if tweet is None:
             return
         if tweet != self.previousTweet:
-            self.bot.say("@%s: %s" % (self.user, tweet))
+            self.plugin.say("@%s: %s" % (self.user, tweet))
             self.previousTweet = tweet
 
 class PluginTwitter(Plugin):
