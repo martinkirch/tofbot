@@ -1,5 +1,5 @@
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # those commands directly trigger cmd_* actions
 _simple_dispatch = set()
@@ -125,7 +125,6 @@ class Cron:
     def tick(self):
         now = datetime.now ()
         for ev in self.events:
-            print ev
             if now > ev.lastTick + ev.period:
                 ev.fire()
                 ev.lastTick = now
