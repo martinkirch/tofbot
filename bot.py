@@ -18,7 +18,8 @@ import sys
 import os
 import plugins
 import types
-from toflib import cmd, confcmd, _simple_dispatch, _simple_conf_dispatch, distance, InnocentHand, RiddleTeller
+from toflib import *
+from toflib import _simple_dispatch, _simple_conf_dispatch
 import re
 from optparse import OptionParser
 
@@ -48,11 +49,11 @@ class Tofbot(Bot):
         self.riddleMaxDist = 2
         self.debug = debug
         self.TGtime = 5
-        self.lastTGtofbot = 0
         self.pings = {}
         self.memoryDepth = 20
         self.lolRateDepth = 8
         self.msgMemory = []
+        self.cron = Cron()
         self.plugins = self.load_plugins()
 
     def run(self, host=None):
@@ -111,13 +112,13 @@ class Tofbot(Bot):
         # because we are configuring the bot before any
         # connection.
         if commandType != 'BOTCONFIG':
-          if not self.joined:
-              self.try_join(args)
-              return
+            if not self.joined:
+                self.try_join(args)
+                return
         else:
-          is_config = 1
-          args.remove('BOTCONFIG')
-          commandType = args[1]
+            is_config = 1
+            args.remove('BOTCONFIG')
+            commandType = args[1]
 
         if commandType == 'JOIN':
             for p in self.plugins:
@@ -143,23 +144,19 @@ class Tofbot(Bot):
             self.pings[senderNick] = datetime.now()
             
             if is_config == False:
-              if msg_text.strip() == "TG " + self.nick:
-                  self.lastTGtofbot = time.time()
-
-              if msg_text.strip() == "GG " + self.nick:
-                  self.lastTGtofbot = 0
-
-              if len(cmd) == 0:
-                  return
-
-              for p in self.plugins:
-                  if hasattr(p, 'handle_msg'):
-                      p.handle_msg(msg_text, chan, senderNick)
-
-              if chan == self.channels[0] and cmd[0] != '!':
-                  self.msgMemory.append("<" + senderNick + "> " + msg_text)
-                  if len(self.msgMemory) > self.memoryDepth:
-                      del self.msgMemory[0]
+                self.cron.tick()
+               
+                if len(cmd) == 0:
+                    return
+               
+                for p in self.plugins:
+                    if hasattr(p, 'handle_msg'):
+                        p.handle_msg(msg_text, chan, senderNick)
+               
+                if chan == self.channels[0] and cmd[0] != '!':
+                    self.msgMemory.append("<" + senderNick + "> " + msg_text)
+                    if len(self.msgMemory) > self.memoryDepth:
+                        del self.msgMemory[0]
 
             if len(cmd) == 0 or cmd[0] != '!':
                 return
@@ -173,22 +170,27 @@ class Tofbot(Bot):
               chan = self.channels[0]
 
             if cmd in _simple_dispatch:
-                self.call_cmd_action(chan,"cmd_" + cmd, msg[1:])
+                act = self.find_cmd_action("cmd_" + cmd)
+                act(chan, msg[1:])
             elif is_config and (cmd in _simple_conf_dispatch):
-              self.call_cmd_action(chan,"confcmd_" + cmd, msg[1:])
+              act = self.find_cmd_action("confcmd_" + cmd)
+              act(chan, msg[1:])
             elif cmd == 'context':
                 self.send_context(senderNick)
 
-    def call_cmd_action(self, chan, cmd_name, args):
+    def find_cmd_action(self, cmd_name):
         targets = self.plugins
         targets.insert(0, self)
-        found = False
 
         for t in targets:
             if (hasattr(t, cmd_name)):
                 action = getattr(t, cmd_name)
-                action(chan, args)
-                break
+                return action
+
+        def nop(self, chan, args):
+            pass
+
+        return nop
 
     def safe_getattr(self, key):
         if key not in self._mutable_attributes:
@@ -238,6 +240,7 @@ class Tofbot(Bot):
 
     @cmd(1)
     def cmd_ping(self, chan, args):
+        "Find when X was last online"
         who = args[0]
         if who in self.pings:
             self.msg(chan, 
@@ -248,6 +251,7 @@ class Tofbot(Bot):
 
     @cmd(1)
     def cmd_get(self, chan, args):
+        "Retrieve a configuration variable's value"
         key = args[0]
         value = self.safe_getattr(key)
         if value is None:
@@ -257,6 +261,7 @@ class Tofbot(Bot):
 
     @cmd(2)
     def cmd_set(self, chan, args):
+        "Set a configuration variable's value"
         key = args[0]
         value = args[1]
         ok = self.safe_setattr(key, value)
@@ -272,10 +277,13 @@ class Tofbot(Bot):
 
     @cmd(0)
     def cmd_help(self, chan, args):
-        commands = ['!' + cmd for cmd in _simple_dispatch]
-        commands.append("!context")
+        "Show this help message"
+        maxlen = 1 + max(map(len, _simple_dispatch))
+
         self.msg(chan, "Commands should be entered in the channel or by private message")
-        self.msg(chan, "Available commands : " + ' '.join(commands))
+        for cmd in _simple_dispatch:
+            f = self.find_cmd_action("cmd_" + cmd)
+            self.msg(chan, '%*s - %s' % (maxlen, "!"+cmd, f.__doc__))
         self.msg(chan, "you can also !get or !set " + ", ".join(self._mutable_attributes.keys()))
         self.msg(chan, "If random-tofades are boring you, enter 'TG " + self.nick + "' (but can be cancelled by GG " + self.nick + ")")
 

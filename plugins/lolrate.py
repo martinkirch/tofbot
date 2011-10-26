@@ -58,16 +58,16 @@ class PluginLolrate(Plugin):
 
     @cmd(0)
     def cmd_kevin(self, chan, args):
-      kevins = dict()
-      for lolade in self.lolRate:
-        for kevin in lolade.kevins.iteritems():
-          kevins.setdefault(kevin[0],0)
-          kevins[kevin[0]] += kevin[1]
-
-      if len(kevins) > 0:
-        kevin = max(kevins,key=lambda a: kevins.get(a))
-        lolades = kevins[kevin]
-        self.say(str(kevin) + " est le Kevin du moment avec " + str(lolades) + " lolade" + ("s" if lolades > 1 else ""))
-      else:
-        self.say("pas de Kevin")
+        kevins = dict()
+        for lolade in self.lolRate:
+            for kevin in lolade.kevins.iteritems():
+                kevins.setdefault(kevin[0],0)
+                kevins[kevin[0]] += kevin[1]
+        
+        if len(kevins) > 0:
+            kevin = max(kevins,key=lambda a: kevins.get(a))
+            lolades = kevins[kevin]
+            self.say(str(kevin) + " est le Kevin du moment avec " + str(lolades) + " lolade" + ("s" if lolades > 1 else ""))
+        else:
+            self.say("pas de Kevin")
 

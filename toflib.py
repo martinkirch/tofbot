@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import random
 import re
+from datetime import datetime, timedelta
 
 # those commands directly trigger cmd_* actions
 _simple_dispatch = set()
@@ -15,18 +16,20 @@ def cmd(expected_args):
         def f(bot, chan, args):
             if(len(args) == expected_args):
                 return func(bot, chan, args)
+        f.__doc__ = func.__doc__
         return f
     return deco
 
 def confcmd(expected_args):
-  def deco(func):
-    name = func.__name__[8:]
-    _simple_conf_dispatch.add(name)
-    def f(bot, chan, args):
-      if(len(args) == expected_args):
-        return func(bot, chan, args)
-    return f
-  return deco
+    def deco(func):
+        name = func.__name__[8:]
+        _simple_conf_dispatch.add(name)
+        def f(bot, chan, args):
+            if(len(args) == expected_args):
+                return func(bot, chan, args)
+        f.__doc__ = func.__doc__
+        return f
+    return deco
 
 def sansAccents(string):
     """
@@ -130,3 +133,27 @@ class Plugin(object):
 
     def say(self, msg):
         self.bot.msg(self.bot.channels[0], msg)
+
+class CronEvent:
+
+    def __init__(self, plugin):
+        self.lastTick = datetime.min
+        self.period = timedelta(minutes=10)
+        self.plugin = plugin
+
+    def fire(self):
+        pass
+
+class Cron:
+    def __init__(self):
+        self.events = []
+
+    def tick(self):
+        now = datetime.now ()
+        for ev in self.events:
+            if now > ev.lastTick + ev.period:
+                ev.fire()
+                ev.lastTick = now
+
+    def schedule(self, ev):
+        self.events.append(ev)
