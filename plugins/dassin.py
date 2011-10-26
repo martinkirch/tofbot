@@ -92,8 +92,8 @@ class PluginDassin(Plugin):
                  "t'es pas superflu",
                  "là t'as une nécessité quand t'écris ça",
                  "la nécessité d'être",
-                 "et c'est ça qui faut tenir mec",
-                 "c'est ça qui faut putain de tenir",
+                 "et c'est ça qu'il faut tenir mec",
+                 "c'est ça qu'il faut putain de tenir",
                  "lâches pas le morceau",
                  "t'fais pas enculer",
                  "t'fais pas disperser",
@@ -107,15 +107,20 @@ class PluginDassin(Plugin):
         songs = [ete, colline, bora]
         
         searched = msg_text.lower()
-        threshold = len(searched)/5
+        minDist = 9999999
+        best = False
         
         for song in songs:
             try:
                 i = 0
                 for line in song:
-                    if (distance(line, searched) <= threshold):
-                        self.say(song[i+1])
-                        return
+                    dist = distance(line, searched)
+                    if dist < minDist:
+                        best = song[i+1]
+                        minDist = dist
                     i += 1
             except:
                 pass
+        
+        if len(best) > 1 and minDist < (len(searched)/5):
+            self.say(best)
