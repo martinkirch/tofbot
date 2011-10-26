@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from toflib import cmd, Plugin
+from toflib import cmd, Plugin, CronEvent
 import json
 import urllib2
 
@@ -15,14 +15,12 @@ def lastTweet(user):
     except: # too many things can go wrong to catch explicitly
         return None
 
-class TweetEvent:
+class TweetEvent(CronEvent):
 
-    def __init__(self, plugin, user):
-        self.lastTick = datetime.min
+    def __init__(self, bot, user):
+        CronEvent.__init__(self, bot)
         self.user = user
         self.previousTweet = None
-        self.period = timedelta(minutes=10)
-        self.plugin = plugin
 
     def fire(self):
         print "%s fire()" % self
@@ -30,7 +28,7 @@ class TweetEvent:
         if tweet is None:
             return
         if tweet != self.previousTweet:
-            self.plugin.say("@%s: %s" % (self.user, tweet))
+            self.bot.say("@%s: %s" % (self.user, tweet))
             self.previousTweet = tweet
 
 class PluginTwitter(Plugin):
@@ -41,7 +39,7 @@ class PluginTwitter(Plugin):
     @cmd(1)
     def cmd_twitter_track(self, chan, args):
         user = args[0]
-        ev = TweetEvent(self, user)
+        ev = TweetEvent(self.bot, user)
         self.bot.cron.schedule(ev)
 
     @cmd(1)

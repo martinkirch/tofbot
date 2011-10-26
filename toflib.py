@@ -108,6 +108,16 @@ class Plugin(object):
     def say(self, msg):
         self.bot.msg(self.bot.channels[0], msg)
 
+class CronEvent:
+
+    def __init__(self, bot):
+        self.lastTick = datetime.min
+        self.period = timedelta(minutes=10)
+        self.bot = bot
+
+    def fire(self):
+        pass
+
 class Cron:
     def __init__(self):
         self.events = []
