@@ -3,9 +3,8 @@ import urllib2
 
 class EulerEvent(CronEvent):
 
-    def __init__(self, bot, plugin):
-        CronEvent.__init__(self, bot)
-        self.plugin = plugin
+    def __init__(self, plugin):
+        CronEvent.__init__(self, plugin)
 
     def fire(self):
         newScores = self.plugin.euler_update_data()
@@ -41,6 +40,6 @@ class PluginEuler(Plugin):
     def cmd_euler_add(self, chan, args):
         who = args[0]
         self._eulerNicks.add(who)
-        ev = EulerEvent(self.bot, self)
+        ev = EulerEvent(self)
         self.bot.cron.schedule(ev)
 

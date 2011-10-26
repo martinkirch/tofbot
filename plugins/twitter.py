@@ -17,8 +17,8 @@ def lastTweet(user):
 
 class TweetEvent(CronEvent):
 
-    def __init__(self, bot, user):
-        CronEvent.__init__(self, bot)
+    def __init__(self, plugin, user):
+        CronEvent.__init__(self, plugin)
         self.user = user
         self.previousTweet = None
 
@@ -39,9 +39,5 @@ class PluginTwitter(Plugin):
     @cmd(1)
     def cmd_twitter_track(self, chan, args):
         user = args[0]
-        ev = TweetEvent(self.bot, user)
+        ev = TweetEvent(user)
         self.bot.cron.schedule(ev)
-
-    @cmd(1)
-    def cmd_twitter_list(self, chan, args):
-        print self.bot.cron.events

@@ -110,10 +110,10 @@ class Plugin(object):
 
 class CronEvent:
 
-    def __init__(self, bot):
+    def __init__(self, plugin):
         self.lastTick = datetime.min
         self.period = timedelta(minutes=10)
-        self.bot = bot
+        self.plugin = plugin
 
     def fire(self):
         pass
