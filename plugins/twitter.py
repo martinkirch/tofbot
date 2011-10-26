@@ -39,5 +39,5 @@ class PluginTwitter(Plugin):
     @cmd(1)
     def cmd_twitter_track(self, chan, args):
         user = args[0]
-        ev = TweetEvent(user)
+        ev = TweetEvent(self, user)
         self.bot.cron.schedule(ev)
