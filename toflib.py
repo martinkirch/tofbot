@@ -108,18 +108,17 @@ class Plugin(object):
     def say(self, msg):
         self.bot.msg(self.bot.channels[0], msg)
 
-
-
 class Cron:
-
     def __init__(self):
-        self.events = ()
-        self.lastTick = datetime.min
+        self.events = []
 
     def tick(self):
         now = datetime.now ()
         for ev in self.events:
+            print ev
             if now > ev.lastTick + ev.period:
-                done = ev.fire()
-                if done:
-                    ev.lastTick = now
+                ev.fire()
+                ev.lastTick = now
+
+    def schedule(self, ev):
+        self.events.append(ev)
