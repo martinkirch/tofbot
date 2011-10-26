@@ -4,9 +4,21 @@ from tofdata.riddles import riddles
 from tofdata.tofades import tofades
 from tofdata.fortunes import fortunes
 from tofdata.contrepetries import contrepetries
-from toflib import cmd, InnocentHand, RiddleTeller, Plugin
+from toflib import cmd, InnocentHand, RiddleTeller, Plugin, CronEvent
 import random
 import time
+from datetime import timedelta
+
+class TofadeEvent(CronEvent):
+
+    def __init__(self, plugin):
+        CronEvent.__init__(self, plugin)
+        self.period = timedelta(seconds=1)
+
+    def fire(self):
+        if (random.randint(0, 100) > self.plugin.bot.autoTofadeThreshold and 
+            (time.time() - self.plugin.lastTGtofbot) >= (self.plugin.bot.TGtime * 60)):
+            self.plugin.say(self.plugin._tofades())
 
 class PluginJokes(Plugin):
 
@@ -21,6 +33,8 @@ class PluginJokes(Plugin):
         self.lastTGtofbot = 0
         bot._mutable_attributes["autoTofadeThreshold"] = int
         bot._mutable_attributes["riddleMaxDist"] = int
+        ev = TofadeEvent(self)
+        self.bot.cron.schedule(ev)
 
     @cmd(0)
     def cmd_blague(self, chan, args):
