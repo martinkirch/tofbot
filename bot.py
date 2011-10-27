@@ -29,6 +29,7 @@ import plugins.donnezmoi
 import plugins.jokes
 import plugins.twitter
 import plugins.dassin
+import plugins.eightball
 
 random.seed()
 
