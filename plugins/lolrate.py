@@ -1,13 +1,15 @@
+"See PluginLolrate"
 from datetime import datetime
 from toflib import cmd, Plugin
 import re
 
 class TimeSlice():
+    "An amount of time (1 hour) with an associated integer count"
 
     def __init__(self):
-        t = datetime.now()
-        self.date = t.date()
-        self.hour = t.hour
+        now = datetime.now()
+        self.date = now.date()
+        self.hour = now.hour
         self.kevins = dict()
         self.count = 0
 
@@ -28,46 +30,62 @@ class TimeSlice():
         return hash(self.date) + hash(self.hour)
 
     def lol(self, nick, count):
-      self.kevins.setdefault(nick,0)
-      self.kevins[nick] += count
-      self.count += count
+        "Called when something funny happens on the chan"
+        self.kevins.setdefault(nick, 0)
+        self.kevins[nick] += count
+        self.count += count
 
 class PluginLolrate(Plugin):
+    "A plugin to compute number of lols and the current Kevin of the day."
 
     def __init__(self, bot):
         Plugin.__init__(self, bot)
-        self.lolRate = [TimeSlice()]
+        self.lol_rate = [TimeSlice()]
         bot._mutable_attributes['lolRateDepth'] = int
 
-    def handle_msg(self, msg_text, chan, nick):
-        lulz = len(re.findall("[lI1]+[o0]+[lI1]+", msg_text, flags=re.IGNORECASE))
+    def handle_msg(self, msg_text, _chan, nick):
+        """
+        If msg_text matches the lol regexp,
+        increment the lolness for the current timeslice.
+        """
+        lol_regexp = "[lI1]+[o0]+[lI1]+"
+        lulz = len(re.findall(lol_regexp, msg_text, flags=re.IGNORECASE))
         if lulz > 0:
-            ts = TimeSlice()
-            if ts != self.lolRate[0]:
-                self.lolRate.insert(0,ts)
+            current_ts = TimeSlice()
+            if current_ts != self.lol_rate[0]:
+                self.lol_rate.insert(0, current_ts)
 
-            if len(self.lolRate) > self.bot.lolRateDepth:
-                self.lolRate.pop()
+            if len(self.lol_rate) > self.bot.lolRateDepth:
+                self.lol_rate.pop()
 
-            self.lolRate[0].lol(nick,lulz)
+            self.lol_rate[0].lol(nick, lulz)
 
     @cmd(0)
-    def cmd_lulz(self, chan, args):
-        for lolade in self.lolRate:
+    def cmd_lulz(self, _chan, _args):
+        "Display the number of lulz in the previous hours"
+        for lolade in self.lol_rate:
             self.say(str(lolade))
 
     @cmd(0)
-    def cmd_kevin(self, chan, args):
+    def cmd_kevin(self, _chan, _args):
+        "Display the nick with the most lulz"
         kevins = dict()
-        for lolade in self.lolRate:
+        for lolade in self.lol_rate:
             for kevin in lolade.kevins.iteritems():
-                kevins.setdefault(kevin[0],0)
+                kevins.setdefault(kevin[0], 0)
                 kevins[kevin[0]] += kevin[1]
         
         if len(kevins) > 0:
-            kevin = max(kevins,key=lambda a: kevins.get(a))
+            def kevin_value(nick):
+                "Fetch amount of lulz for a nick"
+                return kevins.get(nick)
+            kevin = max(kevins, key=kevin_value)
             lolades = kevins[kevin]
-            self.say(str(kevin) + " est le Kevin du moment avec " + str(lolades) + " lolade" + ("s" if lolades > 1 else ""))
+            plural = ""
+            if lolades > 1:
+                plural = "s"
+            self.say("%s est le Kevin du moment avec %d lolade%s" %
+                        (kevin, lolades, plural))
         else:
             self.say("pas de Kevin")
 
