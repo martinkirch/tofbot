@@ -1,3 +1,10 @@
+# This file is part of tofbot, a friendly IRC bot.
+# You may redistribute it under the Simplified BSD License.
+# If we meet some day, and you think this stuff is worth it,
+# you can buy us a beer in return.
+#
+# Copyright (c) 2011 Etienne Millon <etienne.millon@gmail.com>
+
 "See PluginDonnezmoi"
 from toflib import Plugin
 import time

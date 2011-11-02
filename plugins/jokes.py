@@ -1,3 +1,12 @@
+# This file is part of tofbot, a friendly IRC bot.
+# You may redistribute it under the Simplified BSD License.
+# If we meet some day, and you think this stuff is worth it,
+# you can buy us a beer in return.
+#
+# Copyright (c) 2011 Etienne Millon <etienne.millon@gmail.com>
+#                    Martin Kirchgessner <martin.kirch@gmail.com>
+#                    Nicolas Dumazet <nicdumz.commits@gmail.com>
+
 from tofdata.jokes import jokes
 from tofdata.chucknorris import chuckNorrisFacts
 from tofdata.riddles import riddles
