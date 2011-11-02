@@ -3,7 +3,7 @@
 # If we meet some day, and you think this stuff is worth it,
 # you can buy us a beer in return.
 #
-# Copyright (c) Christophe-Marie Duquesne <chm.duquesne@gmail.com>
+# Copyright (c) 2011 Christophe-Marie Duquesne <chm.duquesne@gmail.com>
 """
 Naive Bayesian classifier.
 
