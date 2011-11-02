@@ -81,7 +81,7 @@ class Tofbot(Bot):
     def load_plugins(self):
         d = os.path.dirname(__file__)
         plugindir = os.path.join(d, 'plugins')
-        plugin_instances = []
+        plugin_instances = {}
         for m in dir(plugins):
             if type(getattr(plugins,m)) != types.ModuleType:
                 continue
@@ -90,9 +90,11 @@ class Tofbot(Bot):
                 c = getattr(plugin, n)
                 if type(c) not in [types.ClassType, types.TypeType]:
                     continue
-                if c.__name__.startswith('Plugin'):
+                name = c.__name__
+                if name.startswith('Plugin'):
                     instance = c(self)
-                    plugin_instances.append(instance)
+                    plugin_name = name[6:].lower()
+                    plugin_instances[plugin_name] = instance
         return plugin_instances
 
     # line-feed-safe
@@ -133,7 +135,7 @@ class Tofbot(Bot):
             commandType = args[1]
 
         if commandType == 'JOIN':
-            for p in self.plugins:
+            for p in self.plugins.values():
                 if hasattr(p, 'handle_join'):
                     p.handle_join(args[0], senderNick)
 
@@ -161,7 +163,7 @@ class Tofbot(Bot):
                 if len(cmd) == 0:
                     return
                
-                for p in self.plugins:
+                for p in self.plugins.values():
                     if hasattr(p, 'handle_msg'):
                         p.handle_msg(msg_text, chan, senderNick)
                
@@ -191,7 +193,7 @@ class Tofbot(Bot):
                 self.send_context(senderNick)
 
     def find_cmd_action(self, cmd_name):
-        targets = self.plugins
+        targets = self.plugins.values()
         targets.insert(0, self)
 
         for t in targets:
