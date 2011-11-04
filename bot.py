@@ -302,22 +302,22 @@ class Tofbot(Bot):
         self.msg(chan, "you can also !get or !set " + ", ".join(self._mutable_attributes.keys()))
         self.msg(chan, "If random-tofades are boring you, enter 'TG " + self.nick + "' (but can be cancelled by GG " + self.nick + ")")
 
-    def config_load(self, filename):
+    def load(self, filename):
         with open(filename) as f:
             state = json.load(f)
             if state['version'] != 1:
                 return False
             for name, plugin_state in state['plugins'].items():
                 plugin = self.plugins[name]
-                plugin.config_load(plugin_state)
+                plugin.load(plugin_state)
 
-    def config_save(self, filename):
+    def save(self, filename):
         with open(filename) as f:
             state = { 'version': 1
                     , 'plugins': {}
                     }
             for name, plugin in self.plugins.keys():
-                plugin_state = plugin.config_save()
+                plugin_state = plugin.save()
                 state['plugins'][name] = plugin_state
             json.dump(state, indent=4, fp=f)
 
