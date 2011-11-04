@@ -1,9 +1,17 @@
-from datetime import datetime
+# This file is part of tofbot, a friendly IRC bot.
+# You may redistribute it under the Simplified BSD License.
+# If we meet some day, and you think this stuff is worth it,
+# you can buy us a beer in return.
+#
+# Copyright (c) 2011 Etienne Millon <etienne.millon@gmail.com>
+#                    Christophe-Marie Duquesne <chm.duquesne@gmail.com>
+
+"See PluginTwitter"
 from toflib import cmd, Plugin, CronEvent
 import json
 import urllib2
 
-def lastTweet(user):
+def last_tweet(user):
     """
     Returns the last tweet of the given user (None if problem)
     """
@@ -16,29 +24,37 @@ def lastTweet(user):
         return None
 
 class TweetEvent(CronEvent):
+    """
+    Polls twitter every default period.
+    If the last tweet is different from last time, print it !
+    """
 
     def __init__(self, plugin, user):
         CronEvent.__init__(self, plugin)
         self.user = user
-        self.previousTweet = None
+        self.previous_tweet = None
 
     def fire(self):
         print "%s fire()" % self
-        tweet = lastTweet(self.user)
+        tweet = last_tweet(self.user)
         if tweet is None:
             return
-        if tweet != self.previousTweet:
+        if tweet != self.previous_tweet:
             self.plugin.say("@%s: %s" % (self.user, tweet))
-            self.previousTweet = tweet
+            self.previous_tweet = tweet
 
 class PluginTwitter(Plugin):
+    """
+    A twitter client plugin.
+    It is possible to follow users with the 'twitter_track' command.
+    """
 
     def __init__(self, bot):
         Plugin.__init__(self, bot)
 
     @cmd(1)
-    def cmd_twitter_track(self, chan, args):
+    def cmd_twitter_track(self, _chan, args):
         "Follow a user on twitter"
         user = args[0]
-        ev = TweetEvent(self, user)
-        self.bot.cron.schedule(ev)
+        event = TweetEvent(self, user)
+        self.bot.cron.schedule(event)

@@ -1,5 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+#
+# This file is part of tofbot, a friendly IRC bot.
+# You may redistribute it under the Simplified BSD License.
+# If we meet some day, and you think this stuff is worth it,
+# you can buy us a beer in return.
+#
+# Copyright (c) 2011 Etienne Millon <etienne.millon@gmail.com>
+#                    Martin Kirchgessner <martin.kirch@gmail.com>
+#                    Nicolas Dumazet <nicdumz.commits@gmail.com>
+#                    Quentin Sabah <quentin.sabah@gmail.com>
+
 """
 ./bot.py [options] [legacy-arguments]
 
@@ -29,6 +40,7 @@ import plugins.donnezmoi
 import plugins.jokes
 import plugins.twitter
 import plugins.dassin
+import plugins.eightball
 
 random.seed()
 
@@ -134,9 +146,6 @@ class Tofbot(Bot):
                 respawn_msg = 'comment ça, %s ?' % reason
             self.write(('JOIN', chan))
             self.msg(chan, respawn_msg)
-
-        elif commandType == 'PING':
-            self.cron.tick()
 
         elif commandType == 'PRIVMSG':
             msg_text = args[0]

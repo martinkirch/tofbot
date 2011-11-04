@@ -1,47 +1,58 @@
+# This file is part of tofbot, a friendly IRC bot.
+# You may redistribute it under the Simplified BSD License.
+# If we meet some day, and you think this stuff is worth it,
+# you can buy us a beer in return.
+#
+# Copyright (c) 2011 Etienne Millon <etienne.millon@gmail.com>
+"See PluginEuler"
 from toflib import cmd, Plugin, CronEvent
 import urllib2
 
 class EulerEvent(CronEvent):
+    "Every default period, poll projecteuler.net"
 
     def __init__(self, plugin):
         CronEvent.__init__(self, plugin)
 
     def fire(self):
-        newScores = self.plugin.euler_update_data()
-        for nick, oldScore in self.plugin._eulerScores.items():
-            newScore = newScores[nick]
-            if newScore != oldScore:
-                self.plugin.say("%s : %s -> %s" % (nick, oldScore, newScore))
-        self.plugin._eulerScores = newScores
+        "If one of the scores has changed, print it"
+        new_scores = self.plugin.fetch_scores()
+        for nick, old_score in self.plugin.scores.items():
+            new_score = new_scores[nick]
+            if new_score != old_score:
+                self.plugin.say("%s : %s -> %s" % (nick, old_score, new_score))
+        self.plugin.scores = new_scores
 
 class PluginEuler(Plugin):
+    "A plugin to monitor projecteuler.net scores"
 
     def __init__(self, bot):
         Plugin.__init__(self, bot)
-        self._eulerScores = {}
-        self._eulerNicks = set()
+        self.scores = {}
+        self._euler_nicks = set()
 
-    def euler_update_data(self):
+    def fetch_scores(self):
+        "Retrieve new scores from projecteuler.net for every nick"
         scores = {}
-        for nick in self._eulerNicks:
+        for nick in self._euler_nicks:
             url = "http://projecteuler.net/profile/%s.txt" % nick
-            s = urllib2.urlopen(url).read().split(',')
-            if(len(s) >= 4):
-                scores[nick] = s[3]
+            data = urllib2.urlopen(url).read().split(',')
+            if(len(data) >= 4):
+                scores[nick] = data[3]
         return scores
 
     @cmd(0)
-    def cmd_euler(self, chan, args):
+    def cmd_euler(self, _chan, _args):
         "Display PE scores"
-        self._eulerScores = self.euler_update_data()
-        for nick, score in self._eulerScores.items():
+        self.scores = self.fetch_scores()
+        for nick, score in self.scores.items():
             self.say("%s : %s" %(nick, score))
 
     @cmd(1)
-    def cmd_euler_add(self, chan, args):
+    def cmd_euler_add(self, _chan, args):
         "Add a PE account"
         who = args[0]
-        self._eulerNicks.add(who)
-        ev = EulerEvent(self)
-        self.bot.cron.schedule(ev)
+        self._euler_nicks.add(who)
+        event = EulerEvent(self)
+        self.bot.cron.schedule(event)
 
