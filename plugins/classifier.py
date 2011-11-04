@@ -117,6 +117,28 @@ class SqliteBackend(StorageBackend):
         cursor.close()
         return res
 
+class MemoryBackend(StorageBackend):
+    """
+    "In memory" storage backend.
+    """
+
+    def __init__(self, data={}):
+        """
+        init from a dictionary
+        """
+        self.data = data
+
+    def add_match(self, c, f=''):
+        c_matches = self.data.get(c, {})
+        c_matches[f] = c_matches.get(f, 0) + 1
+        self.data[c] = c_matches
+
+    def nb_matches(self, c, f=''):
+        return self.data.get(c, {}).get(f, 0)
+
+    def classes(self):
+        return self.data.keys()
+
 class NaiveBayesClassifier:
     """
     A Bayes Classifier knows "features" (properties used to recognize) and

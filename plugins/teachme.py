@@ -7,19 +7,31 @@
 #
 # Copyright (c) 2011 Christophe-Marie Duquesne <chm.duquesne@gmail.com>
 #                    Etienne Millon <etienne.millon@gmail.com>
+#
+from __future__ import with_statement
 from toflib import Plugin
 from toflib import distance
-from classifier import NaiveBayesClassifier, SqliteBackend
+from classifier import NaiveBayesClassifier, MemoryBackend
+import json
 
 class PluginTeachMe(Plugin):
 
     def __init__(self, *args):
         Plugin.__init__(self, *args)
-        self.classifier = NaiveBayesClassifier(SqliteBackend("db"))
+        # hack while emillon adds generic loading stuff
+        with open("db.json") as f:
+            data = json.load(f)
+        storage_backend = MemoryBackend(data)
+        self.classifier = NaiveBayesClassifier(storage_backend)
         self.curr_msg = ''
         self.last_msg = ''
         self.last_joke = ()
         self.just_joked = False
+
+    def serialize(self):
+        # hack while emillon adds generic serialization stuff
+        with open("db.json", "wb") as f:
+            json.dump(self.classifier.storage.data, fp=f)
 
     def get_what_to_learn(self):
         if self.curr_msg in ('CMB', 'cmb'):
@@ -59,3 +71,4 @@ class PluginTeachMe(Plugin):
                 if not just_joked:
                     self.classifier.train(self.last_msg.split(),
                             self.get_what_to_learn())
+        self.serialize()
