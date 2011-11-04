@@ -14,7 +14,7 @@
 """
 ./bot.py [options] [legacy-arguments]
 
-Legacy-arguments: 
+Legacy-arguments:
   NICK CHANNEL [CHANNEL...]
 
   Don't prepend a # to chan names
@@ -41,6 +41,7 @@ import plugins.jokes
 import plugins.twitter
 import plugins.dassin
 import plugins.eightball
+import plugins.teachme
 
 random.seed()
 
@@ -99,7 +100,7 @@ class Tofbot(Bot):
     def msg(self, chan, msg):
         for m in msg.split("\n"):
             Bot.msg(self, chan, m)
-        
+
     def log(self, msg):
         if self.debug:
             print(msg)
@@ -115,7 +116,7 @@ class Tofbot(Bot):
 
     def dispatch(self, origin, args):
         self.log("o=%s n=%s a=%s" % (origin.sender, origin.nick, args))
-        
+
         is_config = False
         senderNick = origin.nick
         commandType = args[1]
@@ -152,19 +153,19 @@ class Tofbot(Bot):
             msg = msg_text.split(" ")
             cmd = msg[0]
             chan = args[2]
-            
+
             self.pings[senderNick] = datetime.now()
-            
+
             if is_config == False:
                 self.cron.tick()
-               
+
                 if len(cmd) == 0:
                     return
-               
+
                 for p in self.plugins:
                     if hasattr(p, 'handle_msg'):
                         p.handle_msg(msg_text, chan, senderNick)
-               
+
                 if chan == self.channels[0] and cmd[0] != '!':
                     self.msgMemory.append("<" + senderNick + "> " + msg_text)
                     if len(self.msgMemory) > self.memoryDepth:
@@ -172,7 +173,7 @@ class Tofbot(Bot):
 
             if len(cmd) == 0 or cmd[0] != '!':
                 return
-            
+
             cmd = cmd[1:]
 
             chan = None
@@ -228,12 +229,12 @@ class Tofbot(Bot):
       new_chan = args[0]
       if self.channels.count(new_chan) == 0:
         self.channels.append(new_chan)
-      
+
     @confcmd(1)
     def confcmd_server(self, chan, args):
       host = args[0].strip()
       self.host = host
-    
+
     @confcmd(1)
     def confcmd_port(self, chan, args):
       port = int(args[0].strip())
@@ -255,8 +256,8 @@ class Tofbot(Bot):
         "Find when X was last online"
         who = args[0]
         if who in self.pings:
-            self.msg(chan, 
-                "Last message from %s was on %s (btw my local time is %s)" % 
+            self.msg(chan,
+                "Last message from %s was on %s (btw my local time is %s)" %
                 (who, self.pings[who].__str__(), datetime.now().__str__() ))
         else:
             self.msg(chan, "I havn't seen any message from " + who)
@@ -283,7 +284,7 @@ class Tofbot(Bot):
     def send_context(self, to):
         intro = "Last " + str(len(self.msgMemory)) + " messages sent on " + self.channels[0] + " :"
         self.msg(to, intro)
-        
+
         for msg in self.msgMemory:
             self.msg(to, msg)
 
