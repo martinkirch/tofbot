@@ -111,8 +111,10 @@ class PluginDassin(Plugin):
                  "y'a pas de concession",
                  "tu vis et faut vivre à fond"
                  ]
+	
+	oizo = ["coucou","tu veux voir ma bite ?"]
 
-        songs = [ete, colline, bora]
+        songs = [oizo, ete, colline, bora]
         
         searched = msg_text.lower()
         minDist = 9999999
