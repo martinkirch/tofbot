@@ -33,6 +33,7 @@ from toflib import *
 from toflib import _simple_dispatch, _simple_conf_dispatch
 import re
 from optparse import OptionParser
+import json
 
 import plugins.euler
 import plugins.lolrate
@@ -312,11 +313,11 @@ class Tofbot(Bot):
                 plugin.load(plugin_state)
 
     def save(self, filename):
-        with open(filename) as f:
+        with open(filename, 'w') as f:
             state = { 'version': 1
                     , 'plugins': {}
                     }
-            for name, plugin in self.plugins.keys():
+            for name, plugin in self.plugins.items():
                 plugin_state = plugin.save()
                 state['plugins'][name] = plugin_state
             json.dump(state, indent=4, fp=f)
