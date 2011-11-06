@@ -144,6 +144,14 @@ class Plugin(object):
     def say(self, msg):
         self.bot.msg(self.bot.channels[0], msg)
 
+    def load(self, data):
+        "Called after plugin initialization to set its internal state"
+        pass
+
+    def save(self):
+        "Called periodically to serialize data to a file"
+        return {}
+
 class CronEvent:
 
     def __init__(self, plugin):

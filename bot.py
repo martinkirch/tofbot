@@ -33,6 +33,7 @@ from toflib import *
 from toflib import _simple_dispatch, _simple_conf_dispatch
 import re
 from optparse import OptionParser
+import json
 
 import plugins.euler
 import plugins.lolrate
@@ -82,7 +83,7 @@ class Tofbot(Bot):
     def load_plugins(self):
         d = os.path.dirname(__file__)
         plugindir = os.path.join(d, 'plugins')
-        plugin_instances = []
+        plugin_instances = {}
         for m in dir(plugins):
             if type(getattr(plugins,m)) != types.ModuleType:
                 continue
@@ -91,9 +92,11 @@ class Tofbot(Bot):
                 c = getattr(plugin, n)
                 if type(c) not in [types.ClassType, types.TypeType]:
                     continue
-                if c.__name__.startswith('Plugin'):
+                name = c.__name__
+                if name.startswith('Plugin'):
                     instance = c(self)
-                    plugin_instances.append(instance)
+                    plugin_name = name[6:].lower()
+                    plugin_instances[plugin_name] = instance
         return plugin_instances
 
     # line-feed-safe
@@ -134,7 +137,7 @@ class Tofbot(Bot):
             commandType = args[1]
 
         if commandType == 'JOIN':
-            for p in self.plugins:
+            for p in self.plugins.values():
                 if hasattr(p, 'handle_join'):
                     p.handle_join(args[0], senderNick)
 
@@ -161,8 +164,8 @@ class Tofbot(Bot):
 
                 if len(cmd) == 0:
                     return
-
-                for p in self.plugins:
+               
+                for p in self.plugins.values():
                     if hasattr(p, 'handle_msg'):
                         p.handle_msg(msg_text, chan, senderNick)
 
@@ -192,7 +195,7 @@ class Tofbot(Bot):
                 self.send_context(senderNick)
 
     def find_cmd_action(self, cmd_name):
-        targets = self.plugins
+        targets = self.plugins.values()
         targets.insert(0, self)
 
         for t in targets:
@@ -299,6 +302,25 @@ class Tofbot(Bot):
             self.msg(chan, '%*s - %s' % (maxlen, "!"+cmd, f.__doc__))
         self.msg(chan, "you can also !get or !set " + ", ".join(self._mutable_attributes.keys()))
         self.msg(chan, "If random-tofades are boring you, enter 'TG " + self.nick + "' (but can be cancelled by GG " + self.nick + ")")
+
+    def load(self, filename):
+        with open(filename) as f:
+            state = json.load(f)
+            if state['version'] != 1:
+                return False
+            for name, plugin_state in state['plugins'].items():
+                plugin = self.plugins[name]
+                plugin.load(plugin_state)
+
+    def save(self, filename):
+        with open(filename, 'w') as f:
+            state = { 'version': 1
+                    , 'plugins': {}
+                    }
+            for name, plugin in self.plugins.items():
+                plugin_state = plugin.save()
+                state['plugins'][name] = plugin_state
+            json.dump(state, indent=4, fp=f)
 
 if __name__ == "__main__":
     class FakeOrigin:
