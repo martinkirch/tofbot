@@ -34,6 +34,7 @@ from toflib import _simple_dispatch, _simple_conf_dispatch
 import re
 from optparse import OptionParser
 import json
+import atexit
 
 import plugins.euler
 import plugins.lolrate
@@ -45,6 +46,16 @@ import plugins.eightball
 import plugins.teachme
 
 random.seed()
+
+class AutosaveEvent(CronEvent):
+
+    def __init__(self, bot, filename):
+        CronEvent.__init__(self, None)
+        self.filename = filename
+        self.bot = bot
+
+    def fire(self):
+        self.bot.save(self.filename)
 
 class Tofbot(Bot):
 
@@ -365,6 +376,22 @@ if __name__ == "__main__":
       cmdsfile = open(filename,'r')
       for line in cmdsfile:
         bot_config(b, line)
+
+    # Restore serialized data
+    state_file = "state.json"
+    if os.path.isfile(state_file):
+        b.load(state_file)
+
+    # Perform auto-save periodically
+    autosaveEvent = AutosaveEvent(b, state_file)
+    b.cron.schedule(autosaveEvent)
+
+    # ... and save at exit
+    @atexit.register
+    def save_atexit():
+        print("Exiting, saving state...")
+        b.save(state_file)
+        print("Done !")
 
     # default host when legacy-mode
     if options.host == None and len(options.cmds) == 0 and len(args) > 0:

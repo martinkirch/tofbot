@@ -18,20 +18,19 @@ class PluginTeachMe(Plugin):
 
     def __init__(self, *args):
         Plugin.__init__(self, *args)
-        # hack while emillon adds generic loading stuff
-        with open("db.json") as f:
-            data = json.load(f)
-        storage_backend = MemoryBackend(data)
-        self.classifier = NaiveBayesClassifier(storage_backend)
+        self.classifier = None
+        self.load({})
         self.curr_msg = ''
         self.last_msg = ''
         self.last_joke = ()
         self.just_joked = False
 
-    def serialize(self):
-        # hack while emillon adds generic serialization stuff
-        with open("db.json", "wb") as f:
-            json.dump(self.classifier.storage.data, fp=f)
+    def load(self, data):
+        storage_backend = MemoryBackend(data)
+        self.classifier = NaiveBayesClassifier(storage_backend)
+
+    def save(self):
+        return self.classifier.storage.data
 
     def get_what_to_learn(self):
         if self.curr_msg in ('CMB', 'cmb'):
@@ -71,4 +70,3 @@ class PluginTeachMe(Plugin):
                 if not just_joked:
                     self.classifier.train(self.last_msg.split(),
                             self.get_what_to_learn())
-        self.serialize()
