@@ -9,6 +9,7 @@
 
 from toflib import Plugin
 import re
+import sre_constants
 
 class PluginSed(Plugin):
     "That's what she sed"
@@ -26,7 +27,10 @@ class PluginSed(Plugin):
             to = m.group(2)
             msg_who = self.msg[0]
             msg_what = self.msg[1]
-            new_msg = re.sub(regexp, to, msg_what)
-            self.say("<%s> : %s" % (msg_who, new_msg))
+            try:
+                new_msg = re.sub(regexp, to, msg_what)
+                self.say("<%s> : %s" % (msg_who, new_msg))
+            except sre_constants.error:
+                pass
 
         self.msg = (nick, msg_text)
