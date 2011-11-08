@@ -29,7 +29,8 @@ class PluginSed(Plugin):
             msg_what = self.msg[1]
             try:
                 new_msg = re.sub(regexp, to, msg_what)
-                self.say("<%s> : %s" % (msg_who, new_msg))
+                if new_msg != msg_what:
+                    self.say("<%s> : %s" % (msg_who, new_msg))
             except sre_constants.error:
                 pass
 
