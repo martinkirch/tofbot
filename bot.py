@@ -164,7 +164,7 @@ class Tofbot(Bot):
             self.msg(chan, respawn_msg)
 
         elif commandType == 'PRIVMSG':
-            msg_text = args[0]
+            msg_text = args[0].decode('utf-8')
             msg = msg_text.split(" ")
             cmd = msg[0]
             chan = args[2]
