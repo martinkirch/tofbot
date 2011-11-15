@@ -9,7 +9,7 @@
 
 from toflib import Plugin, InnocentHand
 
-class PluginEuler(Plugin):
+class PluginEightBall(Plugin):
     "Magic 8 ball plugin"
 
     def __init__(self, bot):
