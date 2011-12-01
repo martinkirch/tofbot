@@ -116,7 +116,41 @@ class PluginDassin(Plugin):
 
         hell = ["hell", "cook"]
 
-        songs = [oizo, ete, colline, bora, hell]
+        hibernatus = [ "j'ai tout visité en 2 secondes"
+                     , "Pékin, Tokyo, la Joconde"
+                     , "j'ai fait tous les jobs possibles"
+                     , "plombier, pute et belle fille"
+                     , "j'ai sodomisé un louveteau"
+                     , "avec le manche d'un marteau"
+                     , "j'ai grandi à Harlem"
+                     , "avec Paul Préboist et Vandel"
+                     , "j'ai braqué le CIO"
+                     , "pour m'acheter le Figaro"
+                     , "j'ai buté ma grand-mére"
+                     , "parce que je ne savais pas quoi faire"
+                     , "j'ai aussi buté Diana"
+                     , "mais pour de l'argent cette fois"
+                     , "j'ai été chez un psy"
+                     , "pour lui dire que j'étais guérie"
+                     , "j'ai aussi mangé du dauphin"
+                     , "flipper était pas si malin"
+                     , "j'ai fais la Star Academy"
+                     , "pour chanter avec Fiori"
+                     , "j'ai inventé la bouffe congelée"
+                     , "et j'me ferai cryogéniser"
+                     , "j'ai déjà vu Hibernatus"
+                     , "j'ai le Dvd dans mon anus"
+                     , "j'suis déjà allée partout"
+                     , "j'ai tout ramené, je connais tout"
+                     , "j'ai pas besoin d'en apprendre plus"
+                     , "j'ai le dvd dans mon anus"
+                     , "j'suis déjà allée partout"
+                     , "j'ai tout ramené, je connais tout"
+                     , "j'ai pas besoin d'en apprendre plus"
+                     , "j'ai le dvd dans mon anus"
+                     ]
+
+        songs = [oizo, ete, colline, bora, hell, hibernatus]
         
         searched = msg_text.lower()
         minDist = 9999999
