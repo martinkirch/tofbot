@@ -114,7 +114,9 @@ class PluginDassin(Plugin):
 	
 	oizo = ["coucou","tu veux voir ma bite ?"]
 
-        songs = [oizo, ete, colline, bora]
+        hell = ["hell", "cook"]
+
+        songs = [oizo, ete, colline, bora, hell]
         
         searched = msg_text.lower()
         minDist = 9999999
