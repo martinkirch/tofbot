@@ -45,6 +45,7 @@ import plugins.dassin
 import plugins.eightball
 import plugins.teachme
 import plugins.sed
+import plugins.rick
 
 random.seed()
 
