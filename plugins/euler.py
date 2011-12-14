@@ -36,9 +36,12 @@ class PluginEuler(Plugin):
         scores = {}
         for nick in self._euler_nicks:
             url = "http://projecteuler.net/profile/%s.txt" % nick
-            data = urllib2.urlopen(url).read().split(',')
-            if(len(data) >= 4):
-                scores[nick] = data[3]
+            try:
+                data = urllib2.urlopen(url).read().split(',')
+                if(len(data) >= 4):
+                    scores[nick] = data[3]
+            except:
+                pass
         return scores
 
     @cmd(0)
