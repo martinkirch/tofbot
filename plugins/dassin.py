@@ -154,7 +154,7 @@ class PluginDassin(Plugin):
         
         searched = msg_text.lower()
         minDist = 9999999
-        best = None
+        best = False
         
         for song in songs:
             try:
@@ -168,5 +168,5 @@ class PluginDassin(Plugin):
             except:
                 pass
         
-        if best is not None and len(best) > 1 and minDist < (len(searched)/5):
+        if len(best) > 1 and minDist < (len(searched)/5):
             self.say(best)
