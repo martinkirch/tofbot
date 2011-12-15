@@ -35,6 +35,7 @@ import re
 from optparse import OptionParser
 import json
 import atexit
+import socket
 
 import plugins.euler
 import plugins.lolrate
@@ -344,6 +345,9 @@ if __name__ == "__main__":
       o.sender = 'bot_config'
       o.nick = 'bot_config'
       b.dispatch(o, [cmd.strip(), 'BOTCONFIG','PRIVMSG','#bot_config'])
+
+    # default timeout for urllib2, in seconds
+    socket.setdefaulttimeout(15)
 
     # option parser
     parser = OptionParser(__doc__)
