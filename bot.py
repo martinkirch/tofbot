@@ -208,6 +208,9 @@ class Tofbot(Bot):
             elif cmd == 'context':
                 self.send_context(senderNick)
 
+        else: # Unknown command type
+            self.log('Unknown command type : %s' % commandType)
+
     def find_cmd_action(self, cmd_name):
         targets = self.plugins.values()
         targets.insert(0, self)
