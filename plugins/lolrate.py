@@ -56,7 +56,7 @@ class PluginLolrate(Plugin):
         If msg_text matches the lol regexp,
         increment the lolness for the current timeslice.
         """
-        lol_regexp = "[lI1]+[o0]+[lI1]+"
+        lol_regexp = "[lI1]+[o0u]+[lI1]+z?"
         lulz = len(re.findall(lol_regexp, msg_text, flags=re.IGNORECASE))
         if lulz > 0:
             current_ts = TimeSlice()
