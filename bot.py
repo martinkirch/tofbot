@@ -325,8 +325,11 @@ class Tofbot(Bot):
             if state['version'] != 1:
                 return False
             for name, plugin_state in state['plugins'].items():
-                plugin = self.plugins[name]
-                plugin.load(plugin_state)
+                try:
+                    plugin = self.plugins[name]
+                    plugin.load(plugin_state)
+                except KeyError:
+                    pass
 
     def save(self, filename):
         with open(filename, 'w') as f:
