@@ -44,7 +44,6 @@ import plugins.jokes
 import plugins.twitter
 import plugins.dassin
 import plugins.eightball
-import plugins.teachme
 import plugins.sed
 import plugins.rick
 
