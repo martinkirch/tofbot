@@ -52,7 +52,7 @@ class PluginDassin(Plugin):
                   , "elle n'est jamais venue"
                   , "zay zay zay zay"
                   ]
-        
+
         # Rone - Bora (vocal edit, un texte d'Alain Damasio), texte redécoupé pour que ça toffe
         bora = [ "il n'y pas de secret",
                  "pas de secrets",
@@ -151,11 +151,11 @@ class PluginDassin(Plugin):
                      ]
 
         songs = [oizo, ete, colline, bora, hell, hibernatus]
-        
+
         searched = msg_text.lower()
         minDist = 9999999
         best = False
-        
+
         for song in songs:
             try:
                 i = 0
@@ -167,6 +167,6 @@ class PluginDassin(Plugin):
                     i += 1
             except:
                 pass
-        
+
         if len(best) > 1 and minDist < (len(searched)/5):
             self.say(best)
