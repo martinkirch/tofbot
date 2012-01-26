@@ -45,7 +45,7 @@ RE_URL = re.compile(
     )
     """)
 
-DOMAINS = [ "t.co"
+DOMAINS = [ "t.co/"
           ]
 
 def urls_in(text):
