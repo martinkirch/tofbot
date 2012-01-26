@@ -7,22 +7,24 @@
 #
 # Copyright (c) 2012 Etienne Millon <etienne.millon@gmail.com>
 
+from collections import deque
 from toflib import cmd, Plugin
 
 class PluginLike(Plugin):
 
     def __init__(self, bot):
         Plugin.__init__(self, bot)
-        self.lastNick = None
+        self.history = deque([], 2)
         self.scores = {}
 
     def handle_msg(self, msg_text, chan, nick):
-        self.lastNick = nick
+        self.history.append(nick)
 
     @cmd(0)
     def cmd_like(self, _chan, _args):
-        n = self.lastNick
-        if n is not None:
+        h = self.history
+        if len(h) == 2:
+            n = h[0]
             if n not in self.scores:
                 self.scores[n] = 0
             self.scores[n] += 1
