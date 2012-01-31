@@ -7,6 +7,7 @@
 #
 # Copyright (c) 2012 Etienne Millon <etienne.millon@gmail.com>
 
+from BeautifulSoup import BeautifulSoup
 import requests
 import re
 
@@ -57,19 +58,41 @@ def is_mini(url):
             return True
     return False
 
-def mini_urls_in(text):
-    return filter(is_mini, urls_in(text))
+def is_video(url):
+    return ('youtube' in url)
 
 def urlExpand(url):
     r = requests.get(url)
     return r.url
 
+def getTitle(url):
+    r = requests.get(url)
+    c = r.content
+    s = BeautifulSoup(c)
+    t = s.html.head.title.string
+    return ''.join(t.split("\n")).strip()
+
 class PluginExpand(Plugin):
 
-    def handle_msg(self, msg_text, chan, nick):
-        for url in mini_urls_in(msg_text):
+    def expand_urls(self, urls):
+        for url in urls:
             try:
                 exp = urlExpand(url)
                 self.say(exp)
             except:
                 pass
+
+    def display_titles(self, urls):
+        for url in urls:
+            try:
+                t = getTitle(url)
+                self.say(t)
+            except:
+                pass
+
+    def handle_msg(self, msg_text, chan, nick):
+        urls = urls_in(msg_text)
+        murls = filter(is_mini, urls)
+        vurls = filter(is_video, urls)
+        self.expand_urls(murls)
+        self.display_titles(vurls)
