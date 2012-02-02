@@ -4,7 +4,7 @@
 # TOF_CONFIG  configuration file
 # GIT_REMOTE  name of remote where to pull new objects
 # SSD         start-stop-daemon with pid argument
-# CHANGED     where to write changelog
+# CHANGES     where to write changelog
 # action      in update,start,stop
 
 usage() {
