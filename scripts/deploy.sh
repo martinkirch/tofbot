@@ -22,7 +22,7 @@ case "$action" in
                 cd "$TOF_HOME"
                 git fetch "$GIT_REMOTE"
                 git log --oneline -5 "remotes/$GIT_REMOTE/master..master" > "$CHANGES"
-                git merge "$GIT_REMOTE/master" master
+                git merge --ff-only "$GIT_REMOTE/master"
                 ;;
         start )
 		find "$TOF_HOME" -name '*.pyc' -delete
