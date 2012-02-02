@@ -282,7 +282,7 @@ class Tofbot(Bot):
         if not os.path.exists(filename):
             return
         with open(filename) as f:
-            changes = f.readline()
+            changes = f.readlines()
             self.startMsgs += changes
 
     @cmd(1)
