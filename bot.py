@@ -84,6 +84,7 @@ class Tofbot(Bot):
         self.msgMemory = []
         self.cron = Cron()
         self.plugins = self.load_plugins()
+        self.startMsgs = []
 
     def run(self, host=None):
       if host == None and not hasattr(self,'host'):
@@ -152,6 +153,9 @@ class Tofbot(Bot):
             commandType = args[1]
 
         if commandType == 'JOIN':
+            for m in self.startMsgs:
+                self.msg(self.channels[0], m)
+            self.startMsgs = []
             for p in self.plugins.values():
                 if hasattr(p, 'handle_join'):
                     p.handle_join(args[0], senderNick)
@@ -271,6 +275,15 @@ class Tofbot(Bot):
     def confcmd_name(self, chan, args):
       name = args[0].strip()
       self.name = name
+
+    @confcmd(1)
+    def confcmd_loadchanges(self, chan, args):
+        filename = args[0].strip()
+        if not os.path.exists(filename):
+            return
+        with open(filename) as f:
+            changes = f.readline()
+            self.startMsgs += changes
 
     @cmd(1)
     def cmd_ping(self, chan, args):

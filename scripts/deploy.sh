@@ -1,9 +1,10 @@
 # This script will be sourced with the following variables set
-# 
+#
 # TOF_HOME    location of the git repository
 # TOF_CONFIG  configuration file
 # GIT_REMOTE  name of remote where to pull new objects
 # SSD         start-stop-daemon with pid argument
+# CHANGED     where to write changelog
 # action      in update,start,stop
 
 usage() {
@@ -19,7 +20,9 @@ fi
 case "$action" in
         update )
                 cd "$TOF_HOME"
-                git pull "$GIT_REMOTE" master
+                git fetch "$GIT_REMOTE"
+                git log --oneline -5 "remotes/$GIT_REMOTE/master..master" > "$CHANGES"
+                git merge "$GIT_REMOTE/master" master
                 ;;
         start )
 		find "$TOF_HOME" -name '*.pyc' -delete
