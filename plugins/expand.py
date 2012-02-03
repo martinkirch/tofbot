@@ -49,6 +49,10 @@ RE_URL = re.compile(
 DOMAINS = [ "t.co/"
           ]
 
+VIDEO_DOMAINS = [ "youtube"
+                , "youtu.be"
+                ]
+
 def urls_in(text):
     return [m[0] for m in RE_URL.findall(text)]
 
@@ -59,7 +63,10 @@ def is_mini(url):
     return False
 
 def is_video(url):
-    return ('youtube' in url)
+    for d in VIDEO_DOMAINS:
+        if d in url:
+            return True
+    return False
 
 def urlExpand(url):
     r = requests.get(url)
