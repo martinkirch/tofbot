@@ -22,6 +22,7 @@ class PluginLike(Plugin):
 
     @cmd(0)
     def cmd_like(self, _chan, _args):
+        "Give kudos to the chan's last speaker"
         h = self.history
         if len(h) == 2:
             n = h[0]
@@ -31,6 +32,7 @@ class PluginLike(Plugin):
 
     @cmd(1)
     def cmd_score(self, _chan, args):
+        "Give someone's kudos count"
         n = args[0]
         if n not in self.scores:
             self.say("%s n'est pas très populaire." % n)

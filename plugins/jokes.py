@@ -52,27 +52,33 @@ class PluginJokes(Plugin):
 
     @cmd(0)
     def cmd_fortune(self, chan, args):
+        "Tell great philosophy"
         self.say(self._fortunes())
 
     @cmd(0)
     def cmd_chuck(self, chan, args):
+        "Tell a Chuck Norris fact"
         self.say(self._chuck())
 
     @cmd(0)
     def cmd_tofade(self, chan, args):
+        "Tof randomly"
         self.say(self._tofades())
             
     @cmd(0)
     def cmd_contrepetrie(self, chan, args):
+        "Tell a contrepetrie"
         self.say(self._contrepetries())
 
     @cmd(1)
     def cmd_tofme(self, chan, args):
+        "Tof to someone (give a nickname)"
         who = args[0]
         self.say("%s : %s" % (who, self._tofades()))
 
     @cmd(0)
     def cmd_devinette(self, chan, args):
+        "Riddle teller"
         if not self.active_riddle():
             self.devinette = self.random_riddle(chan)
 
