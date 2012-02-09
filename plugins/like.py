@@ -39,3 +39,12 @@ class PluginLike(Plugin):
         else:
             s = self.scores[n]
             self.say("%d" % s)
+
+    @cmd(1)
+    def cmd_ggg(self, _chan, args):
+        "Tell who is the current Good Guy Greg"
+        if not self.scores:
+            return
+        nick = max(self.scores, key=self.scores.get)
+        score = self.scores[nick]
+        self.say("%s is the current Good Guy Greg with %d 'likes'" % (nick, score))
