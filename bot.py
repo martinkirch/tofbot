@@ -212,6 +212,8 @@ class Tofbot(Bot):
               act(chan, msg[1:])
             elif cmd == 'context':
                 self.send_context(senderNick)
+            elif cmd == 'help':
+                self.send_help(senderNick)
 
         else: # Unknown command type
             self.log('Unknown command type : %s' % commandType)
@@ -316,23 +318,28 @@ class Tofbot(Bot):
             self.msg(chan, "N'écris pas sur mes parties privées !")
 
     def send_context(self, to):
+        "Gives you last messages from the channel"
+    
         intro = "Last " + str(len(self.msgMemory)) + " messages sent on " + self.channels[0] + " :"
         self.msg(to, intro)
 
         for msg in self.msgMemory:
             self.msg(to, msg)
 
-    @cmd(0)
-    def cmd_help(self, chan, args):
+    def send_help(self, to):
         "Show this help message"
         maxlen = 1 + max(map(len, _simple_dispatch))
 
-        self.msg(chan, "Commands should be entered in the channel or by private message")
+        self.msg(to, "Commands should be entered in the channel or by private message")
+        
+        self.msg(to, '%*s - %s' % (maxlen, "!help", self.send_help.__doc__))
+        self.msg(to, '%*s - %s' % (maxlen, "!context", self.send_context.__doc__))
+        
         for cmd in _simple_dispatch:
             f = self.find_cmd_action("cmd_" + cmd)
-            self.msg(chan, '%*s - %s' % (maxlen, "!"+cmd, f.__doc__))
-        self.msg(chan, "you can also !get or !set " + ", ".join(self._mutable_attributes.keys()))
-        self.msg(chan, "If random-tofades are boring you, enter 'TG " + self.nick + "' (but can be cancelled by GG " + self.nick + ")")
+            self.msg(to, '%*s - %s' % (maxlen, "!"+cmd, f.__doc__))
+        self.msg(to, "you can also !get or !set " + ", ".join(self._mutable_attributes.keys()))
+        self.msg(to, "If random-tofades are boring you, enter 'TG " + self.nick + "' (but can be cancelled by GG " + self.nick + ")")
 
     def load(self, filename):
         with open(filename) as f:
