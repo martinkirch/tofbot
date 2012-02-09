@@ -40,7 +40,7 @@ class PluginLike(Plugin):
             s = self.scores[n]
             self.say("%d" % s)
 
-    @cmd(1)
+    @cmd(0)
     def cmd_ggg(self, _chan, args):
         "Tell who is the current Good Guy Greg"
         if not self.scores:
