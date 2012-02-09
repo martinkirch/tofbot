@@ -20,6 +20,7 @@ fi
 case "$action" in
         update )
                 cd "$TOF_HOME"
+                unset GIT_DIR
                 git fetch "$GIT_REMOTE"
                 git log --oneline -5 "remotes/$GIT_REMOTE/master..master" > "$CHANGES"
                 git merge --ff-only "$GIT_REMOTE/master"
