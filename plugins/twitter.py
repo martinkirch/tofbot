@@ -52,9 +52,32 @@ class PluginTwitter(Plugin):
     def __init__(self, bot):
         Plugin.__init__(self, bot)
 
+    def add(self, user):
+        event = TweetEvent(self, user)
+        self.bot.cron.schedule(event)
+
+    def remove(self, user):
+        def ev_to_keep(ev):
+            return not (ev.__class__ == TweetEvent and ev.user == user)
+        self.bot.cron.events = filter(ev_to_keep, self.bot.cron.events)
+
+    def ls(self):
+        evs = self.bot.cron.events
+        self.say (str ([ev.user for ev in evs if ev.__class__ == TweetEvent]))
+
     @cmd(1)
     def cmd_twitter_track(self, _chan, args):
         "Follow a user on twitter"
         user = args[0]
-        event = TweetEvent(self, user)
-        self.bot.cron.schedule(event)
+        self.add(user)
+
+    @cmd(1)
+    def cmd_tw(self, _chan, args):
+        "Manage follow list (!tw +user, !tw -user, !tw ?)"
+        action = args[0]
+        if(action[0] == '+'):
+            self.add(action[1:])
+        elif(action[0] == '-'):
+            self.remove(action[1:])
+        elif(action == '?'):
+            self.ls()
