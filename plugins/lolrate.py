@@ -74,9 +74,7 @@ class PluginLolrate(Plugin):
         for lolade in self.lol_rate:
             self.say(str(lolade))
 
-    @cmd(0)
-    def cmd_kevin(self, _chan, _args):
-        "Display the nick with the most lulz"
+    def compute_kevin(self):
         kevins = dict()
         for lolade in self.lol_rate:
             for kevin in lolade.kevins.iteritems():
@@ -89,11 +87,21 @@ class PluginLolrate(Plugin):
                 return kevins.get(nick)
             kevin = max(kevins, key=kevin_value)
             lolades = kevins[kevin]
+            return (kevin, lolades)
+        else:
+            return None
+
+    @cmd(0)
+    def cmd_kevin(self, _chan, _args):
+        "Display the nick with the most lulz"
+        k = self.compute_kevin()
+        if k is None:
+            self.say("pas de Kevin")
+        else:
+            kevin=k[0]
+            lolades=k[1]
             plural = ""
             if lolades > 1:
                 plural = "s"
             self.say("%s est le Kevin du moment avec %d lolade%s" %
                         (kevin, lolades, plural))
-        else:
-            self.say("pas de Kevin")
-
