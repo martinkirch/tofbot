@@ -124,5 +124,4 @@ class PluginJokes(Plugin):
             respawn_msg = 'respawn, LOL'
         else:
             respawn_msg = 'comment ça, %s ?' % reason
-        bot.write(('JOIN', chan))
         bot.msg(chan, respawn_msg)
