@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#
 # This file is part of tofbot, a friendly IRC bot.
 # You may redistribute it under the Simplified BSD License.
 # If we meet some day, and you think this stuff is worth it,
@@ -105,3 +107,9 @@ class PluginLolrate(Plugin):
                 plural = "s"
             self.say("%s est le Kevin du moment avec %d lolade%s" %
                         (kevin, lolades, plural))
+
+    def on_kick(self, chan, reason):
+        k = self.compute_kevin()
+        if k is not None:
+            kevin=k[0]
+            self.say("Au passage, %s est un sacré Kevin" % kevin)

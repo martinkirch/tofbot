@@ -162,6 +162,7 @@ class Tofbot(Bot):
         elif commandType == 'KICK' and args[3] == self.nick:
             reason = args[0]
             chan = args[2]
+            self.write(('JOIN', chan))
             for p in self.plugins.values():
                 p.on_kick(chan, reason)
 
