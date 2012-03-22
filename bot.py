@@ -157,8 +157,7 @@ class Tofbot(Bot):
                 self.msg(self.channels[0], m)
             self.startMsgs = []
             for p in self.plugins.values():
-                if hasattr(p, 'handle_join'):
-                    p.handle_join(args[0], senderNick)
+                p.on_join(args[0], senderNick)
 
         elif commandType == 'KICK' and args[3] == self.nick:
             reason = args[0]
@@ -187,8 +186,7 @@ class Tofbot(Bot):
                 urls = urls_in(msg_text)
                
                 for p in self.plugins.values():
-                    if hasattr(p, 'handle_msg'):
-                        p.handle_msg(msg_text, chan, senderNick)
+                    p.handle_msg(msg_text, chan, senderNick)
                     for url in urls:
                         p.on_url(url)
 

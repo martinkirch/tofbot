@@ -155,6 +155,12 @@ class Plugin(object):
     def on_url(self, url):
         pass
 
+    def on_join(self, chan, nick):
+        pass
+
+    def handle_msg(self, text, chan, nick):
+        pass
+
 class CronEvent:
 
     def __init__(self, plugin):

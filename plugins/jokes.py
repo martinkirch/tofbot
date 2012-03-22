@@ -82,7 +82,7 @@ class PluginJokes(Plugin):
         if not self.active_riddle():
             self.devinette = self.random_riddle(chan)
 
-    def handle_join(self, chan, nick):
+    def on_join(self, chan, nick):
         if nick == self.bot.nick:
             self.cmd_tofade(chan, [])
         else:
