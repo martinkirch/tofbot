@@ -152,6 +152,9 @@ class Plugin(object):
         "Called periodically to serialize data to a file"
         return {}
 
+    def on_url(self, url):
+        pass
+
 class CronEvent:
 
     def __init__(self, plugin):
@@ -175,3 +178,39 @@ class Cron:
 
     def schedule(self, ev):
         self.events.append(ev)
+
+# http://daringfireball.net/2010/07/improved_regex_for_matching_urls
+# Public Domain
+RE_URL = re.compile(
+   r"""
+    (?xi)
+    \b
+    (                           # Capture 1: entire matched URL
+      (?:
+        [a-z][\w-]+:                # URL protocol and colon
+        (?:
+          /{1,3}                        # 1-3 slashes
+          |                             #   or
+          [a-z0-9%]                     # Single letter or digit or '%'
+                                        # (Trying not to match e.g. "URI::Escape")
+        )
+        |                           #   or
+        www\d{0,3}[.]               # "www.", "www1.", "www2." … "www999."
+        |                           #   or
+        [a-z0-9.\-]+[.][a-z]{2,4}/  # looks like domain name followed by a slash
+      )
+      (?:                           # One or more:
+        [^\s()<>]+                      # Run of non-space, non-()<>
+        |                               #   or
+        \(([^\s()<>]+|(\([^\s()<>]+\)))*\)  # balanced parens, up to 2 levels
+      )+
+      (?:                           # End with:
+        \(([^\s()<>]+|(\([^\s()<>]+\)))*\)  # balanced parens, up to 2 levels
+        |                                   #   or
+        [^\s`!()\[\]{};:'".,<>?«»“”‘’]        # not a space or one of these punct chars
+      )
+    )
+    """)
+
+def urls_in(text):
+    return [m[0] for m in RE_URL.findall(text)]

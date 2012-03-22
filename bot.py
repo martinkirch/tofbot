@@ -30,7 +30,7 @@ import os
 import plugins
 import types
 from toflib import *
-from toflib import _simple_dispatch, _simple_conf_dispatch
+from toflib import _simple_dispatch, _simple_conf_dispatch, urls_in
 import re
 from optparse import OptionParser
 import json
@@ -183,10 +183,14 @@ class Tofbot(Bot):
 
                 if len(cmd) == 0:
                     return
+
+                urls = urls_in(msg_text)
                
                 for p in self.plugins.values():
                     if hasattr(p, 'handle_msg'):
                         p.handle_msg(msg_text, chan, senderNick)
+                    for url in urls:
+                        p.on_url(url)
 
                 if chan == self.channels[0] and cmd[0] != '!':
                     self.msgMemory.append("<" + senderNick + "> " + msg_text)
