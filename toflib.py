@@ -161,6 +161,9 @@ class Plugin(object):
     def handle_msg(self, text, chan, nick):
         pass
 
+    def on_kick(self, chan, reason):
+        pass
+
 class CronEvent:
 
     def __init__(self, plugin):

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#
 # This file is part of tofbot, a friendly IRC bot.
 # You may redistribute it under the Simplified BSD License.
 # If we meet some day, and you think this stuff is worth it,
@@ -116,3 +118,11 @@ class PluginJokes(Plugin):
                           self.bot.riddleMaxDist)
         return r
 
+    def on_kick(self, chan, reason):
+        bot = self.bot
+        if reason == bot.nick:
+            respawn_msg = 'respawn, LOL'
+        else:
+            respawn_msg = 'comment ça, %s ?' % reason
+        bot.write(('JOIN', chan))
+        bot.msg(chan, respawn_msg)

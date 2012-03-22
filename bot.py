@@ -162,12 +162,8 @@ class Tofbot(Bot):
         elif commandType == 'KICK' and args[3] == self.nick:
             reason = args[0]
             chan = args[2]
-            if reason == self.nick:
-                respawn_msg = 'respawn, LOL'
-            else:
-                respawn_msg = 'comment ça, %s ?' % reason
-            self.write(('JOIN', chan))
-            self.msg(chan, respawn_msg)
+            for p in self.plugins.values():
+                p.on_kick(chan, reason)
 
         elif commandType == 'PRIVMSG':
             msg_text = args[0]
