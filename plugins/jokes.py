@@ -87,15 +87,18 @@ class PluginJokes(Plugin):
     def on_join(self, chan, nick):
         if nick == self.bot.nick:
             self.cmd_tofade(chan, [])
+        elif nick == "hellcook":
+            self.say("hellcook: hell !")
         else:
             self.cmd_tofme(chan, [nick])
         
     def handle_msg(self, msg_text, chan, nick):
         if msg_text.strip() == "TG " + self.bot.nick:
             self.lastTGtofbot = time.time()
-
-        if msg_text.strip() == "GG " + self.bot.nick:
+        elif msg_text.strip() == "GG " + self.bot.nick:
             self.lastTGtofbot = 0
+        elif msg_text.find(self.bot.nick, 1) >= 0:
+            self.say(nick+": Ouais, c'est moi !")
 
         if self.active_riddle():
             itsOver = self.devinette.wait_answer(chan, msg_text)
