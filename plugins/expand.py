@@ -14,6 +14,7 @@ import re
 from toflib import Plugin
 
 DOMAINS = [ "t.co/"
+          , "tinyurl.com/"
           ]
 
 VIDEO_DOMAINS = [ "youtube"
