@@ -15,6 +15,7 @@ from toflib import Plugin
 
 DOMAINS = [ "t.co/"
           , "tinyurl.com/"
+          , "bit.ly/"
           ]
 
 VIDEO_DOMAINS = [ "youtube"
