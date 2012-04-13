@@ -91,11 +91,12 @@ class PluginJokes(Plugin):
             self.cmd_tofme(chan, [nick])
         
     def handle_msg(self, msg_text, chan, nick):
-        if msg_text.strip() == "TG " + self.bot.nick:
+        stripped = msg_text.strip().lower()
+        if stripped == "tg " + self.bot.nick:
             self.lastTGtofbot = time.time()
-        elif msg_text.strip() == "GG " + self.bot.nick:
+        elif stripped == "gg " + self.bot.nick:
             self.lastTGtofbot = 0
-        elif msg_text.find(self.bot.nick, 1) >= 0:
+        elif stripped.find(self.bot.nick, 1) >= 0:
             self.say(nick+": Ouais, c'est moi !")
 
         if self.active_riddle():
