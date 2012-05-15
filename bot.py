@@ -36,6 +36,7 @@ from optparse import OptionParser
 import json
 import atexit
 import socket
+import traceback
 
 import plugins.euler
 import plugins.lolrate
@@ -216,6 +217,9 @@ class Tofbot(Bot):
 
         elif commandType == 'PING':
             self.log('PING received in bot.py')
+
+        elif commandType == 'ERROR':
+            traceback.print_exc(file=sys.stdout)
 
         else: # Unknown command type
             self.log('Unknown command type : %s' % commandType)
