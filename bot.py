@@ -214,6 +214,9 @@ class Tofbot(Bot):
             elif cmd == 'help':
                 self.send_help(senderNick)
 
+        elif commandType == 'PING':
+            self.log('PING received in bot.py')
+
         else: # Unknown command type
             self.log('Unknown command type : %s' % commandType)
 
