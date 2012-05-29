@@ -13,6 +13,7 @@ from tofdata.chucknorris import chuckNorrisFacts
 from tofdata.riddles import riddles
 from tofdata.tofades import tofades
 from tofdata.fortunes import fortunes
+from tofdata.contrepetries import contrepetries
 from toflib import cmd, InnocentHand, RiddleTeller, Plugin, CronEvent
 import random
 import time
@@ -37,6 +38,7 @@ class PluginJokes(Plugin):
         self._tofades = InnocentHand(tofades)
         self._riddles = InnocentHand(riddles)
         self._fortunes = InnocentHand(fortunes)
+        self._contrepetries = InnocentHand(contrepetries)
         self.lastTGtofbot = 0
         bot._mutable_attributes["autoTofadeThreshold"] = int
         bot._mutable_attributes["riddleMaxDist"] = int
@@ -58,6 +60,11 @@ class PluginJokes(Plugin):
         "Tof randomly"
         self.say(self._tofades())
             
+    @cmd(0)
+    def cmd_contrepetrie(self, chan, args):
+        "Tell a contrepetrie"
+        self.say(self._contrepetries())
+
     @cmd(1)
     def cmd_tofme(self, chan, args):
         "Tof to someone (give a nickname)"
