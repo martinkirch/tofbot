@@ -5,8 +5,7 @@
 #
 # Copyright (c) 2011 Etienne Millon <etienne.millon@gmail.com>
 "See PluginEuler"
-from toflib import cmd, Plugin, CronEvent
-import urllib2
+from toflib import cmd, Plugin, CronEvent, urlopen
 
 class EulerEvent(CronEvent):
     "Every default period, poll projecteuler.net"
@@ -34,14 +33,14 @@ class PluginEuler(Plugin):
     def fetch_scores(self):
         "Retrieve new scores from projecteuler.net for every nick"
         scores = {}
-        for nick in self._euler_nicks:
-            url = "http://projecteuler.net/profile/%s.txt" % nick
-            try:
-                data = urllib2.urlopen(url).read().split(',')
+        try:
+            for nick in self._euler_nicks:
+                url = "http://projecteuler.net/profile/%s.txt" % nick
+                data = urlopen(url).read().split(',')
                 if(len(data) >= 4):
                     scores[nick] = data[3]
-            except:
-                pass
+        except:
+            pass
         return scores
 
     @cmd(0)

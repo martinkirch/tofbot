@@ -7,9 +7,8 @@
 #                    Christophe-Marie Duquesne <chm.duquesne@gmail.com>
 
 "See PluginTwitter"
-from toflib import cmd, Plugin, CronEvent
+from toflib import cmd, Plugin, CronEvent, urlopen
 import json
-import urllib2
 
 def last_tweet(user):
     """
@@ -17,7 +16,7 @@ def last_tweet(user):
     """
     request = "http://api.twitter.com/1/users/show.json?screen_name=" + user
     try:
-        answer = urllib2.urlopen(request)
+        answer = urlopen(request)
         answer_data = json.load(answer)
         return answer_data["status"]["text"]
     except: # too many things can go wrong to catch explicitly

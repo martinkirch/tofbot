@@ -12,6 +12,7 @@
 import random
 import re
 from datetime import datetime, timedelta
+import urllib2
 
 # those commands directly trigger cmd_* actions
 _simple_dispatch = set()
@@ -223,3 +224,7 @@ RE_URL = re.compile(
 
 def urls_in(text):
     return [m[0] for m in RE_URL.findall(text)]
+
+def urlopen(url):
+    timeout = 10 # seconds
+    return urllib2.urlopen(url, None, timeout)
