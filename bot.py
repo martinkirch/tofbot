@@ -369,7 +369,8 @@ class Tofbot(Bot):
                 state['plugins'][name] = plugin_state
             json.dump(state, indent=4, fp=f)
 
-if __name__ == "__main__":
+
+def __main():
     class FakeOrigin:
       pass
 
@@ -437,4 +438,14 @@ if __name__ == "__main__":
       options.host = 'irc.freenode.net'
 
     b.run(options.host)
+
+if __name__ == "__main__":
+    try:
+        __main()
+    except Exception, ex:
+        import traceback
+        dumpFile = open("_TOFDUMP.txt","w")
+        traceback.print_exc(None, dumpFile)
+        dumpFile.close()
+        raise ex
 
