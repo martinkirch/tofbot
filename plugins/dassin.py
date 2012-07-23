@@ -170,5 +170,5 @@ class PluginDassin(Plugin):
             except:
                 pass
 
-        if len(best) > 1 and minDist < (len(searched)/5):
+        if len(best) > 3 and minDist < (len(searched)/3):
             self.say(best)
