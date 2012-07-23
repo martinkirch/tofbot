@@ -115,6 +115,8 @@ class PluginDassin(Plugin):
 	oizo = ["coucou","tu veux voir ma bite ?"]
 
         hell = ["hell", "cook"]
+        
+        chuck = ["nope", "it's just Chuck Testa !"]
 
         hibernatus = [ "j'ai tout visité en 2 secondes"
                      , "Pékin, Tokyo, la Joconde"
@@ -150,7 +152,7 @@ class PluginDassin(Plugin):
                      , "j'ai le dvd dans mon anus"
                      ]
 
-        songs = [oizo, ete, colline, bora, hell, hibernatus]
+        songs = [oizo, ete, colline, bora, hell, hibernatus, chuck]
 
         searched = msg_text.lower()
         minDist = 9999999
