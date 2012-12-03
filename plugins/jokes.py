@@ -26,7 +26,7 @@ class TofadeEvent(CronEvent):
         self.period = timedelta(seconds=1)
 
     def fire(self):
-        if (random.randint(0, 100) > self.plugin.bot.autoTofadeThreshold and 
+        if (random.randint(0, 100) > self.plugin.bot.autoTofadeThreshold and
             (time.time() - self.plugin.lastTGtofbot) >= (self.plugin.bot.TGtime * 60)):
             self.plugin.say(self.plugin._tofades())
 
@@ -59,7 +59,7 @@ class PluginJokes(Plugin):
     def cmd_tofade(self, chan, args):
         "Tof randomly"
         self.say(self._tofades())
-            
+
     @cmd(0)
     def cmd_contrepetrie(self, chan, args):
         "Tell a contrepetrie"
@@ -79,10 +79,10 @@ class PluginJokes(Plugin):
 
     def on_join(self, chan, nick):
         if nick == "hellcook":
-            self.say("hellcook: hell !")
+            self.say("hellcook: \m/ (⊙▃⊙) \m/ < HELL !!!")
         elif nick <> self.bot.nick:
             self.cmd_tofme(chan, [nick])
-        
+
     def handle_msg(self, msg_text, chan, nick):
         stripped = msg_text.strip().lower()
         if stripped == "tg " + self.bot.nick:
@@ -97,14 +97,14 @@ class PluginJokes(Plugin):
             if itsOver:
                 self.devinette = None
 
-        if (random.randint(0, 100) > self.bot.autoTofadeThreshold and 
+        if (random.randint(0, 100) > self.bot.autoTofadeThreshold and
             (time.time() - self.lastTGtofbot) >= (self.bot.TGtime * 60)):
             self.cmd_tofme(chan, [nick])
 
 
     def active_riddle(self):
         return (hasattr(self, 'devinette') and self.devinette is not None)
-    
+
     def random_riddle(self, chan):
         riddle = self._riddles()
         r = RiddleTeller (riddle,
