@@ -4,7 +4,9 @@ PIDFILE=/var/run/tofbot.pid
 CONFFILE=
 USER=tofbot
 
-. /etc/default/tofbot
+if [ -e /etc/default/tofbot] ; then
+  . /etc/default/tofbot
+else
 
 usage() {
         echo RTFM

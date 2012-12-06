@@ -16,11 +16,6 @@ file {'tofbot-init':
     mode      => 0755,
 }
 
-file {'tofbot-defaults':
-    path    => '/etc/default/tofbot',
-    content => '# CONFFILE= path to tofbot config',
-}
-
 service {'tofbot':
     ensure    => running,
     require   => User['tofbot'],
