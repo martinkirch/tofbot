@@ -6,7 +6,7 @@ USER=tofbot
 
 if [ -e /etc/default/tofbot] ; then
   . /etc/default/tofbot
-else
+fi
 
 usage() {
         echo RTFM
