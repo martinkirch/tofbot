@@ -1,0 +1,45 @@
+#!/bin/sh -e
+
+PIDFILE=/var/run/tofbot.pid
+CONFFILE=
+USER=tofbot
+
+. /etc/default/tofbot
+
+usage() {
+        echo RTFM
+        exit 1
+}
+
+if [ $# -lt 1 ]
+then
+        usage
+fi
+
+case "$1" in
+        start )
+                start-stop-daemon \
+			-c "$USER" \
+			--background \
+                        --exec python \
+                        -S -- \
+                        /usr/local/src/tofbot/bot.py \
+			-x "$CONFFILE" \
+			-B \
+			"--pidfile=$PIDFILE"
+                ;;
+        stop )
+                start-stop-daemon \
+			-p "$PIDFILE" \
+			-K
+                ;;
+	status )
+                start-stop-daemon \
+			-p "$PIDFILE" \
+			-T
+		exit $?
+		;;
+        * )
+                usage
+                ;;
+esac
