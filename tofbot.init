@@ -34,9 +34,7 @@ case "$1" in
 			-K
                 ;;
 	status )
-                start-stop-daemon \
-			-p "$PIDFILE" \
-			-T
+                kill -0 $(cat "$PIDFILE")
 		exit $?
 		;;
         * )
