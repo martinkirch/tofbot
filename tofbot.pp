@@ -28,3 +28,7 @@ service {'tofbot':
                   Vcsrepo['/usr/local/src/tofbot'],
     ],
 }
+
+package {'python':
+    ensure => installed,
+}
