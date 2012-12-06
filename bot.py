@@ -348,26 +348,32 @@ class Tofbot(Bot):
         self.msg(to, "If random-tofades are boring you, enter 'TG " + self.nick + "' (but can be cancelled by GG " + self.nick + ")")
 
     def load(self, filename):
-        with open(filename) as f:
-            state = json.load(f)
-            if state['version'] != 1:
-                return False
-            for name, plugin_state in state['plugins'].items():
-                try:
-                    plugin = self.plugins[name]
-                    plugin.load(plugin_state)
-                except KeyError:
-                    pass
+        try:
+            with open(filename) as f:
+                state = json.load(f)
+                if state['version'] != 1:
+                    return False
+                for name, plugin_state in state['plugins'].items():
+                    try:
+                        plugin = self.plugins[name]
+                        plugin.load(plugin_state)
+                    except KeyError:
+                        pass
+        except IOError as e:
+            print "Can't load state. Error: ", e
 
     def save(self, filename):
-        with open(filename, 'w') as f:
-            state = { 'version': 1
-                    , 'plugins': {}
-                    }
-            for name, plugin in self.plugins.items():
-                plugin_state = plugin.save()
-                state['plugins'][name] = plugin_state
-            json.dump(state, indent=4, fp=f)
+        try:
+            with open(filename, 'w') as f:
+                state = { 'version': 1
+                        , 'plugins': {}
+                        }
+                for name, plugin in self.plugins.items():
+                    plugin_state = plugin.save()
+                    state['plugins'][name] = plugin_state
+                json.dump(state, indent=4, fp=f)
+        except IOError as e:
+            print "Can't save state. Error: ", e
 
 
 def __main():
@@ -419,8 +425,7 @@ def __main():
 
     # Restore serialized data
     state_file = "state.json"
-    if os.path.isfile(state_file):
-        b.load(state_file)
+    b.load(state_file)
 
     # Perform auto-save periodically
     autosaveEvent = AutosaveEvent(b, state_file)
