@@ -13,7 +13,7 @@ file {'tofbot-init':
     path      => '/etc/init.d/tofbot',
     source    => '/usr/local/src/tofbot/tofbot.init',
     subscribe => Vcsrepo['/usr/local/src/tofbot'],
-    mode      => 755,
+    mode      => 0755,
 }
 
 file {'tofbot-defaults':
