@@ -4,7 +4,7 @@ PIDFILE=/var/run/tofbot.pid
 CONFFILE=
 USER=tofbot
 
-if [ -e /etc/default/tofbot] ; then
+if [ -e /etc/default/tofbot ] ; then
   . /etc/default/tofbot
 fi
 
