@@ -21,12 +21,12 @@ case "$1" in
                 start-stop-daemon \
 			-c "$USER" \
 			--background \
+                        --make-pidfile \
+			--pidfile "$PIDFILE" \
                         --exec /usr/bin/python \
                         -S -- \
                         /usr/local/src/tofbot/bot.py \
-			-x "$CONFFILE" \
-			-B \
-			"--pidfile=$PIDFILE"
+			-x "$CONFFILE"
                 ;;
         stop )
                 start-stop-daemon \
