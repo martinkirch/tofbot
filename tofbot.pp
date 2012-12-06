@@ -16,6 +16,11 @@ file {'tofbot-init':
     mode      => 0755,
 }
 
+file {'/var/log/tofbot':
+    ensure => directory,
+    owner  => 'tofbot',
+}
+
 service {'tofbot':
     ensure    => running,
     require   => User['tofbot'],
