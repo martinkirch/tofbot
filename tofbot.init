@@ -43,7 +43,7 @@ case "$1" in
                         -c "/usr/bin/python \
                         /usr/local/src/tofbot/bot.py \
 			-x "$CONFFILE" \
-                        > "$LOGFILE" 2>&1"
+                        >> "$LOGFILE" 2>&1"
                 ;;
         stop )
                 start-stop-daemon \
