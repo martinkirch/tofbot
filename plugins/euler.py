@@ -17,7 +17,10 @@ class EulerEvent(CronEvent):
         "If one of the scores has changed, print it"
         new_scores = self.plugin.fetch_scores()
         for nick, old_score in self.plugin.scores.items():
-            new_score = new_scores[nick]
+            try:
+                new_score = new_scores[nick]
+            except KeyError:
+                continue
             if new_score != old_score:
                 self.plugin.say("%s : %s -> %s" % (nick, old_score, new_score))
         self.plugin.scores = new_scores
