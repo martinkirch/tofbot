@@ -1,7 +1,10 @@
 from bot import Tofbot
+import unittest
+
 
 def print_resp(msg):
     print (" -> %s" % msg)
+
 
 class TestTofbot(Tofbot):
 
@@ -24,3 +27,7 @@ class TestTofbot(Tofbot):
         self.cb = cb
         self.dispatch(self.origin, [msg, 'PRIVMSG', self.chan])
         self.cb = saved_cb
+
+
+class TestCase(unittest.TestCase):
+    pass
