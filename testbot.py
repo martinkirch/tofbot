@@ -30,4 +30,10 @@ class TestTofbot(Tofbot):
 
 
 class TestCase(unittest.TestCase):
-    pass
+
+    def setUp(self):
+        nick = "testbot"
+        name = "Test Bot"
+        chan = "#chan"
+        password = ""
+        self.bot = TestTofbot(nick, name, chan, password)
