@@ -77,12 +77,18 @@ class TestCase(unittest.TestCase):
 
         self.bot.joined = True
 
+    def _io(self, inp, outp):
+        """
+        Test that a given input produces a given output.
+        """
+        with bot_input(self.bot, inp) as l:
+            self.assertEqual(l, outp)
+
     def test_set_allowed(self):
         msg = "!set autoTofadeThreshold 9000"
         self.bot.send(msg)
 
-        with bot_input(self.bot, "!get autoTofadeThreshold") as l:
-            self.assertEqual(l, "autoTofadeThreshold = 9000")
+        self._io("!get autoTofadeThreshold", "autoTofadeThreshold = 9000")
 
     def test_kick(self):
         with bot_kick(self.bot) as l:
@@ -91,3 +97,6 @@ class TestCase(unittest.TestCase):
     def test_kick_reason(self):
         with bot_kick(self.bot, "tais toi") as l:
             self.assertEqual(l, "comment ça, tais toi ?")
+
+    def test_dassin(self):
+        self._io("tu sais", "je n'ai jamais été aussi heureux que ce matin-là")
