@@ -35,33 +35,23 @@ class TestTofbot(Tofbot):
         self.dispatch(self.origin, [msg, 'KICK', self.chan, self.nick])
 
 
-class BotAction:
-    def __init__(self, bot, action):
-        """
-        If length=None, just expect one and return it (not a list).
-        """
-        self.bot = bot
-        self.action = action
-        self.msgs = []
+def bot_action(bot, action):
+    msgs = []
 
-    def __enter__(self):
-        def capture_out(msg):
-            self.msgs.append(msg)
+    def capture_out(msg):
+        msgs.append(msg)
 
-        self.bot.cb = capture_out
-        self.action()
-        return self.msgs
-
-    def __exit__(self, *args):
-        pass
+    bot.cb = capture_out
+    action()
+    return msgs
 
 
 def bot_input(bot, msg):
-    return BotAction(bot, lambda: bot.send(msg))
+    return bot_action(bot, lambda: bot.send(msg))
 
 
 def bot_kick(bot, msg=None):
-    return BotAction(bot, lambda: bot.kick(msg))
+    return bot_action(bot, lambda: bot.kick(msg))
 
 
 class TestCase(unittest.TestCase):
@@ -83,10 +73,10 @@ class TestCase(unittest.TestCase):
         """
         Test that a given input produces a given output.
         """
-        with bot_input(self.bot, inp) as l:
-            if isinstance(outp, str):
-                outp = [outp]
-            self.assertEqual(l, outp)
+        l = bot_input(self.bot, inp)
+        if isinstance(outp, str):
+            outp = [outp]
+        self.assertEqual(l, outp)
 
     def test_set_allowed(self):
         msg = "!set autoTofadeThreshold 9000"
@@ -94,12 +84,12 @@ class TestCase(unittest.TestCase):
         self._io("!get autoTofadeThreshold", "autoTofadeThreshold = 9000")
 
     def test_kick(self):
-        with bot_kick(self.bot) as l:
-            self.assertEqual(l, ["respawn, LOL"])
+        l = bot_kick(self.bot)
+        self.assertEqual(l, ["respawn, LOL"])
 
     def test_kick_reason(self):
-        with bot_kick(self.bot, "tais toi") as l:
-            self.assertEqual(l, ["comment ça, tais toi ?"])
+        l = bot_kick(self.bot, "tais toi")
+        self.assertEqual(l, ["comment ça, tais toi ?"])
 
     def test_dassin(self):
         self._io("tu sais", "je n'ai jamais été aussi heureux que ce matin-là")
