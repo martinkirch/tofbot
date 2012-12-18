@@ -96,3 +96,7 @@ class TestCase(unittest.TestCase):
 
     def test_donnezmoi(self):
         self._io("donnez moi un lol", ['L', 'O', 'L'])
+
+    def test_eightball(self):
+        l = bot_input(self.bot, "boule magique, est-ce que blabla ?")
+        self.assertEquals(1, len(l))
