@@ -37,18 +37,20 @@ class TestTofbot(Tofbot):
 
 class BotAction:
     def __init__(self, bot, action):
+        """
+        If length=None, just expect one and return it (not a list).
+        """
         self.bot = bot
         self.action = action
+        self.msgs = []
 
     def __enter__(self):
-        msgs = []
-
         def capture_out(msg):
-            msgs.append(msg)
+            self.msgs.append(msg)
 
         self.bot.cb = capture_out
         self.action()
-        return msgs[0]
+        return self.msgs
 
     def __exit__(self, *args):
         pass
@@ -82,21 +84,25 @@ class TestCase(unittest.TestCase):
         Test that a given input produces a given output.
         """
         with bot_input(self.bot, inp) as l:
+            if isinstance(outp, str):
+                outp = [outp]
             self.assertEqual(l, outp)
 
     def test_set_allowed(self):
         msg = "!set autoTofadeThreshold 9000"
         self.bot.send(msg)
-
         self._io("!get autoTofadeThreshold", "autoTofadeThreshold = 9000")
 
     def test_kick(self):
         with bot_kick(self.bot) as l:
-            self.assertEqual(l, "respawn, LOL")
+            self.assertEqual(l, ["respawn, LOL"])
 
     def test_kick_reason(self):
         with bot_kick(self.bot, "tais toi") as l:
-            self.assertEqual(l, "comment ça, tais toi ?")
+            self.assertEqual(l, ["comment ça, tais toi ?"])
 
     def test_dassin(self):
         self._io("tu sais", "je n'ai jamais été aussi heureux que ce matin-là")
+
+    def test_donnezmoi(self):
+        self._io("donnez moi un lol", ['L', 'O', 'L'])
