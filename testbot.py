@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from bot import Tofbot
 import unittest
 from collections import namedtuple
@@ -85,3 +87,7 @@ class TestCase(unittest.TestCase):
     def test_kick(self):
         with bot_kick(self.bot) as l:
             self.assertEqual(l, "respawn, LOL")
+
+    def test_kick_reason(self):
+        with bot_kick(self.bot, "tais toi") as l:
+            self.assertEqual(l, "comment ça, tais toi ?")
