@@ -1,0 +1,5 @@
+BeautifulSoup
+coverage
+HTTPretty
+nose
+requests
