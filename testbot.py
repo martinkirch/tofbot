@@ -3,6 +3,8 @@
 from bot import Tofbot
 import unittest
 from collections import namedtuple
+from httpretty import HTTPretty, httprettified
+from plugins.euler import EulerEvent
 
 
 def print_resp(msg):
@@ -100,3 +102,36 @@ class TestCase(unittest.TestCase):
     def test_eightball(self):
         l = bot_input(self.bot, "boule magique, est-ce que blabla ?")
         self.assertEquals(1, len(l))
+
+    @httprettified
+    def test_euler(self):
+        euler_nick = 'leonhard'
+
+        def set_score(score):
+            url = "http://projecteuler.net/profile/%s.txt" % euler_nick
+            country = 'country'
+            language = 'language'
+            level = 1
+            text = "%s,%s,%s,Solved %d,%d" % (euler_nick,
+                                              country,
+                                              language,
+                                              score,
+                                              level,
+                                              )
+            HTTPretty.register_uri(HTTPretty.GET, url,
+                                   body=text,
+                                   content_type="text/plain")
+
+        set_score(10)
+        self.bot.send("!euler_add leonhard")
+
+        # Get event to unschedule and manually fire it
+        (event_k, event) = ((k, v) for (k, v)
+                            in enumerate(self.bot.cron.events)
+                            if isinstance(v, EulerEvent)).next()
+        del self.bot.cron.events[event_k]
+
+        self._io("!euler", "leonhard : Solved 10")
+        set_score(15)
+        l = bot_action(self.bot, event.fire)
+        self.assertEqual(l, ["leonhard : Solved 10 -> Solved 15"])
