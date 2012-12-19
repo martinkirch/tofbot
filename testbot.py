@@ -135,3 +135,19 @@ class TestCase(unittest.TestCase):
         set_score(15)
         l = bot_action(self.bot, event.fire)
         self.assertEqual(l, ["leonhard : Solved 10 -> Solved 15"])
+
+    @httprettified
+    def test_expand_tiny(self):
+        url = 'http://tinyurl.com/deadbeef'
+        target = 'http://google.fr/'
+
+        HTTPretty.register_uri(HTTPretty.GET, url,
+                               status=301,
+                               location=target,
+                               )
+
+        HTTPretty.register_uri(HTTPretty.GET, target,
+                               status=200,
+                               )
+
+        self._io("Check out %s" % url, target)
