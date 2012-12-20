@@ -64,11 +64,12 @@ class TestCase(unittest.TestCase):
         name = "Test Bot"
         chan = "#chan"
         Origin = namedtuple('Origin', ['sender', 'nick'])
-        origin = Origin('sender', 'nick')
-        self.bot = TestTofbot(nick, name, chan, origin)
+        self.origin = Origin('sender', 'nick')
+        self.bot = TestTofbot(nick, name, chan, self.origin)
         cmds = ['!set autoTofadeThreshold 100']
         for cmd in cmds:
-            self.bot.dispatch(origin, [cmd, 'BOTCONFIG', 'PRIVMSG', '#config'])
+            self.bot.dispatch(self.origin,
+                              [cmd, 'BOTCONFIG', 'PRIVMSG', '#config'])
 
         self.bot.joined = True
 
@@ -190,3 +191,7 @@ class TestCase(unittest.TestCase):
     def test_jokes_misc(self):
         for cmd in ['fortune', 'chuck', 'tofade', 'contrepeterie']:
             self.assertOutputLength('!%s' % cmd, 1)
+
+    def test_jokes_butters(self):
+        self.assertOutput("hey %s how are you" % self.bot.nick,
+                          "%s: Ouais, c'est moi !" % self.origin.nick)
