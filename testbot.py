@@ -89,6 +89,9 @@ class TestCase(unittest.TestCase):
         l = bot_input(self.bot, msg)
         self.assertEquals(len(l), 1)
 
+    def assertNoOutput(self, msg):
+        self.assertOutput(msg, [])
+
     def _find_event(self, clz):
         """
         Find an event of a given class in cron.
@@ -195,3 +198,11 @@ class TestCase(unittest.TestCase):
     def test_jokes_butters(self):
         self.assertOutput("hey %s how are you" % self.bot.nick,
                           "%s: Ouais, c'est moi !" % self.origin.nick)
+
+    def test_sed(self):
+        self.bot.send("oho")
+        self.assertOutput("s/o/a", "<%s> : aha" % self.origin.nick)
+
+    def test_sed_invalid(self):
+        self.bot.send("oho")
+        self.assertNoOutput("s/++/a")
