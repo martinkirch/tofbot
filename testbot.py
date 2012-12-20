@@ -5,6 +5,7 @@ import unittest
 from collections import namedtuple
 from httpretty import HTTPretty, httprettified
 from plugins.euler import EulerEvent
+from plugins.jokes import TofadeEvent
 
 
 def print_resp(msg):
@@ -177,3 +178,11 @@ class TestCase(unittest.TestCase):
                                body=response,
                                )
         self.assertOutput("Check out this video %s" % url, title)
+
+    def test_jokes_autotofade(self):
+        (event_k, event) = self._find_event(TofadeEvent)
+
+        self.bot.send('!set autoTofadeThreshold 0')
+        l = bot_action(self.bot, event.fire)
+        self.assertEqual(len(l), 1)
+        self.bot.send('!set autoTofadeThreshold 9000')
