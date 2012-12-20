@@ -188,5 +188,5 @@ class TestCase(unittest.TestCase):
         self.bot.send('!set autoTofadeThreshold 9000')
 
     def test_jokes_misc(self):
-        for cmd in ['fortune', 'chuck', 'tofade']:
+        for cmd in ['fortune', 'chuck', 'tofade', 'contrepeterie']:
             self.assertOutputLength('!%s' % cmd, 1)

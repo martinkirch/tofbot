@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Awesome contrepetries
+Awesome contrepeteries
 voir aussi http://contrepeteries.free.fr/docs/txt_reduit.php
 """
 
-contrepetries = [
+contrepeteries = [
       ("Salut Fred")
     , ("La programmeuse compile le C")
     , ("Personne n'est jamais assez fort pour ce calcul")
@@ -22,6 +22,6 @@ contrepetries = [
 
 if __name__ == "__main__":
     from bot import InnocentHand
-    joker = InnocentHand(contrepetries)
+    joker = InnocentHand(contrepeteries)
     print joker()
     print joker(1)
