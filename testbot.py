@@ -151,3 +151,13 @@ class TestCase(unittest.TestCase):
                                )
 
         self._io("Check out %s" % url, target)
+
+    @httprettified
+    def test_expand_video(self):
+        url = 'https://www.youtube.com/watch?v=J---aiyznGQ'
+        title = 'Keyboard cat'
+        response = '<html><head><title>%s</title></head></html>' % title
+        HTTPretty.register_uri(HTTPretty.GET, url,
+                               body=response,
+                               )
+        self._io("Check out this video %s" % url, title)
