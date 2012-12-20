@@ -94,6 +94,9 @@ class TestCase(unittest.TestCase):
         return ((k, v) for (k, v) in enumerate(self.bot.cron.events)
                 if isinstance(v, clz)).next()
 
+    def _delete_event(self, key):
+        del self.bot.cron.events[key]
+
     def test_set_allowed(self):
         msg = "!set autoTofadeThreshold 9000"
         self.bot.send(msg)
@@ -142,7 +145,7 @@ class TestCase(unittest.TestCase):
 
         # Get event to unschedule and manually fire it
         (event_k, event) = self._find_event(EulerEvent)
-        del self.bot.cron.events[event_k]
+        self._delete_event(event_k)
 
         self.assertOutput("!euler", "leonhard : Solved 10")
         set_score(15)
