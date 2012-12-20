@@ -87,6 +87,13 @@ class TestCase(unittest.TestCase):
         l = bot_input(self.bot, msg)
         self.assertEquals(len(l), 1)
 
+    def _find_event(self, clz):
+        """
+        Find an event of a given class in cron.
+        """
+        return ((k, v) for (k, v) in enumerate(self.bot.cron.events)
+                if isinstance(v, clz)).next()
+
     def test_set_allowed(self):
         msg = "!set autoTofadeThreshold 9000"
         self.bot.send(msg)
@@ -134,9 +141,7 @@ class TestCase(unittest.TestCase):
         self.bot.send("!euler_add leonhard")
 
         # Get event to unschedule and manually fire it
-        (event_k, event) = ((k, v) for (k, v)
-                            in enumerate(self.bot.cron.events)
-                            if isinstance(v, EulerEvent)).next()
+        (event_k, event) = self._find_event(EulerEvent)
         del self.bot.cron.events[event_k]
 
         self.assertOutput("!euler", "leonhard : Solved 10")
