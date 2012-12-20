@@ -80,6 +80,13 @@ class TestCase(unittest.TestCase):
             outp = [outp]
         self.assertEqual(l, outp)
 
+    def assertOutputLength(self, n, msg):
+        """
+        Checks that when fed with msg, the bot's answer has length n.
+        """
+        l = bot_input(self.bot, msg)
+        self.assertEquals(1, len(l))
+
     def test_set_allowed(self):
         msg = "!set autoTofadeThreshold 9000"
         self.bot.send(msg)
@@ -100,8 +107,7 @@ class TestCase(unittest.TestCase):
         self._io("donnez moi un lol", ['L', 'O', 'L'])
 
     def test_eightball(self):
-        l = bot_input(self.bot, "boule magique, est-ce que blabla ?")
-        self.assertEquals(1, len(l))
+        self.assertOutputLength(1, "boule magique, est-ce que blabla ?")
 
     @httprettified
     def test_euler(self):
