@@ -186,3 +186,7 @@ class TestCase(unittest.TestCase):
         l = bot_action(self.bot, event.fire)
         self.assertEqual(len(l), 1)
         self.bot.send('!set autoTofadeThreshold 9000')
+
+    def test_jokes_misc(self):
+        for cmd in ['fortune', 'chuck', 'tofade']:
+            self.assertOutputLength('!%s' % cmd, 1)
