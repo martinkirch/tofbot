@@ -71,7 +71,7 @@ class TestCase(unittest.TestCase):
 
         self.bot.joined = True
 
-    def _io(self, inp, outp):
+    def assertOutput(self, inp, outp):
         """
         Test that a given input produces a given output.
         """
@@ -90,7 +90,8 @@ class TestCase(unittest.TestCase):
     def test_set_allowed(self):
         msg = "!set autoTofadeThreshold 9000"
         self.bot.send(msg)
-        self._io("!get autoTofadeThreshold", "autoTofadeThreshold = 9000")
+        self.assertOutput("!get autoTofadeThreshold",
+                          "autoTofadeThreshold = 9000")
 
     def test_kick(self):
         l = bot_kick(self.bot)
@@ -101,10 +102,11 @@ class TestCase(unittest.TestCase):
         self.assertEqual(l, ["comment ça, tais toi ?"])
 
     def test_dassin(self):
-        self._io("tu sais", "je n'ai jamais été aussi heureux que ce matin-là")
+        self.assertOutput("tu sais",
+                          "je n'ai jamais été aussi heureux que ce matin-là")
 
     def test_donnezmoi(self):
-        self._io("donnez moi un lol", ['L', 'O', 'L'])
+        self.assertOutput("donnez moi un lol", ['L', 'O', 'L'])
 
     def test_eightball(self):
         self.assertOutputLength(1, "boule magique, est-ce que blabla ?")
@@ -137,7 +139,7 @@ class TestCase(unittest.TestCase):
                             if isinstance(v, EulerEvent)).next()
         del self.bot.cron.events[event_k]
 
-        self._io("!euler", "leonhard : Solved 10")
+        self.assertOutput("!euler", "leonhard : Solved 10")
         set_score(15)
         l = bot_action(self.bot, event.fire)
         self.assertEqual(l, ["leonhard : Solved 10 -> Solved 15"])
@@ -156,7 +158,7 @@ class TestCase(unittest.TestCase):
                                status=200,
                                )
 
-        self._io("Check out %s" % url, target)
+        self.assertOutput("Check out %s" % url, target)
 
     @httprettified
     def test_expand_video(self):
@@ -166,4 +168,4 @@ class TestCase(unittest.TestCase):
         HTTPretty.register_uri(HTTPretty.GET, url,
                                body=response,
                                )
-        self._io("Check out this video %s" % url, title)
+        self.assertOutput("Check out this video %s" % url, title)
