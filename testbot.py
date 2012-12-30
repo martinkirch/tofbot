@@ -87,7 +87,7 @@ class TestCase(unittest.TestCase):
         Checks that when fed with msg, the bot's answer has length n.
         """
         l = bot_input(self.bot, msg)
-        self.assertEquals(len(l), 1)
+        self.assertEquals(len(l), n)
 
     def assertNoOutput(self, msg):
         self.assertOutput(msg, [])
