@@ -8,6 +8,9 @@ from plugins.euler import EulerEvent
 from plugins.jokes import TofadeEvent
 
 
+TestOrigin = namedtuple('TestOrigin', ['sender', 'nick'])
+
+
 def print_resp(msg):
     print (" -> %s" % msg)
 
@@ -28,9 +31,13 @@ class TestTofbot(Tofbot):
         else:
             print_resp(msg)
 
-    def send(self, msg):
+    def send(self, msg, origin=None):
         print ("<-  %s" % msg)
-        self.dispatch(self.origin, [msg, 'PRIVMSG', self.chan])
+        if origin is None:
+            origin = self.origin
+        else:
+            origin = TestOrigin('sender', origin)
+        self.dispatch(origin, [msg, 'PRIVMSG', self.chan])
 
     def kick(self, msg=None):
         if msg is None:
@@ -63,8 +70,7 @@ class TestCase(unittest.TestCase):
         nick = "testbot"
         name = "Test Bot"
         chan = "#chan"
-        Origin = namedtuple('Origin', ['sender', 'nick'])
-        self.origin = Origin('sender', 'nick')
+        self.origin = TestOrigin('sender', 'nick')
         self.bot = TestTofbot(nick, name, chan, self.origin)
         cmds = ['!set autoTofadeThreshold 100']
         for cmd in cmds:
@@ -245,3 +251,14 @@ class TestCase(unittest.TestCase):
                           [title,
                            "We're no strangers to love..."
                            ])
+
+    def test_like(self):
+        self.assertOutputLength('!ggg', 0)
+        self.bot.send('oh oh', origin='alfred')
+        self.bot.send('!like')
+        self.assertOutput('!ggg',
+                          "alfred is the current Good Guy Greg with 1 'likes'")
+        self.assertOutput('!score alfred', '1')
+        l = bot_input(self.bot, '!score michel')
+        self.assertEqual(len(l), 1)
+        self.assertIn('populaire', l[0])
