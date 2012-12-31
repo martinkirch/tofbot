@@ -221,6 +221,10 @@ class TestCase(unittest.TestCase):
         self.assertOutput("hey %s how are you" % self.bot.nick,
                           "%s: Ouais, c'est moi !" % self.origin.nick)
 
+    def test_joke_riddle(self):
+        self.assertOutputLength("!devinette", 1)
+        self.bot.send('answer?')
+
     def test_sed(self):
         self.bot.send("oho")
         self.assertOutput("s/o/a", "<%s> : aha" % self.origin.nick)
