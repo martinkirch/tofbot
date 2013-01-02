@@ -60,7 +60,7 @@ class PluginLolrate(Plugin):
         """
         lol_regexp = "[lI1]+[o0u]+[lI1]+z?"
         lulz = len(re.findall(lol_regexp, msg_text, flags=re.IGNORECASE))
-        if lulz > 0:
+        if lulz > 0 and msg_text != '!lulz':
             current_ts = TimeSlice()
             if current_ts != self.lol_rate[0]:
                 self.lol_rate.insert(0, current_ts)

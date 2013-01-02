@@ -32,6 +32,10 @@ class TestTofbot(Tofbot):
             print_resp(msg)
 
     def send(self, msg, origin=None):
+        """
+        Send a message to the bot.
+        origin is a string that overrides the sender's nick.
+        """
         print ("<-  %s" % msg)
         if origin is None:
             origin = self.origin
@@ -262,3 +266,32 @@ class TestCase(unittest.TestCase):
         l = bot_input(self.bot, '!score michel')
         self.assertEqual(len(l), 1)
         self.assertIn('populaire', l[0])
+
+    def test_lol_kevin(self):
+        self.assertOutput('!kevin', 'pas de Kevin')
+        for msg in ['lol', 'lolerie']:
+            self.bot.send(msg, origin='michel')
+        self.assertOutput('!kevin',
+                          'michel est le Kevin du moment avec 2 lolades')
+        for msg in ['lulz', 'LOL', '10L']:
+            self.bot.send(msg, origin='alfred')
+        self.assertOutput('!kevin',
+                          'alfred est le Kevin du moment avec 3 lolades')
+
+    def test_lol_rate(self):
+        self.bot.send('lol')
+        self.bot.send('lol')
+        from datetime import datetime
+        now = datetime.now()
+        expected = '%s %02dh-%02dh : 2 lolz' % (now.date().strftime('%d %b'),
+                                                now.hour,
+                                                now.hour + 1 % 24,
+                                                )
+        self.assertOutput('!lulz', expected)
+        # check that the command itself does not increment
+        self.assertOutput('!lulz', expected)
+
+    def test_lol_kick(self):
+        self.bot.send('lol', origin='michel')
+        l = bot_kick(self.bot)
+        self.assertIn('Au passage, michel est un sacré Kevin', l)
