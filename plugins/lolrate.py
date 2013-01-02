@@ -13,11 +13,17 @@ from datetime import datetime
 from toflib import cmd, Plugin
 import re
 
+def datetime_now():
+    """
+    A 'now' method that can be patched, unlike the builtin function.
+    """
+    return datetime.now()
+
 class TimeSlice():
     "An amount of time (1 hour) with an associated integer count"
 
     def __init__(self):
-        now = datetime.now()
+        now = datetime_now()
         self.date = now.date()
         self.hour = now.hour
         self.kevins = dict()
@@ -60,7 +66,7 @@ class PluginLolrate(Plugin):
         """
         lol_regexp = "[lI1]+[o0u]+[lI1]+z?"
         lulz = len(re.findall(lol_regexp, msg_text, flags=re.IGNORECASE))
-        if lulz > 0 and msg_text != '!lulz':
+        if lulz > 0 and not msg_text.startswith('!'):
             current_ts = TimeSlice()
             if current_ts != self.lol_rate[0]:
                 self.lol_rate.insert(0, current_ts)
@@ -74,7 +80,8 @@ class PluginLolrate(Plugin):
     def cmd_lulz(self, _chan, _args):
         "Display the number of lulz in the previous hours"
         for lolade in self.lol_rate:
-            self.say(str(lolade))
+            if lolade.count:
+                self.say(str(lolade))
 
     def compute_kevin(self):
         kevins = dict()

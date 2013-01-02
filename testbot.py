@@ -6,6 +6,7 @@ from collections import namedtuple
 from httpretty import HTTPretty, httprettified
 from plugins.euler import EulerEvent
 from plugins.jokes import TofadeEvent
+from mock import patch
 
 
 TestOrigin = namedtuple('TestOrigin', ['sender', 'nick'])
@@ -278,18 +279,34 @@ class TestCase(unittest.TestCase):
         self.assertOutput('!kevin',
                           'alfred est le Kevin du moment avec 3 lolades')
 
-    def test_lol_rate(self):
+    @patch('plugins.lolrate.datetime_now')
+    def test_lol_rate(self, now_mock):
+        def set_clock(hours):
+            from datetime import datetime
+            now_mock.return_value = datetime(1941, 2, 16, hours, 0, 0, 0)
+
+        self.bot.send('!set lolRateDepth 2')
+        self.assertOutput('!get lolRateDepth', 'lolRateDepth = 2')
+
+        set_clock(12)
         self.bot.send('lol')
         self.bot.send('lol')
-        from datetime import datetime
-        now = datetime.now()
-        expected = '%s %02dh-%02dh : 2 lolz' % (now.date().strftime('%d %b'),
-                                                now.hour,
-                                                now.hour + 1 % 24,
-                                                )
+        expected = '16 Feb 12h-13h : 2 lolz'
         self.assertOutput('!lulz', expected)
         # check that the command itself does not increment
         self.assertOutput('!lulz', expected)
+
+        set_clock(13)
+        self.bot.send('lol')
+        self.assertOutput('!lulz', ['16 Feb 13h-14h : 1 lolz',
+                                    expected,
+                                    ])
+
+        set_clock(14)
+        self.bot.send('lol')
+        self.assertOutput('!lulz', ['16 Feb 14h-15h : 1 lolz',
+                                    '16 Feb 13h-14h : 1 lolz',
+                                    ])
 
     def test_lol_kick(self):
         self.bot.send('lol', origin='michel')
