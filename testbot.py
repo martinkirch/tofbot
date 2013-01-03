@@ -6,6 +6,7 @@ from collections import namedtuple
 from httpretty import HTTPretty, httprettified
 from plugins.euler import EulerEvent
 from plugins.jokes import TofadeEvent
+from plugins.twitter import TweetEvent
 from mock import patch
 
 
@@ -312,3 +313,53 @@ class TestCase(unittest.TestCase):
         self.bot.send('lol', origin='michel')
         l = bot_kick(self.bot)
         self.assertIn('Au passage, michel est un sacré Kevin', l)
+
+    @httprettified
+    def test_twitter(self):
+        def url(name):
+            base = "http://api.twitter.com/1/users/show.json?screen_name=%s"
+            return base % name
+
+        def set_response(name, response):
+            import json
+            HTTPretty.register_uri(HTTPretty.GET, url(name),
+                                   content_type="application/json",
+                                   body=json.dumps(response),
+                                   )
+
+        def set_tweet(name, tweet):
+            response = {'status': {'text': tweet}}
+            set_response(name, response)
+
+        tweet = 'blabla'
+        set_tweet('michel', tweet)
+        self.bot.send('!twitter_track michel')
+
+        (event_k, event) = self._find_event(TweetEvent)
+        self._delete_event(event_k)
+
+        l = bot_action(self.bot, event.fire)
+        self.assertEquals(l, ['@michel: %s' % tweet])
+
+        l = bot_action(self.bot, event.fire)
+        self.assertEquals(l, [])
+
+        tweet2 = 'blibli'
+        set_tweet('michel', tweet2)
+
+        l = bot_action(self.bot, event.fire)
+        self.assertEquals(l, ['@michel: %s' % tweet2])
+
+        set_response('michel', {})
+
+        l = bot_action(self.bot, event.fire)
+        self.assertEquals(l, [])
+
+        alfred_tweet = 'mon super tweet'
+        set_tweet('alfred', alfred_tweet)
+        self.assertOutput('!tw +alfred', [])
+        self.assertOutput('oho?', '@alfred: %s' % alfred_tweet)
+        self.assertOutput('!tw ?', "['alfred']")  # michel's event was removed
+        set_tweet('alfred', 'le tweet invisible')
+        self.assertOutput('!tw -alfred', [])
+        self.assertOutputLength('oho?', 0)
