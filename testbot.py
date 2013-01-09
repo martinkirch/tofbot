@@ -99,7 +99,7 @@ class TestCase(unittest.TestCase):
         Checks that when fed with msg, the bot's answer has length n.
         """
         l = bot_input(self.bot, msg)
-        self.assertEquals(len(l), n)
+        self.assertEqual(len(l), n)
 
     def assertNoOutput(self, msg):
         self.assertOutput(msg, [])
@@ -339,21 +339,21 @@ class TestCase(unittest.TestCase):
         self._delete_event(event_k)
 
         l = bot_action(self.bot, event.fire)
-        self.assertEquals(l, ['@michel: %s' % tweet])
+        self.assertEqual(l, ['@michel: %s' % tweet])
 
         l = bot_action(self.bot, event.fire)
-        self.assertEquals(l, [])
+        self.assertEqual(l, [])
 
         tweet2 = 'blibli'
         set_tweet('michel', tweet2)
 
         l = bot_action(self.bot, event.fire)
-        self.assertEquals(l, ['@michel: %s' % tweet2])
+        self.assertEqual(l, ['@michel: %s' % tweet2])
 
         set_response('michel', {})
 
         l = bot_action(self.bot, event.fire)
-        self.assertEquals(l, [])
+        self.assertEqual(l, [])
 
         alfred_tweet = 'mon super tweet'
         set_tweet('alfred', alfred_tweet)
