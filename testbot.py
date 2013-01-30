@@ -345,6 +345,10 @@ class TestCase(unittest.TestCase):
         l = bot_action(self.bot, event.fire)
         self.assertEqual(l, [])
 
+        twitter_set_tweet('michel', '@alfred oh oh')
+        l = bot_action(self.bot, event.fire)
+        self.assertEqual(l, [])
+
         tweet2 = 'blibli'
         twitter_set_tweet('michel', tweet2)
 

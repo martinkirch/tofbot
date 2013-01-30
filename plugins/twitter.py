@@ -38,6 +38,8 @@ class TweetEvent(CronEvent):
         tweet = last_tweet(self.user)
         if tweet is None:
             return
+        if tweet.startswith('@'):
+            return
         if tweet != self.previous_tweet:
             self.plugin.say("@%s: %s" % (self.user, tweet))
             self.previous_tweet = tweet
