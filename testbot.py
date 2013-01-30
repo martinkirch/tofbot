@@ -8,6 +8,7 @@ from plugins.euler import EulerEvent
 from plugins.jokes import TofadeEvent
 from plugins.twitter import TweetEvent
 from mock import patch
+import json
 
 
 TestOrigin = namedtuple('TestOrigin', ['sender', 'nick'])
@@ -15,6 +16,21 @@ TestOrigin = namedtuple('TestOrigin', ['sender', 'nick'])
 
 def print_resp(msg):
     print (" -> %s" % msg)
+
+
+def twitter_set_response(name, response):
+    base = "http://api.twitter.com/1/users/show.json?screen_name=%s"
+    url = base % name
+
+    HTTPretty.register_uri(HTTPretty.GET, url,
+                           content_type="application/json",
+                           body=json.dumps(response),
+                           )
+
+
+def twitter_set_tweet(name, tweet):
+    response = {'status': {'text': tweet}}
+    twitter_set_response(name, response)
 
 
 class TestTofbot(Tofbot):
@@ -316,23 +332,8 @@ class TestCase(unittest.TestCase):
 
     @httprettified
     def test_twitter(self):
-        def url(name):
-            base = "http://api.twitter.com/1/users/show.json?screen_name=%s"
-            return base % name
-
-        def set_response(name, response):
-            import json
-            HTTPretty.register_uri(HTTPretty.GET, url(name),
-                                   content_type="application/json",
-                                   body=json.dumps(response),
-                                   )
-
-        def set_tweet(name, tweet):
-            response = {'status': {'text': tweet}}
-            set_response(name, response)
-
         tweet = 'blabla'
-        set_tweet('michel', tweet)
+        twitter_set_tweet('michel', tweet)
         self.bot.send('!twitter_track michel')
 
         (event_k, event) = self._find_event(TweetEvent)
@@ -345,21 +346,21 @@ class TestCase(unittest.TestCase):
         self.assertEqual(l, [])
 
         tweet2 = 'blibli'
-        set_tweet('michel', tweet2)
+        twitter_set_tweet('michel', tweet2)
 
         l = bot_action(self.bot, event.fire)
         self.assertEqual(l, ['@michel: %s' % tweet2])
 
-        set_response('michel', {})
+        twitter_set_response('michel', {})
 
         l = bot_action(self.bot, event.fire)
         self.assertEqual(l, [])
 
         alfred_tweet = 'mon super tweet'
-        set_tweet('alfred', alfred_tweet)
+        twitter_set_tweet('alfred', alfred_tweet)
         self.assertOutput('!tw +alfred', [])
         self.assertOutput('oho?', '@alfred: %s' % alfred_tweet)
         self.assertOutput('!tw ?', "['alfred']")  # michel's event was removed
-        set_tweet('alfred', 'le tweet invisible')
+        twitter_set_tweet('alfred', 'le tweet invisible')
         self.assertOutput('!tw -alfred', [])
         self.assertOutputLength('oho?', 0)
