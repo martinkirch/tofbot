@@ -82,3 +82,14 @@ class PluginTwitter(Plugin):
             self.remove(action[1:])
         elif(action == '?'):
             self.ls()
+
+    @cmd(1)
+    def cmd_rt(self, _chan, args):
+        who = args[0]
+        tweet = last_tweet(who)
+        if tweet is None:
+            return
+        if tweet.startswith('@'):
+            return
+        msg = '@%s: %s' % (who, tweet)
+        self.say(msg)

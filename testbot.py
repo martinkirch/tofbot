@@ -368,3 +368,8 @@ class TestCase(unittest.TestCase):
         twitter_set_tweet('alfred', 'le tweet invisible')
         self.assertOutput('!tw -alfred', [])
         self.assertOutputLength('oho?', 0)
+
+    @httprettified
+    def test_twitter_rt(self):
+        twitter_set_tweet('roberto', 'LOL')
+        self.assertOutput('!rt roberto', '@roberto: LOL')
