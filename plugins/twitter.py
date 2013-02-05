@@ -19,7 +19,7 @@ def last_tweet(user):
         answer = requests.get(url)
         answer_data = answer.json()
         return answer_data["status"]["text"]
-    except: # too many things can go wrong to catch explicitly
+    except KeyError:
         return None
 
 class TweetEvent(CronEvent):
