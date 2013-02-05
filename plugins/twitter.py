@@ -9,6 +9,7 @@
 "See PluginTwitter"
 from toflib import cmd, Plugin, CronEvent
 import requests
+import json
 
 def last_tweet(user):
     """
@@ -17,7 +18,7 @@ def last_tweet(user):
     url = "http://api.twitter.com/1/users/show.json?screen_name=" + user
     try:
         answer = requests.get(url)
-        answer_data = answer.json()
+        answer_data = json.loads(answer.text)
         return answer_data["status"]["text"]
     except KeyError:
         return None
