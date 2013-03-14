@@ -78,9 +78,7 @@ class PluginJokes(Plugin):
             self.devinette = self.random_riddle(chan)
 
     def on_join(self, chan, nick):
-        if nick == "hellcook":
-            self.say("hellcook: \m/ (⊙▃⊙) \m/ < HELL !!!")
-        elif nick <> self.bot.nick:
+        if nick <> self.bot.nick:
             self.cmd_tofme(chan, [nick])
 
     def handle_msg(self, msg_text, chan, nick):
