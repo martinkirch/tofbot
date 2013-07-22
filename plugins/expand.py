@@ -7,7 +7,7 @@
 #
 # Copyright (c) 2012 Etienne Millon <etienne.millon@gmail.com>
 
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 import requests
 import re
 
