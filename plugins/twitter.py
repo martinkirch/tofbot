@@ -8,6 +8,8 @@
 
 "See PluginTwitter"
 from toflib import cmd, Plugin, CronEvent
+from bs4 import BeautifulSoup
+import re
 import requests
 import json
 
@@ -44,6 +46,13 @@ class TweetEvent(CronEvent):
         if tweet != self.previous_tweet:
             self.plugin.say("@%s: %s" % (self.user, tweet))
             self.previous_tweet = tweet
+
+def parse_tweet(url):
+    r = requests.get(url)
+    s = BeautifulSoup(r.text)
+    container = s.find('div', {'class': 'permalink-tweet'})
+    tweet = container.find('p', {'class': 'js-tweet-text'})
+    return tweet.get_text().strip()
 
 class PluginTwitter(Plugin):
     """
@@ -94,3 +103,8 @@ class PluginTwitter(Plugin):
             return
         msg = '@%s: %s' % (who, tweet)
         self.say(msg)
+
+    def on_url(self, url):
+        if re.match(r'https?://twitter.com/\w+/status/\d+', url):
+            tweet = parse_tweet(url)
+            self.say(tweet)

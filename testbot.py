@@ -28,9 +28,27 @@ def twitter_set_response(name, response):
                            )
 
 
-def twitter_set_tweet(name, tweet):
+def twitter_set_tweet(name, tweet, tweet_id=None):
     response = {'status': {'text': tweet}}
     twitter_set_response(name, response)
+
+    # Fill also the HTML response if an id was specified
+    if tweet_id is not None:
+        url = 'https://twitter.com/{screen_name}/status/{tweet_id}'\
+              .format(screen_name=name,
+                      tweet_id=tweet_id)
+        html = """
+            <html>
+                <body>
+                   <div class='permalink-tweet'>
+                        <p class='js-tweet-text'>
+                            {tweet}
+                        </p>
+                   </div>
+                </body>
+            </html>
+            """.format(tweet=tweet)
+        HTTPretty.register_uri(HTTPretty.GET, url, body=html)
 
 
 class TestTofbot(Tofbot):
@@ -373,3 +391,11 @@ class TestCase(unittest.TestCase):
     def test_twitter_rt(self):
         twitter_set_tweet('roberto', 'LOL')
         self.assertOutput('!rt roberto', '@roberto: LOL')
+
+    @httprettified
+    def test_twitter_expand(self):
+        tweet_id = 1122334455667788
+        tweet = 'Michel!'
+        twitter_set_tweet('roflman', tweet, tweet_id=tweet_id)
+        msg = 'https://twitter.com/roflman/status/%d' % tweet_id
+        self.assertOutput(msg, tweet)
