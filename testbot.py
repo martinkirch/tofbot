@@ -6,7 +6,6 @@ from collections import namedtuple
 from httpretty import HTTPretty, httprettified
 from plugins.euler import EulerEvent
 from plugins.jokes import TofadeEvent
-from plugins.twitter import TweetEvent
 from mock import patch
 import json
 
@@ -18,37 +17,22 @@ def print_resp(msg):
     print (" -> %s" % msg)
 
 
-def twitter_set_response(name, response):
-    base = "http://api.twitter.com/1/users/show.json?screen_name=%s"
-    url = base % name
-
-    HTTPretty.register_uri(HTTPretty.GET, url,
-                           content_type="application/json",
-                           body=json.dumps(response),
-                           )
-
-
-def twitter_set_tweet(name, tweet, tweet_id=None):
-    response = {'status': {'text': tweet}}
-    twitter_set_response(name, response)
-
-    # Fill also the HTML response if an id was specified
-    if tweet_id is not None:
-        url = 'https://twitter.com/{screen_name}/status/{tweet_id}'\
-              .format(screen_name=name,
-                      tweet_id=tweet_id)
-        html = """
-            <html>
-                <body>
-                   <div class='permalink-tweet'>
-                        <p class='js-tweet-text'>
-                            {tweet}
-                        </p>
-                   </div>
-                </body>
-            </html>
-            """.format(tweet=tweet)
-        HTTPretty.register_uri(HTTPretty.GET, url, body=html)
+def twitter_set_tweet(name, tweet, tweet_id):
+    url = 'https://twitter.com/{screen_name}/status/{tweet_id}'\
+          .format(screen_name=name,
+                  tweet_id=tweet_id)
+    html = """
+        <html>
+            <body>
+               <div class='permalink-tweet'>
+                    <p class='js-tweet-text'>
+                        {tweet}
+                    </p>
+               </div>
+            </body>
+        </html>
+        """.format(tweet=tweet)
+    HTTPretty.register_uri(HTTPretty.GET, url, body=html)
 
 
 class TestTofbot(Tofbot):
@@ -349,53 +333,9 @@ class TestCase(unittest.TestCase):
         self.assertIn('Au passage, michel est un sacré Kevin', l)
 
     @httprettified
-    def test_twitter(self):
-        tweet = 'blabla'
-        twitter_set_tweet('michel', tweet)
-        self.bot.send('!twitter_track michel')
-
-        (event_k, event) = self._find_event(TweetEvent)
-        self._delete_event(event_k)
-
-        l = bot_action(self.bot, event.fire)
-        self.assertEqual(l, ['@michel: %s' % tweet])
-
-        l = bot_action(self.bot, event.fire)
-        self.assertEqual(l, [])
-
-        twitter_set_tweet('michel', '@alfred oh oh')
-        l = bot_action(self.bot, event.fire)
-        self.assertEqual(l, [])
-
-        tweet2 = 'blibli'
-        twitter_set_tweet('michel', tweet2)
-
-        l = bot_action(self.bot, event.fire)
-        self.assertEqual(l, ['@michel: %s' % tweet2])
-
-        twitter_set_response('michel', {})
-
-        l = bot_action(self.bot, event.fire)
-        self.assertEqual(l, [])
-
-        alfred_tweet = 'mon super tweet'
-        twitter_set_tweet('alfred', alfred_tweet)
-        self.assertOutput('!tw +alfred', [])
-        self.assertOutput('oho?', '@alfred: %s' % alfred_tweet)
-        self.assertOutput('!tw ?', "['alfred']")  # michel's event was removed
-        twitter_set_tweet('alfred', 'le tweet invisible')
-        self.assertOutput('!tw -alfred', [])
-        self.assertOutputLength('oho?', 0)
-
-    @httprettified
-    def test_twitter_rt(self):
-        twitter_set_tweet('roberto', 'LOL')
-        self.assertOutput('!rt roberto', '@roberto: LOL')
-
-    @httprettified
     def test_twitter_expand(self):
         tweet_id = 1122334455667788
         tweet = 'Michel!'
-        twitter_set_tweet('roflman', tweet, tweet_id=tweet_id)
+        twitter_set_tweet('roflman', tweet, tweet_id)
         msg = 'https://twitter.com/roflman/status/%d' % tweet_id
         self.assertOutput(msg, tweet)
