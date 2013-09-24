@@ -13,6 +13,7 @@ import re
 import requests
 import json
 
+
 def parse_tweet(url):
     r = requests.get(url)
     s = BeautifulSoup(r.text)
@@ -20,14 +21,12 @@ def parse_tweet(url):
     tweet = container.find('p', {'class': 'js-tweet-text'})
     return tweet.get_text().strip()
 
+
 class PluginTwitter(Plugin):
     """
     A twitter client plugin.
     It will expand tweets if a tweet URL is received.
     """
-
-    def __init__(self, bot):
-        Plugin.__init__(self, bot)
 
     def on_url(self, url):
         if re.match(r'https?://twitter.com/\w+/status/\d+', url):
