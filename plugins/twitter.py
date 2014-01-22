@@ -18,6 +18,8 @@ def parse_tweet(url):
     r = requests.get(url)
     s = BeautifulSoup(r.text)
     container = s.find('div', {'class': 'permalink-tweet'})
+    if container is None:
+        return None
     tweet = container.find('p', {'class': 'js-tweet-text'})
     return tweet.get_text().strip()
 
