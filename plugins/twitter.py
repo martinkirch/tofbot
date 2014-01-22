@@ -33,4 +33,5 @@ class PluginTwitter(Plugin):
     def on_url(self, url):
         if re.match(r'https?://twitter.com/\w+/status/\d+', url):
             tweet = parse_tweet(url)
-            self.say(tweet)
+            if tweet:
+                self.say(tweet)
