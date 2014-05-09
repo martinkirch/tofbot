@@ -1,0 +1,37 @@
+---
+
+- hosts: ircservers
+  user: admin
+  sudo: True
+  vars:
+    repo_url: https://github.com/martinkirch/tofbot.git
+    apps_dir: /srv/apps
+    app_name: tofbot
+    repo_remote: origin
+    repo_version: master
+    config_file: default.conf
+
+  tasks:
+    - name: ensure log directory
+      action: file dest={{apps_dir}}/{{app_name}}/log state=directory
+
+    - name: deploy code from repository
+      action: git repo={{repo_url}} dest={{apps_dir}}/{{app_name}}/src remote={{repo_remote}} version={{repo_version}}
+
+    - name: copy configuration file
+      action: template src=templates/{{config_file}} dest={{apps_dir}}/{{app_name}}/tofbot.conf
+
+    - name: install dependencies into virtualenv
+      action: pip requirements={{apps_dir}}/{{app_name}}/src/requirements.txt virtualenv={{apps_dir}}/{{app_name}}/venv state=present
+
+    - name: create supervisor program config
+      action: template src=templates/supervisor.conf dest=/etc/supervisor/conf.d/{{app_name}}.conf
+      notify:
+        - restart app
+
+    - name: start app
+      action: supervisorctl name={{app_name}} state=started
+
+  handlers:
+    - name: restart app
+      action: supervisorctl name={{app_name}} state=restarted

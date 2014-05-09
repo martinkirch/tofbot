@@ -1,0 +1,13 @@
+---
+
+- hosts: ircservers
+  user: admin
+  sudo: True
+
+  tasks:
+    - name: install required packages
+      action: apt pkg={{item}} state=installed
+      with_items:
+        - git-core
+        - python-virtualenv
+        - supervisor
