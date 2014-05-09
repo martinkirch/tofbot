@@ -1,22 +1,25 @@
 This is tofbot
+==============
 
 configuration files in tofconfigs/
 
 launch for a given configuration like this:
-  python bot.py -x tofconfigs/localhost.conf
+
+    python bot.py -x tofconfigs/localhost.conf
 
 more help about command line arguments:
-  python bot.py -h
+
+    python bot.py -h
 
 Deployment
 ----------
 
 You need:
 
-    - ansible
-    - a remote machine. Let's call it tofbox (it can be an alias in
-      ~/.ssh/config). All you need there is a python 2 interpreter, and a
-      passwordless sudo for a "admin" user (feel free to edit the *.yml).
+  - ansible
+  - a remote machine. Let's call it tofbox (it can be an alias in
+    ~/.ssh/config). All you need there is a python 2 interpreter, and a
+    passwordless sudo for a "admin" user (feel free to edit the .yml).
 
 Let's prepare the local environment.
 
