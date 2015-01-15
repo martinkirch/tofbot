@@ -156,7 +156,7 @@ class PluginDassin(Plugin):
 
         searched = msg_text.lower()
         minDist = 9999999
-        best = False
+        best = ""
 
         for song in songs:
             try:
