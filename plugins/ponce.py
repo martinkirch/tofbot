@@ -7,7 +7,7 @@
 
 "See PluginPonce"
 from toflib import Plugin
-import time
+import random
 
 class PluginPonce(Plugin):
     "A plugin that asks the right questions"
@@ -15,7 +15,8 @@ class PluginPonce(Plugin):
     def handle_msg(self, msg_text, _chan, _nick):
         "When msg starts with 'elle', asks if it refers to the girfriend"
 
-        msg = msg_text.strip().lower()
-        first_word = msg[:msg.find(" ")]
-        if first_word == "elle":
-            self.say("C'est ta meuf?")
+        words = msg_text.lower().strip().split(" ")
+
+        if "elle" in words:
+            if random.random() > .5:
+                self.say("C'est ta meuf?")
