@@ -46,22 +46,22 @@ def sansAccents(string):
     Remplace les accents courants en français par le caractère sans. Ne reconnait que les minuscules !
     """
     result = string.decode("utf-8")
-    
+
     a = re.compile(u"[àâä]")
     result = a.sub("a", result)
-    
+
     e = re.compile(u"é|è|ë|ê")
     result = e.sub("e", result)
-    
+
     u = re.compile(u"[üûù]")
     result = u.sub("u", result)
-    
+
     i = re.compile(u"[ïî]")
     result = i.sub("i", result)
-    
+
     o = re.compile(u"[öô]")
     result = o.sub("o", result)
-    
+
     return result.replace(u"ç", "c")
 
 
