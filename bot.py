@@ -49,7 +49,6 @@ import plugins.sed
 import plugins.rick
 import plugins.expand
 import plugins.like
-import plugins.ponce
 
 random.seed()
 
@@ -183,7 +182,7 @@ class Tofbot(Bot):
                     return
 
                 urls = urls_in(msg_text)
-
+               
                 for p in self.plugins.values():
                     p.handle_msg(msg_text, chan, senderNick)
                     for url in urls:
@@ -326,7 +325,7 @@ class Tofbot(Bot):
 
     def send_context(self, to):
         "Gives you last messages from the channel"
-
+    
         intro = "Last " + str(len(self.msgMemory)) + " messages sent on " + self.channels[0] + " :"
         self.msg(to, intro)
 
@@ -338,10 +337,10 @@ class Tofbot(Bot):
         maxlen = 1 + max(map(len, _simple_dispatch))
 
         self.msg(to, "Commands should be entered in the channel or by private message")
-
+        
         self.msg(to, '%*s - %s' % (maxlen, "!help", self.send_help.__doc__))
         self.msg(to, '%*s - %s' % (maxlen, "!context", self.send_context.__doc__))
-
+        
         for cmd in _simple_dispatch:
             f = self.find_cmd_action("cmd_" + cmd)
             self.msg(to, '%*s - %s' % (maxlen, "!"+cmd, f.__doc__))
