@@ -96,7 +96,7 @@ class PluginJokes(Plugin):
             if itsOver:
                 self.devinette = None
 
-        if self.tofade_time():
+        if self.tofade_time(has_context=False):
             self.cmd_tofme(chan, [nick])
 
 

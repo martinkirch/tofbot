@@ -144,9 +144,12 @@ class Plugin(object):
     def say(self, msg):
         self.bot.msg(self.bot.channels[0], msg)
 
-    def tofade_time(self):
+    def tofade_time(self, has_context=True):
         "Is it a good time for a tofade"
-        return (random.randint(0, 100) > self.bot.autoTofadeThreshold and
+        threshold = self.bot.autoTofadeThreshold
+        if has_context:
+            threshold = threshold / 2
+        return (random.randint(0, 100) > threshold and
             (time.time() - self.lastTGtofbot) >= (self.bot.TGtime * 60))
 
     def load(self, data):
