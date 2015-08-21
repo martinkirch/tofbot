@@ -111,11 +111,11 @@ class PluginDassin(Plugin):
                  "y'a pas de concession",
                  "tu vis et faut vivre à fond"
                  ]
-	
-	oizo = ["coucou","tu veux voir ma bite ?"]
+
+        oizo = ["coucou","tu veux voir ma bite ?"]
 
         hell = ["hell", "cook"]
-        
+
         chuck = ["nope", "it's just Chuck Testa !"]
 
         hibernatus = [ "j'ai tout visité en 2 secondes"

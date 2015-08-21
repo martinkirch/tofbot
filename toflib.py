@@ -11,6 +11,7 @@
 #                    Quentin Sabah <quentin.sabah@gmail.com>
 import random
 import re
+import unidecode
 from datetime import datetime, timedelta
 
 # those commands directly trigger cmd_* actions
@@ -41,37 +42,14 @@ def confcmd(expected_args):
         return f
     return deco
 
-def sansAccents(string):
-    """
-    Remplace les accents courants en français par le caractère sans. Ne reconnait que les minuscules !
-    """
-    result = string.decode("utf-8")
-    
-    a = re.compile(u"[àâä]")
-    result = a.sub("a", result)
-    
-    e = re.compile(u"é|è|ë|ê")
-    result = e.sub("e", result)
-    
-    u = re.compile(u"[üûù]")
-    result = u.sub("u", result)
-    
-    i = re.compile(u"[ïî]")
-    result = i.sub("i", result)
-    
-    o = re.compile(u"[öô]")
-    result = o.sub("o", result)
-    
-    return result.replace(u"ç", "c")
-
 
 def distance(string1, string2):
     """
     Levenshtein distance
     http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance#Python
     """
-    string1 = ' ' + sansAccents(string1)
-    string2 = ' ' + sansAccents(string2)
+    string1 = ' ' + unidecode.unidecode(string1.decode("utf-8"))
+    string2 = ' ' + unidecode.unidecode(string2.decode("utf-8"))
     dists = {}
     len1 = len(string1)
     len2 = len(string2)
@@ -143,6 +121,14 @@ class Plugin(object):
 
     def say(self, msg):
         self.bot.msg(self.bot.channels[0], msg)
+
+    def tofade_time(self, has_context=True):
+        "Is it a good time for a tofade"
+        threshold = self.bot.autoTofadeThreshold
+        if has_context:
+            threshold = threshold / 2
+        return (random.randint(0, 100) > threshold and
+            (time.time() - self.lastTGtofbot) >= (self.bot.TGtime * 60))
 
     def load(self, data):
         "Called after plugin initialization to set its internal state"

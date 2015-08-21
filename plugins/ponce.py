@@ -18,5 +18,5 @@ class PluginPonce(Plugin):
         words = msg_text.lower().strip().split(" ")
 
         if "elle" in words:
-            if random.random() > .5:
+            if self.tofade_time():
                 self.say("C'est ta meuf?")

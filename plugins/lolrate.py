@@ -35,7 +35,7 @@ class TimeSlice():
                                             , self.hour+1 % 24
                                             , self.count
                                             )
-      
+
 
     def __cmp__(self, other):
         return cmp ( (self.date, self.hour)
@@ -89,7 +89,7 @@ class PluginLolrate(Plugin):
             for kevin in lolade.kevins.iteritems():
                 kevins.setdefault(kevin[0], 0)
                 kevins[kevin[0]] += kevin[1]
-        
+
         if len(kevins) > 0:
             def kevin_value(nick):
                 "Fetch amount of lulz for a nick"

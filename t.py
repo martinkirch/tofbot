@@ -9,7 +9,7 @@ origin = Origin()
 origin.sender = 'TestTofbot'
 
 class Counter:
-    
+
     def __init__(self, n):
         self.remaining_calls = n
 
