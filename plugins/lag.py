@@ -49,4 +49,4 @@ class PluginLag(Plugin):
                     )
 
             # wipe out the pending mention
-            self.last_mention[_nick] = None
+            self.last_mention[me] = None
