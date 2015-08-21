@@ -4,3 +4,4 @@ HTTPretty
 mock
 nose
 requests
+unidecode
