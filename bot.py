@@ -6,10 +6,11 @@
 # If we meet some day, and you think this stuff is worth it,
 # you can buy us a beer in return.
 #
-# Copyright (c) 2011 Etienne Millon <etienne.millon@gmail.com>
+# Copyright (c) 2011,2015 Etienne Millon <etienne.millon@gmail.com>
 #                    Martin Kirchgessner <martin.kirch@gmail.com>
 #                    Nicolas Dumazet <nicdumz.commits@gmail.com>
 #                    Quentin Sabah <quentin.sabah@gmail.com>
+#                    Christophe-Marie Duquesne <chm.duquesne@gmail.com>
 
 """
 ./bot.py [options] [legacy-arguments]
@@ -460,4 +461,3 @@ if __name__ == "__main__":
         traceback.print_exc(None, dumpFile)
         dumpFile.close()
         raise ex
-
