@@ -34,7 +34,7 @@ class PluginLag(Plugin):
 
         # did I mention anybody?
         for nick in self.watched:
-            if nick in words and nick != me:
+            if nick != me and nick in words:
                 self.last_mention[nick] = (now, me, msg_text)
 
         # is there a pending mention for me?
