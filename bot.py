@@ -87,6 +87,7 @@ class Tofbot(Bot):
         self.cron = Cron()
         self.plugins = self.load_plugins()
         self.startMsgs = []
+        self.msgHandled = False
 
     def run(self, host=None):
       if host == None and not hasattr(self,'host'):
@@ -119,6 +120,7 @@ class Tofbot(Bot):
 
     # line-feed-safe
     def msg(self, chan, msg):
+        self.msgHandled = True
         for m in msg.split("\n"):
             Bot.msg(self, chan, m)
 
@@ -184,10 +186,12 @@ class Tofbot(Bot):
 
                 urls = urls_in(msg_text)
 
-                for p in self.plugins.values():
-                    p.handle_msg(msg_text, chan, senderNick)
-                    for url in urls:
-                        p.on_url(url)
+                self.msgHandled = False
+                for p in random.shuffle(self.plugins.values()):
+                    if not self.msgHandled:
+                        p.handle_msg(msg_text, chan, senderNick)
+                        for url in urls:
+                            p.on_url(url)
 
                 if chan == self.channels[0] and cmd[0] != '!':
                     self.msgMemory.append("<" + senderNick + "> " + msg_text)
