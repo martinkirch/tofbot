@@ -193,8 +193,8 @@ class Tofbot(Bot):
                 for p in random.shuffle(self.plugins.values()):
                     if not self.msgHandled:
                         p.handle_msg(msg_text, chan, senderNick)
-                        for url in urls:
-                            p.on_url(url)
+                    for url in urls:
+                        p.on_url(url)
 
                 if chan == self.channels[0] and cmd[0] != '!':
                     self.msgMemory.append("<" + senderNick + "> " + msg_text)
