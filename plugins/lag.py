@@ -60,7 +60,7 @@ class PluginLag(Plugin):
         "Add a mention to the nick"
         self.data[to]["mentions"].append((
             datetime.datetime.now(),    # timestamp
-            author,                       # author
+            author,                     # author
             msg_text,                   # message
             pending                     # pending
             ))
