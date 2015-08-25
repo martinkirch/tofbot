@@ -10,6 +10,9 @@
 from toflib import Plugin, cmd
 import datetime
 import time
+import collections
+
+Mention = collections.namedtuple('Mention', "timestamp author msg pending")
 
 class PluginLag(Plugin):
     "Lag: time between a mention and the answer"
@@ -18,7 +21,7 @@ class PluginLag(Plugin):
         # A dictionary of nick -> dict
         # Values are like this:
         #  {
-        #      "mentions": list(tuple<timestamp, author, msg, pending>)
+        #      "mentions": list(Mention)
         #      "previous_lag": timedelta
         #      "last_active": timestamp
         #  }
@@ -58,11 +61,11 @@ class PluginLag(Plugin):
 
     def add_mention(self, msg_text, author, to, pending=True):
         "Add a mention to the nick"
-        self.data[to]["mentions"].append((
-            datetime.datetime.now(),    # timestamp
-            author,                     # author
-            msg_text,                   # message
-            pending                     # pending
+        self.data[to]["mentions"].append(Mention(
+            timestamp=datetime.datetime.now(),
+            author=author,
+            msg=msg_text,
+            pending=pending
             ))
         self.gc()
 
@@ -71,9 +74,8 @@ class PluginLag(Plugin):
         "Returns the time between now and the oldest pending mention"
         now = datetime.datetime.now()
         for m in self.data[nick]["mentions"]:
-            timestamp, _, _ , pending = m
-            if pending:
-                return now - timestamp
+            if m.pending:
+                return now - m.timestamp
         return None
 
 
@@ -99,7 +101,7 @@ class PluginLag(Plugin):
 
         # my mentions are no longer pending since I just answered
         for m in mentions:
-            m[3] = False
+            m.pending = False
 
 
     @cmd(1)
@@ -128,10 +130,9 @@ class PluginLag(Plugin):
         if who in self.data:
             self.say("Dernières mentions de %s:")
             for m in self.data[who]["mentions"]:
-                timestamp, author, msg, pending = m
-                status = "✗" if pending else "✓"
+                status = "✗" if m.pending else "✓"
                 time.sleep(0.5)
-                self.say("[%s] %s <%s> %s" % (status, str(timestamp),
-                    author, msg))
+                self.say("[%s] %s <%s> %s" % (status, str(m.timestamp),
+                    m.author, m.msg))
         else:
             self.say("Pas d'infos sur %s." % who)
