@@ -29,6 +29,11 @@ class PluginLag(Plugin):
         self.data = {}
 
 
+    def timeformat(t):
+        "return a formatted time element without microseconds"
+        return str(t).split(".")[0]
+
+
     def gc(self):
         "Limit memory usage"
         # don't watch more than 20 nicks
@@ -115,12 +120,12 @@ class PluginLag(Plugin):
             lag = self.lag(who)
             if lag is not None:
                 self.say("Le %s-lag du moment est de %s." % (who,
-                    str(lag)))
+                    self.timeformat(lag)))
             else:
                 previous_lag = self.data[who]["previous_lag"]
                 if previous_lag is not None:
                     self.say("Pas de lag pour %s (lag précédent: %s)." %
-                            (who, str(previous_lag)))
+                            (who, self.timeformat(previous_lag)))
                 else:
                     self.say("Pas de lag pour %s." % who)
         else:
@@ -135,7 +140,7 @@ class PluginLag(Plugin):
             for m in self.data[who]["mentions"]:
                 status = "✗" if m.pending else "✓"
                 time.sleep(0.5)
-                self.say("[%s] %s <%s> %s" % (status, str(m.timestamp),
-                    m.author, m.msg))
+                self.say("[%s] %s <%s> %s" % (status,
+                    self.timeformat(m.timestamp), m.author, m.msg))
         else:
             self.say("Pas d'infos sur %s." % who)
