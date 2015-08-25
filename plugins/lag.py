@@ -14,7 +14,7 @@ import time
 class PluginLag(Plugin):
     "Lag: time between a mention and the answer"
 
-    def __init__(self):
+    def __init__(self, bot):
         # A dictionary of nick -> dict
         # Values are like this:
         #  {
@@ -22,6 +22,7 @@ class PluginLag(Plugin):
         #      "previous_lag": timedelta
         #      "last_active": timestamp
         #  }
+        super(PluginLag, self).__init__(bot)
         self.data = {}
 
 
