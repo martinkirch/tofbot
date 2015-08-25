@@ -12,6 +12,7 @@
 import random
 import re
 import unidecode
+import time
 from datetime import datetime, timedelta
 
 # those commands directly trigger cmd_* actions
