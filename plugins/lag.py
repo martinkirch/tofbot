@@ -104,7 +104,7 @@ class PluginLag(Plugin):
         # my mentions are no longer pending since I just answered
         mentions = self.data[me]["mentions"]
         for i in range(len(mentions)):
-            mentions[i] = mention[i]._replace(pending=False)
+            mentions[i] = mentions[i]._replace(pending=False)
 
 
     @cmd(1)
