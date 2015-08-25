@@ -29,7 +29,7 @@ class PluginLag(Plugin):
         self.data = {}
 
 
-    def timeformat(t):
+    def timeformat(self, t):
         "return a formatted time element without microseconds"
         return str(t).split(".")[0]
 
