@@ -17,7 +17,7 @@ class PluginLag(Plugin):
         # A dictionary of nick -> dict
         # Values are like this:
         #  {
-        #      "mentions": list(tuple<timestamp, from, msg, pending>)
+        #      "mentions": list(tuple<timestamp, author, msg, pending>)
         #      "previous_lag": timedelta
         #      "last_active": timestamp
         #  }
@@ -54,11 +54,11 @@ class PluginLag(Plugin):
         self.set_active(nick)
 
 
-    def add_mention(self, msg_text, from, to, pending=True):
+    def add_mention(self, msg_text, author, to, pending=True):
         "Add a mention to the nick"
         self.data[to]["mentions"].append((
             datetime.datetime.now(),    # timestamp
-            from,                       # author
+            author,                       # author
             msg_text,                   # message
             pending                     # pending
             ))
@@ -126,10 +126,10 @@ class PluginLag(Plugin):
         if who in self.data:
             self.say("Dernières mentions de %s:")
             for m in self.data[who]["mentions"]:
-                timestamp, from, msg, pending = m
+                timestamp, author, msg, pending = m
                 status = "✗" if pending else "✓"
                 time.sleep(0.5)
                 self.say("[%s] %s <%s> %s" % (status, str(timestamp),
-                    from, msg))
+                    author, msg))
         else:
             self.say("Pas d'infos sur %s." % who)
