@@ -102,8 +102,9 @@ class PluginLag(Plugin):
             self.data[me]["previous_lag"] = lag
 
         # my mentions are no longer pending since I just answered
-        for m in self.data[me]["mentions"]:
-            m.pending = False
+        mentions = self.data[me]["mentions"]
+        for i in range(len(mentions)):
+            mentions[i] = mention[i]._replace(pending=False)
 
 
     @cmd(1)
