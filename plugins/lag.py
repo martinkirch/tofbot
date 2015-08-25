@@ -139,11 +139,15 @@ class PluginLag(Plugin):
         "Report the recent mentions of the given nick"
         who = args[0]
         if who in self.data:
-            self.say("Dernières mentions de %s:" % who)
-            for m in self.data[who]["mentions"]:
-                status = "✗" if m.pending else "✓"
-                time.sleep(0.5)
-                self.say("[%s] %s <%s> %s" % (status,
-                    self.timeformat(m.timestamp), m.author, m.msg))
+            mentions = self.data[who]["mentions"]
+            if len(mentions) > 0:
+                self.say("Dernières mentions de %s:" % who)
+                for m in mentions:
+                    status = "✗" if m.pending else "✓"
+                    time.sleep(0.5)
+                    self.say("[%s] %s <%s> %s" % (status,
+                        self.timeformat(m.timestamp), m.author, m.msg))
+            else:
+                self.say("Pas de mentions pour %s." % who)
         else:
             self.say("Pas d'infos sur %s." % who)
