@@ -96,7 +96,7 @@ class PluginLag(Plugin):
                     .strip()
                     .split(" "))
 
-        is_cmd = words[0].startswith('!')
+        is_cmd = msg_text.strip().startswith('!')
 
         # did I mention anybody?
         if not is_cmd:
