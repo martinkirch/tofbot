@@ -45,7 +45,9 @@ class PluginLag(Plugin):
     def set_active(self, nick):
         "Update the last moment the nick was active"
         # If the nick did not exist, add it
-        if nick != self.bot.nick and nick not in self.data:
+        if nick == self.bot.nick:
+            return
+        if nick not in self.data:
             self.data[nick] = {
                     "mentions": [],
                     "previous_lag": None
