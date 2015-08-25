@@ -51,6 +51,7 @@ import plugins.rick
 import plugins.expand
 import plugins.like
 import plugins.ponce
+import plugins.lag
 
 random.seed()
 
