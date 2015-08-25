@@ -43,7 +43,7 @@ class PluginLag(Plugin):
             del self.data[least_active_nick]
         # don' keep more than 5 mentions per nick
         for nick in self.data:
-            while len(self.data[nick]["mentions"]) > 5:
+            while len(self.data[nick]["mentions"]) > 10:
                 del self.data[nick]["mentions"][0]
 
 
