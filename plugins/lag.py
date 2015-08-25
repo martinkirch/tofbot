@@ -99,7 +99,7 @@ class PluginLag(Plugin):
 
         # my mentions are no longer pending since I just answered
         for m in mentions:
-            m[4] = False
+            m[3] = False
 
 
     @cmd(1)
