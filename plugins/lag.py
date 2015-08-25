@@ -99,7 +99,7 @@ class PluginLag(Plugin):
         is_cmd = words[0].startswith('!')
 
         # did I mention anybody?
-        if !is_cmd:
+        if not is_cmd:
             for nick in self.data:
                 if nick != me and nick in words:
                     self.add_mention(msg_text, me, nick)
