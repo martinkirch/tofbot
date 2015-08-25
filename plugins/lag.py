@@ -104,15 +104,15 @@ class PluginLag(Plugin):
                 if nick != me and nick in words:
                     self.add_mention(msg_text, me, nick)
 
-        # update the lag
-        lag = self.lag(me)
-        if lag is not None:
-            self.data[me]["previous_lag"] = lag
+            # update the lag
+            lag = self.lag(me)
+            if lag is not None:
+                self.data[me]["previous_lag"] = lag
 
-        # my mentions are no longer pending since I just answered
-        mentions = self.data[me]["mentions"]
-        for i in range(len(mentions)):
-            mentions[i] = mentions[i]._replace(pending=False)
+            # my mentions are no longer pending since I just answered
+            mentions = self.data[me]["mentions"]
+            for i in range(len(mentions)):
+                mentions[i] = mentions[i]._replace(pending=False)
 
 
     @cmd(1)
