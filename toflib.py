@@ -128,8 +128,12 @@ class Plugin(object):
         threshold = self.bot.autoTofadeThreshold
         if has_context:
             threshold = threshold / 2
-        return (random.randint(0, 100) > threshold and
-            (time.time() - self.lastTGtofbot) >= (self.bot.TGtime * 60))
+        lastTGtofbot = 0
+        jokes = self.bot.plugins.get("jokes", None)
+        if jokes is not None:
+            lastTGtofbot = jokes.lastTGtofbot
+        return (time.time() - lastTGtofbot >= self.bot.TGtime * 60 and
+                random.randint(0, 100) > threshold)
 
     def load(self, data):
         "Called after plugin initialization to set its internal state"
