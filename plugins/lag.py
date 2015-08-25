@@ -96,10 +96,13 @@ class PluginLag(Plugin):
                     .strip()
                     .split(" "))
 
+        is_cmd = words[0].startswith('!')
+
         # did I mention anybody?
-        for nick in self.data:
-            if nick != me and nick in words:
-                self.add_mention(msg_text, me, nick)
+        if !is_cmd:
+            for nick in self.data:
+                if nick != me and nick in words:
+                    self.add_mention(msg_text, me, nick)
 
         # update the lag
         lag = self.lag(me)
