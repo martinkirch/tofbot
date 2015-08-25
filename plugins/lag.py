@@ -7,7 +7,7 @@
 # Copyright (c) 2015 Christophe-Marie Duquesne <chmd@chmd.fr>
 
 "See PluginLag"
-from toflib import Plugin
+from toflib import Plugin, cmd
 import datetime
 import time
 
