@@ -191,7 +191,7 @@ class Tofbot(Bot):
                 self.msgHandled = False
                 # We only allow one plugin to answer, so we trigger them
                 # in random order
-                for p in random.shuffle(self.plugins.values()):
+                for p in random.shuffle(list(self.plugins.values())):
                     if not self.msgHandled:
                         p.handle_msg(msg_text, chan, senderNick)
                     for url in urls:
