@@ -248,8 +248,10 @@ class TestCase(unittest.TestCase):
             self.assertOutputLength('!%s' % cmd, 1)
 
     def test_jokes_butters(self):
+        self.bot.send('!set autoTofadeThreshold 0')
         self.assertOutput("hey %s how are you" % self.bot.nick,
                           "%s: Ouais, c'est moi !" % self.origin.nick)
+        self.bot.send('!set autoTofadeThreshold 9000')
 
     def test_joke_riddle(self):
         self.assertOutputLength("!devinette", 1)

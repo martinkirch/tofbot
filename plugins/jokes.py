@@ -87,17 +87,15 @@ class PluginJokes(Plugin):
             self.lastTGtofbot = time.time()
         elif stripped == "gg " + self.bot.nick:
             self.lastTGtofbot = 0
-        elif stripped.find(self.bot.nick, 1) >= 0:
-            if self.tofade_time():
-                self.say(nick+": Ouais, c'est moi !")
-
+        elif stripped.find(self.bot.nick, 1) >= 0 and self.tofade_time():
+            self.say(nick+": Ouais, c'est moi !")
+        elif self.tofade_time(has_context=False):
+            self.cmd_tofme(chan, [nick])
         if self.active_riddle():
             itsOver = self.devinette.wait_answer(chan, msg_text)
             if itsOver:
                 self.devinette = None
 
-        if self.tofade_time(has_context=False):
-            self.cmd_tofme(chan, [nick])
 
 
     def active_riddle(self):
