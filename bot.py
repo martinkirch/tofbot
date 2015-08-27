@@ -215,10 +215,10 @@ class Tofbot(Bot):
 
             if cmd in _simple_dispatch:
                 act = self.find_cmd_action("cmd_" + cmd)
-                act(chan, msg[1:])
+                act(chan, msg[1:], senderNick)
             elif is_config and (cmd in _simple_conf_dispatch):
               act = self.find_cmd_action("confcmd_" + cmd)
-              act(chan, msg[1:])
+              act(chan, msg[1:], senderNick)
             elif cmd == 'context':
                 self.send_context(senderNick)
             elif cmd == 'help':

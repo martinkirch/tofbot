@@ -13,6 +13,7 @@ import random
 import re
 import unidecode
 import time
+import inspect
 from datetime import datetime, timedelta
 
 # those commands directly trigger cmd_* actions
@@ -25,9 +26,13 @@ def cmd(expected_args):
     def deco(func):
         name = func.__name__[4:]
         _simple_dispatch.add(name)
-        def f(bot, chan, args):
+        def f(bot, chan, args, sender_nick='nobody'):
             if(len(args) == expected_args):
-                return func(bot, chan, args)
+                nb_args_func = len(inspect.getargspec(func)[0])
+                if nb_args_func == 3:
+                    return func(bot, chan, args)
+                elif nb_args_func == 4:
+                    return func(bot, chan, args, sender_nick)
         f.__doc__ = func.__doc__
         return f
     return deco
@@ -36,9 +41,13 @@ def confcmd(expected_args):
     def deco(func):
         name = func.__name__[8:]
         _simple_conf_dispatch.add(name)
-        def f(bot, chan, args):
+        def f(bot, chan, args, sender_nick='nobody'):
             if(len(args) == expected_args):
-                return func(bot, chan, args)
+                nb_args_func = len(inspect.getargspec(func)[0])
+                if nb_args_func == 3:
+                    return func(bot, chan, args)
+                elif nb_args_func == 4:
+                    return func(bot, chan, args, sender_nick)
         f.__doc__ = func.__doc__
         return f
     return deco
@@ -121,7 +130,11 @@ class Plugin(object):
         self.bot = bot
 
     def say(self, msg):
-        self.bot.msg(self.bot.channels[0], msg)
+        to = self.bot.channels[0]
+        self.msg(to, msg)
+
+    def msg(self, to, msg):
+        self.bot.msg(to, msg)
 
     def tofade_time(self, has_context=True):
         "Is it a good time for a tofade"
