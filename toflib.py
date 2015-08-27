@@ -131,9 +131,9 @@ class Plugin(object):
 
     def say(self, msg):
         to = self.bot.channels[0]
-        self.msg(to, msg)
+        self.bot.msg(to, msg)
 
-    def msg(self, to, msg):
+    def private(self, to, msg):
         self.bot.msg(to, msg)
 
     def tofade_time(self, has_context=True):

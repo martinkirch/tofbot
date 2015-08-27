@@ -141,13 +141,13 @@ class PluginLag(Plugin):
         if who in self.data:
             mentions = self.data[who]["mentions"]
             if len(mentions) > 0:
-                self.msg(sender_nick, "Dernières mentions de %s:" % who)
+                self.private(sender_nick, "Dernières mentions de %s:" % who)
                 for m in mentions:
                     status = "✗" if m.pending else "✓"
                     time.sleep(0.5)
-                    self.msg(sender_nick, "[%s] %s <%s> %s" % (status,
+                    self.private(sender_nick, "[%s] %s <%s> %s" % (status,
                         self.timeformat(m.timestamp), m.author, m.msg))
             else:
-                self.msg(sender_nick, "Pas de mentions pour %s." % who)
+                self.private(sender_nick, "Pas de mentions pour %s." % who)
         else:
-            self.msg(sender_nick, "Pas d'infos sur %s." % who)
+            self.private(sender_nick, "Pas d'infos sur %s." % who)
